@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_id"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="horizontal">
+
+        <com.richfit.common_lib.widget.FButton
+            android:id="@+id/btn_online_mode"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_margin="30dp"
+            android:layout_weight="1"
+            android:minHeight="@dimen/fbutton_min_height"
+            android:minWidth="@dimen/fbutton_min_width"
+            android:text="@string/richfit_barcodesystem_online_model"
+            android:textColor="@color/black"
+            app:buttonColor="@color/light_blue_a200"
+            app:shadowEnabled="true" />
+
+        <com.richfit.common_lib.widget.FButton
+            android:id="@+id/btn_offline_mode"
+            android:layout_width="0dp"
+            android:layout_height="80dp"
+            android:layout_margin="30dp"
+            android:layout_weight="1"
+            android:minHeight="@dimen/fbutton_min_height"
+            android:minWidth="@dimen/fbutton_min_width"
+            android:text="@string/richfit_barcodesystem_offline_model"
+            android:textColor="@color/black"
+            app:buttonColor="@color/orange_500"
+            app:shadowEnabled="true" />
+    </LinearLayout>
+</RelativeLayout>

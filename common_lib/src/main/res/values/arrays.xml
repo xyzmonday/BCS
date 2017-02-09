@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--物资验收-->
+    <string-array name="richfit_barcodesystem_subfun_approval_names">
+        <item>验收结果录入-检验批</item>
+        <item>验收结果录入-其他</item>
+        <item>验收结果过账</item>
+    </string-array>
+    <string-array name="richfit_barcodesystem_subfun_approval_codes">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    
+    <!--物资入库-->
+    <string-array name="richfit_barcodesystem_subfun_accept_store_names">
+        <item>采购入库-101</item>
+        <item>采购入库-103</item>
+        <item>采购入库-105</item>
+        <item>生产入库</item>
+        <item>委外入库</item>
+        <item>其他入库-有参考</item>
+        <item>调拨入库</item>
+        <item>其他入库-无参考</item>
+    </string-array>
+
+    <string-array name="richfit_barcodesystem_subfun_accept_store_codes">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+
+    <!--物资出库-->
+    <string-array name="richfit_barcodesystem_subfun_delivery_store_names">
+        <item>销售出库</item>
+        <item>生产出库</item>
+        <item>委外出库</item>
+        <item>其他出库-有参考</item>
+        <item>其他出库-无参考</item>
+    </string-array>
+
+    <string-array name="richfit_barcodesystem_subfun_delivery_store_codes">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
+    <!--物资退库-->
+    <string-array name="richfit_barcodesystem_subfun_return_store_names">
+        <item>调拨退库</item>
+        <item>生产退库</item>
+        <item>其他退库(有参考)</item>
+        <item>其他退库(无参考)</item>
+    </string-array>
+
+    <string-array name="richfit_barcodesystem_subfun_return_store_codes">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <!--物资盘点-->
+    <string-array name="richfit_barcodesystem_subfun_check_names">
+        <item>明盘-有参考</item>
+        <item>明盘-无参考</item>
+        <item>盲盘</item>
+    </string-array>
+
+    <string-array name="richfit_barcodesystem_subfun_check_codes">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <!--物资移库-->
+    <string-array name="richfit_barcodesystem_subfun_move_store_names">
+        <item>工厂间一步转储(301)有参考</item>
+        <item>工厂间一步转储(301)无参考</item>
+        <item>工厂内一步转储(311)有参考</item>
+        <item>工厂内一步转储(311)无参考</item>
+        <item>一步转储(UB-STO)</item>
+        <item>工厂间转储发出(303)</item>
+        <item>工厂内转储发出(313)</item>
+        <item>转储发出(UB-STO)</item>
+        <item>工厂间转储接收(305)</item>
+        <item>工厂内转储接收(315)</item>
+        <item>UB-STO转储接收(101)</item>
+    </string-array>
+
+    <string-array name="richfit_barcodesystem_subfun_move_store_codes">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+    </string-array>
+
+    <!--信息查询-->
+    <string-array name="richfit_barcodesystem_subfun_info_query_names">
+        <item>物资条码信息查询</item>
+        <item>物资料签信息查询</item>
+        <item>物资库存信息查询(有参考)</item>
+        <item>物资库存信息查询(无参考)</item>
+    </string-array>
+
+    <string-array name="richfit_barcodesystem_subfun_info_query_codes">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <!--代管料出库-->
+    <string-array name="richfit_barcodesystem_subfun_escrow_ds_names">
+        <item>代管料出库</item>
+    </string-array>
+
+    <string-array name="richfit_barcodesystem_subfun_escrow_ds_codes">
+        <item>111</item>
+    </string-array>
+
+    <!--代管料出库原因-->
+    <string-array name="ds_reason_list">
+        <item>代管料入库-随机</item>
+    </string-array>
+
+
+    <!--代管料入库-->
+    <string-array name="richfit_barcodesystem_subfun_escrow_as_names">
+        <item>代管料入库</item>
+    </string-array>
+
+    <string-array name="richfit_barcodesystem_subfun_escrow_as_codes">
+        <item>110</item>
+    </string-array>
+
+    <!--代管料入库类型-->
+    <string-array name="as_type_list">
+        <item>代管料入库-随机</item>
+    </string-array>
+
+    <!--单据冲销-->
+    <string-array name="richfit_barcodesystem_subfun_ref_write_off_names">
+        <item>单据冲销(移库)</item>
+        <item>单据冲销(其他)</item>
+    </string-array>
+
+    <string-array name="richfit_barcodesystem_subfun_ref_write_off_codes">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+
+    <!--默认Tab的titles-->
+    <string-array name="default_tab_titles">
+        <item>抬头</item>
+        <item>数据明细</item>
+        <item>数据采集</item>
+    </string-array>
+
+    <!--库存查询有参考模块的Tab的titles-->
+    <string-array name="inventory_y_tab_titles">
+        <item>抬头</item>
+        <item>库存显示</item>
+    </string-array>
+
+    <!--库存查询无参考模块的Tab的titles-->
+    <string-array name="inventory_n_tab_titles">
+        <item>抬头</item>
+        <item>库存显示</item>
+    </string-array>
+    <!--物料编码和料签信息查询模块的Tab的titles-->
+    <string-array name="material_tab_titles">
+        <item>物资条码信息查询</item>
+        <item>物资料签信息查询</item>
+    </string-array>
+
+    <!--参考移动类型-->
+    <string-array name="ref_move_types">
+        <item>警卫消防费发料_Z39</item>
+        <item>炼化修理费发料_Z03</item>
+        <item>项目发料_281</item>
+        <item>成本中心发料_201</item>
+        <item>非生产维修发料_ZD1</item>
+    </string-array>
+
+</resources>

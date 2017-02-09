@@ -1,0 +1,24 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/error_message_vertical_margin"
+    android:paddingLeft="@dimen/error_message_horizontal_margin"
+    android:paddingRight="@dimen/error_message_horizontal_margin"
+    android:paddingTop="@dimen/error_message_vertical_margin">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/time_line_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:fadeScrollbars="true"
+        android:fadingEdge="none"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:overScrollMode="never"
+        android:scrollbarSize="2dp"
+        android:scrollbarThumbVertical="@color/cyan_500"
+        android:scrollbars="vertical" />
+
+</RelativeLayout>

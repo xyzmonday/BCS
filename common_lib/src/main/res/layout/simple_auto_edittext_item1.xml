@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.richfit.common_lib.widget.AutoMultiLineTextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:yff="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/id_auto_textview"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/auto_edittext_bg"
+    android:gravity="center_vertical"
+    android:textAppearance="?android:attr/textAppearanceListItemSmall"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall"
+    yff:m_paddingLeft="5dp"
+    yff:m_paddingRight="15dp"
+    yff:m_textColor="#000000"
+    yff:m_textSize="15sp" />

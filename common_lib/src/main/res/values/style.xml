@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="BaseAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!--Toolbar的背景颜色-->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <!--状态栏的颜色-->
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <!--控件颜色-->
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/white</item>
+        <!--设置overflowMenu的下拉高度以及背景-->
+        <item name="actionOverflowMenuStyle">@style/AppBaseActionOverflowMenuStyle</item>
+        <!-- 箭头 -->
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+    </style>
+
+    <style name="SplashTheme" parent="BaseAppTheme">
+        <!-- 欢迎页背景引用刚才写好的 -->
+        <item name="android:windowBackground">@drawable/splash</item>
+        <item name="android:windowFullscreen">true</item>
+
+    </style>
+
+    <!--OverFlowMenu样式-->
+    <style name="AppBaseActionOverflowMenuStyle" parent="@style/Widget.AppCompat.Light.PopupMenu.Overflow">
+        <item name="overlapAnchor">false</item>
+        <item name="android:popupBackground">@color/white_alpha_224</item>
+        <item name="android:dropDownVerticalOffset">5dp</item>
+    </style>
+
+    <!-- 左边的箭头指示-->
+    <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/white</item>
+    </style>
+
+    <!--如果只是希望设置ToolBar颜色为黑或者白,那么直接使用一下样式-->
+    <style name="CustomToolBarStyle" parent="ThemeOverlay.AppCompat.Light">
+        <!--标题栏文字颜色-->
+        <item name="android:textColorPrimary">@color/white</item>
+        <!--弹出菜单icon的颜色(竖着排列的那三个点)-->
+        <item name="android:textColorSecondary">@color/white</item>
+        <!--弹出菜单OptionMenu文字的颜色-->
+        <item name="android:textColor">@color/black</item>
+
+    </style>
+
+    <!--普通dialog-->
+    <style name="CustomDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+    </style>
+
+    <style name="CustomProgressDialog" parent="@style/CustomDialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+
+    <style name="CustomTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabIndicatorColor">@color/colorPrimary</item>
+        <item name="tabIndicatorHeight">2dp</item>
+        <item name="tabPaddingStart">12dp</item>
+        <item name="tabPaddingEnd">12dp</item>
+        <item name="tabBackground">@color/grey_400</item>
+        <item name="tabTextAppearance">@style/CustomTabTextAppearance</item>
+        <item name="tabSelectedTextColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="CustomTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/black_alpha_16</item>
+        <item name="textAllCaps">true</item>
+    </style>
+
+
+    <!--底部sheetDialog的样式-->
+    <style name="MaterialDialogSheet" parent="@android:style/Theme.Dialog">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowAnimationStyle">@style/MaterialDialogSheetAnimation</item>
+    </style>
+
+    <!--底部DialogSheet的动画-->
+    <style name="MaterialDialogSheetAnimation">
+        <item name="android:windowEnterAnimation">@anim/popup_show</item>
+        <item name="android:windowExitAnimation">@anim/popup_hide</item>
+    </style>
+
+    <!--表格分割线的样式-->
+    <style name="ItemSeperatorLayout">
+        <item name="android:layout_width">1px</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/white_alpha_224</item>
+    </style>
+
+    <!--明细界面父节点样式-->
+    <style name="TableHeaderStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:padding">3dp</item>
+    </style>
+
+    <!--明细界面子节点的样式-->
+    <style name="TableChildHeaderStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/grey_300</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:padding">3dp</item>
+    </style>
+
+    <!--第一列TextView的样式-->
+    <style name="LeftTextViewItemStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:gravity">start</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginLeft">@dimen/textview_left_margin</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <!--第二列TextView的样式-->
+    <style name="RightTextViewItemStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/edit_selector</item>
+        <item name="android:layout_weight">2</item>
+        <item name="android:freezesText">true</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:padding">2dp</item>
+    </style>
+
+
+    <!--第二列EditText的样式-->
+    <style name="RightEditTextItemStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/edit_selector</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:layout_weight">2</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:padding">2dp</item>
+    </style>
+
+    <!--第二列RichEditText的样式-->
+    <style name="RightRichEditTextItemStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">2</item>
+        <item name="android:padding">2dp</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:background">@drawable/edit_selector</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColorHint">@color/colorPrimary</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="SwitchButtonStyle">
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+
+    <style name="CustomLoadingDialog" parent="Theme.AppCompat.Dialog">
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="Translucent" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimaryDark">#0288D1</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+
+    </style>
+
+    <style name="TextLabel" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorControlActivated">#FFCC00</item>
+    </style>
+
+    <declare-styleable name="TimeLineMarker">
+        <attr name="markerSize" format="dimension" />
+        <attr name="marker" format="color|reference" />
+        <attr name="beginLine" format="color|reference" />
+        <attr name="endLine" format="color|reference" />
+        <attr name="lineSize" format="dimension" />
+    </declare-styleable>
+
+</resources>

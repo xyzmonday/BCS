@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/root_id"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/child_node_bg">
+
+    <View style="@style/ItemSeperatorLayout" />
+
+
+    <TextView
+        android:id="@+id/location"
+        style="@style/TableChildHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/s_location" />
+
+    <View style="@style/ItemSeperatorLayout" />
+
+
+    <TextView
+        android:id="@+id/batchFlag"
+        style="@style/TableChildHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/batch_flag" />
+
+    <View style="@style/ItemSeperatorLayout" />
+
+
+    <TextView
+        android:id="@+id/quantity"
+        style="@style/TableChildHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/quantity" />
+
+    <View style="@style/ItemSeperatorLayout" />
+
+
+</LinearLayout>

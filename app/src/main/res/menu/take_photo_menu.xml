@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item
+        android:id="@+id/id_delete_image"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@drawable/icon_delete_pic"
+        android:title="@string/delete_image" />
+
+
+    <item
+        android:id="@+id/id_select_all_image"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@drawable/icon_select_all"
+        android:title="@string/select_all_images" />
+
+</menu>

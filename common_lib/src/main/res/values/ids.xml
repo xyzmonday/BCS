@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--所有fragment界面的根视图强制都为linearLayout-->
+    <item name="root_id" type="id"></item>
+    <item name="toolbar" type="id"></item>
+
+    <!--子节点的修改和删除id-->
+    <item name="item_edit" type="id"></item>
+    <item name="item_delete" type="id"></item>
+
+</resources>

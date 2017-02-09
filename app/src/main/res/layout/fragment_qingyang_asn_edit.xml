@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/root_id"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/material_num" />
+
+        <TextView
+            android:id="@+id/tv_material_num"
+            style="@style/RightTextViewItemStyle" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/material_desc" />
+
+        <TextView
+            android:id="@+id/tv_material_desc"
+            style="@style/RightTextViewItemStyle"
+            android:hint="@string/material_desc" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/material_group" />
+
+        <TextView
+            android:id="@+id/tv_material_group"
+            style="@style/RightTextViewItemStyle"
+            android:hint="@string/material_group" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/batch_flag" />
+
+        <TextView
+            android:id="@+id/tv_batch_flag"
+            style="@style/RightTextViewItemStyle"
+            android:hint="@string/batch_flag" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/store_location" />
+
+
+        <TextView
+            android:id="@+id/tv_inv"
+            style="@style/RightTextViewItemStyle" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/s_location" />
+
+
+        <EditText
+            android:id="@+id/et_location"
+            style="@style/RightEditTextItemStyle" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/location_quantity" />
+
+
+        <TextView
+            android:id="@+id/tv_location_quantity"
+            style="@style/RightTextViewItemStyle" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/rec_quantity" />
+
+        <EditText
+            android:id="@+id/et_quantity"
+            android:inputType="numberDecimal"
+            style="@style/RightEditTextItemStyle" />
+
+
+    </LinearLayout>
+</LinearLayout>
+

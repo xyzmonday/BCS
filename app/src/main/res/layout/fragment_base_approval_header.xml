@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/root_id"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/ref_name" />
+
+        <com.richfit.common_lib.widget.RichEditText
+            android:id="@+id/et_ref_num"
+            android:drawableRight="@mipmap/icon_find"
+            style="@style/RightRichEditTextItemStyle" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/approval_type" />
+
+        <Spinner
+            android:id="@+id/sp_approval_type"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/spinner_min_height"
+            android:layout_weight="2" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/ref_name" />
+
+        <TextView
+            android:id="@+id/tv_ref_num"
+            style="@style/RightTextViewItemStyle"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/supplier" />
+
+        <TextView
+            android:id="@+id/tv_supplier"
+            style="@style/RightTextViewItemStyle"
+             />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/approval_name" />
+
+        <TextView
+            android:id="@+id/tv_approval_name"
+            style="@style/RightTextViewItemStyle"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/approval_date" />
+
+        <com.richfit.common_lib.widget.RichEditText
+            android:id="@+id/et_approval_date"
+            style="@style/RightRichEditTextItemStyle"
+            android:drawableRight="@mipmap/icon_find"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/arrival_date" />
+
+        <com.richfit.common_lib.widget.RichEditText
+            android:id="@+id/et_arrival_date"
+            style="@style/RightRichEditTextItemStyle"
+            android:drawableRight="@mipmap/icon_find"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
+    </LinearLayout>
+
+</LinearLayout>

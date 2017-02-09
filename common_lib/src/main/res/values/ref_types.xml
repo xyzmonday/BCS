@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--单据类型和单据编码-->
+    <string name="default_ref_code">-1</string>
+    <string name="purchase_ref_code">14</string>
+    <string name="delivery_out_ref_code">2</string>
+    <string name="other_ref_code">3</string>
+    <string name="product_ref_code">4</string>
+    <string name="ww_ref_code">5</string>
+    <string name="delivery_in_ref_code">6</string>
+    <string name="origin_purchase_ref_code">7</string>
+    <string name="origin_accept_visa_code">8</string>
+    <string name="rg_purchase_ref_code">9</string>
+    <string name="reserve_ref_code">10</string>
+    <string name="develop_ref_code">15</string>
+    <string name="ub_purchase_ref_code">11</string>
+    <string name="sto_purchase_ref_code">12</string>
+    <string name="wo_material_visa_code">13</string>
+    <string name="inspection_ref_code">1</string>
+    <string name="wo_materialvisa_code">14</string>
+
+    <string name="default_ref_name">请选择</string>
+    <string name="purchase_ref_name">采购订单</string>
+    <string name="delivery_out_ref_name">内向交货单</string>
+    <string name="other_ref_name">其他订单</string>
+    <string name="product_ref_name">生产订单</string>
+    <string name="ww_ref_name">委外采购订单</string>
+    <string name="delivery_in_ref_name">外向交货单</string>
+    <string name="origin_purchase_ref_name">原采购订单</string>
+    <string name="origin_accept_visa_name">原入库凭证</string>
+    <string name="rg_purchase_ref_name">退货采购订单</string>
+    <string name="reserve_ref_name">预留单</string>
+    <string name="develop_ref_name">其他自开发业务单据</string>
+    <string name="ub_purchase_ref_name">UB采购订单</string>
+    <string name="sto_purchase_ref_name">STO采购订单</string>
+    <string name="wo_material_visa_name">物料凭证</string>
+    <string name="inspection_ref_name">验收清单</string>
+    <string name="wo_materialvisa_name">物料凭证</string>
+
+</resources>

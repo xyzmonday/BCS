@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@id/root_id"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/ref_line_num" />
+
+            <Spinner
+                android:id="@+id/sp_ref_line_num"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/spinner_min_height"
+                android:layout_weight="2" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/material_num" />
+
+            <com.richfit.common_lib.widget.RichEditText
+                android:id="@+id/et_material_num"
+                style="@style/RightRichEditTextItemStyle" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/material_desc" />
+
+            <TextView
+                android:id="@+id/tv_material_desc"
+                style="@style/RightTextViewItemStyle" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/act_quantity" />
+
+            <TextView
+                android:id="@+id/tv_act_quantity"
+                style="@style/RightTextViewItemStyle" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/batch_flag" />
+
+            <EditText
+                android:id="@+id/et_batch_flag"
+                style="@style/RightTextViewItemStyle" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/work" />
+
+            <TextView
+                android:id="@+id/tv_work"
+                style="@style/RightTextViewItemStyle" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/inv" />
+
+
+            <Spinner
+                android:id="@+id/sp_inv"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/spinner_min_height"
+                android:layout_weight="2" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/contractQuantity" />
+
+            <TextView
+                android:id="@+id/tv_order_quantity"
+                style="@style/RightTextViewItemStyle"
+                android:gravity="center_horizontal" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/arrival_quantity" />
+
+            <EditText
+                android:id="@+id/et_quantity"
+                style="@style/RightEditTextItemStyle"
+                android:gravity="center_horizontal" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/balance_quantity" />
+
+            <TextView
+                android:id="@+id/tv_balance_quantity"
+                style="@style/RightTextViewItemStyle" />
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

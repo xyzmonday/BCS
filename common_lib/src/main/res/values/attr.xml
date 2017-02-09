@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PullHeaderLayout">
+        <attr name="phl_header_height" format="dimension" />
+        <attr name="phl_header_expand_height" format="dimension" />
+        <attr name="phl_header_shrink_height" format="dimension" />
+        <attr name="phl_header" format="reference" />
+        <attr name="phl_content" format="reference" />
+        <attr name="phl_action" format="reference" />
+    </declare-styleable>
+    <declare-styleable name="SwitchButton">
+        <attr name="kswThumbDrawable" format="reference"/>
+        <attr name="kswThumbColor" format="color|reference"/>
+        <attr name="kswThumbMargin" format="dimension|reference"/>
+        <attr name="kswThumbMarginTop" format="dimension|reference"/>
+        <attr name="kswThumbMarginBottom" format="dimension|reference"/>
+        <attr name="kswThumbMarginLeft" format="dimension|reference"/>
+        <attr name="kswThumbMarginRight" format="dimension|reference"/>
+        <attr name="kswThumbWidth" format="dimension|reference"/>
+        <attr name="kswThumbHeight" format="dimension|reference"/>
+        <attr name="kswThumbRadius" format="dimension|reference"/>
+        <attr name="kswBackRadius" format="dimension|reference"/>
+        <attr name="kswBackDrawable" format="reference"/>
+        <attr name="kswBackColor" format="color|reference"/>
+        <attr name="kswFadeBack" format="boolean"/>
+        <attr name="kswBackMeasureRatio" format="float"/>
+        <attr name="kswAnimationDuration" format="integer"/>
+        <attr name="kswTintColor" format="color|reference"/>
+        <attr name="kswTextOn" format="string"/>
+        <attr name="kswTextOff" format="string"/>
+        <attr name="kswTextMarginH" format="dimension"/>
+    </declare-styleable>
+
+
+    <declare-styleable name="ButtonCircleProgressBar">
+        <!--无进度时的颜色-->
+        <attr name="progress_unreached_color" format="color" />
+        <!--进度颜色-->
+        <attr name="progress_reached_color" format="color" />
+        <!--进度条的高-->
+        <attr name="progress_reached_bar_height" format="dimension" />
+        <!--无进度时的边框高-->
+        <attr name="progress_unreached_bar_height" format="dimension" />
+        <!--圆的半径-->
+        <attr name="radius" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="PwdTextView">
+        <attr name="psw_size" format="dimension" />
+        <attr name="psw_color" format="color" />
+        <attr name="psw_count" format="integer" />
+        <attr name="border_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="AutoMultiLineTextView">
+        <attr name="m_textColor" format="color|reference"></attr>
+        <attr name="m_textSize" format="dimension"></attr>
+        <attr name="m_paddingLeft" format="dimension"></attr>
+        <attr name="m_paddingRight" format="dimension"></attr>
+    </declare-styleable>
+
+    <declare-styleable name="AvatarImageBehavior">
+        <attr name="finalYPosition" format="dimension"/>
+        <attr name="startXPosition" format="dimension"/>
+        <attr name="startToolbarPosition" format="dimension"/>
+        <attr name="startHeight" format="dimension"/>
+        <attr name="finalHeight" format="dimension"/>
+    </declare-styleable>
+
+
+    <declare-styleable name="FButton">
+        <attr name="shadowEnabled" format="boolean" />
+        <attr name="buttonColor" format="color" />
+        <attr name="shadowColor" format="color" />
+        <attr name="shadowHeight" format="dimension" />
+        <attr name="cornerRadius" format="dimension" />
+    </declare-styleable>
+
+
+    <declare-styleable name="CustomBehavior">
+        <attr name="finalHeight1" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="DonutProgress">
+        <attr name="donut_progress" format="integer" />
+        <attr name="donut_max" format="integer" />
+
+        <attr name="donut_unfinished_color" format="color" />
+        <attr name="donut_finished_color" format="color" />
+
+        <attr name="donut_finished_stroke_width" format="dimension" />
+        <attr name="donut_unfinished_stroke_width" format="dimension" />
+
+        <attr name="donut_text_size" format="dimension" />
+        <attr name="donut_text_color" format="color" />
+
+        <attr name="donut_prefix_text" format="string" />
+        <attr name="donut_suffix_text" format="string" />
+        <attr name="donut_text" format="string" />
+
+        <attr name="donut_background_color" format="color" />
+
+        <attr name="donut_inner_bottom_text" format="string" />
+        <attr name="donut_inner_bottom_text_size" format="dimension" />
+        <attr name="donut_inner_bottom_text_color" format="color" />
+        <attr name="donut_circle_starting_degree" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="CircleProgressBar">
+        <attr name="mlpb_inner_radius" format="dimension" />
+        <attr name="mlpb_background_color" format="color" />
+        <attr name="mlpb_progress_color" format="color" />
+        <attr name="mlpb_progress_stoke_width" format="dimension" />
+        <attr name="mlpb_show_arrow" format="boolean" />
+        <attr name="mlpb_enable_circle_background" format="boolean" />
+        <attr name="mlpb_arrow_width" format="dimension" />
+        <attr name="mlpb_arrow_height" format="dimension" />
+
+        <attr name="mlpb_progress" format="integer" />
+        <attr name="mlpb_max" format="integer" />
+
+
+        <attr name="mlpb_progress_text_size" format="dimension" />
+        <attr name="mlpb_progress_text_color" format="color" />
+
+        <!--<attr name="mlpb_progress_text_offset" format="dimension"/>-->
+
+        <attr name="mlpb_progress_text_visibility" format="enum">
+            <enum name="visible" value="0" />
+            <enum name="invisible" value="1" />
+        </attr>
+    </declare-styleable>
+
+</resources>

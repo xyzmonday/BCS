@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/root_id"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_send_work"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/send_work" />
+
+        <Spinner
+            android:id="@+id/sp_send_work"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/spinner_min_height"
+            android:layout_weight="2" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_send_inv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/send_inv" />
+
+        <Spinner
+            android:id="@+id/sp_send_inv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/spinner_min_height"
+            android:layout_weight="2" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_rec_work"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/rec_work" />
+
+        <Spinner
+            android:id="@+id/sp_rec_work"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/spinner_min_height"
+            android:layout_weight="2" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_rec_inv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/rec_inv" />
+
+        <Spinner
+            android:id="@+id/sp_rec_inv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/spinner_min_height"
+            android:layout_weight="2" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/transfer_date" />
+
+        <com.richfit.common_lib.widget.RichEditText
+            android:id="@+id/et_guozhang_date"
+            style="@style/RightRichEditTextItemStyle"
+            android:enabled="false" />
+    </LinearLayout>
+</LinearLayout>

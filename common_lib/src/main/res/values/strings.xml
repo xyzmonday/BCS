@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">common_lib</string>
+    <string name="loading">正在玩命加载...</string>
+
+
+    <!--主模块名称-->
+    <string name="richfit_barcodesystem_modular_approval">物资验收</string>
+    <string name="richfit_barcodesystem_modular_accept_store">物资入库</string>
+    <string name="richfit_barcodesystem_modular_delivery_store">物资出库</string>
+    <string name="richfit_barcodesystem_modular_return_store">物资退库</string>
+    <string name="richfit_barcodesystem_modular_return_goods">物资退货</string>
+    <string name="richfit_barcodesystem_modular_move_store">物资移库</string>
+    <string name="richfit_barcodesystem_modular_location_adjust">仓位调整</string>
+    <string name="richfit_barcodesystem_modular_check">物资盘点</string>
+    <string name="richfit_barcodesystem_modular_reference_write_off">业务单据冲销</string>
+    <string name="richfit_barcodesystem_modular_info_query">物资信息查询</string>
+    <string name="richfit_barcodesystem_modular_exit">退出系统</string>
+    <string name="richfit_barcodesystem_modular_escrow_ds">代管料出库</string>
+    <string name="richfit_barcodesystem_modular_escrow_as">代管料入库</string>
+
+
+    <string name="richfit_barcodesystem_modular_creator">创建人</string>
+    <string name="richfit_barcodesystem_modular_create_date_start">创建起始日期</string>
+    <string name="richfit_barcodesystem_modular_create_date_end">创建结束日期</string>
+    <string name="richfit_barcodesystem_modular_start_search">开始查询</string>
+    <string name="richfit_barcodesystem_modular_cancel">取消</string>
+    <string name="switch_on">On</string>
+    <string name="switch_off">Off</string>
+
+    <string name="block_canary_display_activity_label">Blocks</string>
+</resources>

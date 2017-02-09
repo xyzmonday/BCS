@@ -1,0 +1,174 @@
+[
+  {
+    "id": "0",
+    "tabTitle" : "抬头",
+    "fragmentTag": "qingyang_asn_header_fragment_tag",
+    "bizType": "16",
+    "refType": "1",
+    "fragmentType" : 0,
+    "className": "com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.header.QingYangASNHeaderFragment"
+  },
+  {
+    "id": "1",
+    "tabTitle" : "数据明细",
+    "fragmentTag": "qingyang_asn_detail_fragment_tag",
+    "bizType": "16",
+    "refType": "1",
+    "fragmentType" : 1,
+    "className": "com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.detail.QingYangASNDetailFragment"
+  },
+  {
+    "id": "2",
+    "tabTitle" : "数据采集",
+    "fragmentTag": "qingyang_asn_collect_fragment_tag",
+    "bizType": "16",
+    "refType": "1",
+    "fragmentType" : 2,
+    "className": "com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.collect.QingYangASNCollectFragment"
+  },
+  {
+    "id": "3",
+    "tabTitle" : "抬头",
+    "fragmentTag": "qingyang_ao_header_fragment_tag",
+    "bizType": "00",
+    "refType": "0",
+    "fragmentType" : 0,
+    "className": "com.richfit.barcodesystemproduct.module_approval.qingyang_ao.header.QingYangAOHeaderFragment"
+  },
+  {
+    "id": "4",
+    "tabTitle" : "数据明细",
+    "fragmentTag": "qingyang_ao_detail_fragment_tag",
+    "bizType": "00",
+    "refType": "0",
+    "fragmentType" : 1,
+    "className": "com.richfit.barcodesystemproduct.module_approval.qingyang_ao.detail.QingYangAODetailFragment"
+  },
+  {
+    "id": "5",
+    "tabTitle" : "数据采集",
+    "fragmentTag": "qingyang_ao_collect_fragment_tag",
+    "bizType": "00",
+    "refType": "0",
+    "fragmentType" : 2,
+    "className": "com.richfit.barcodesystemproduct.module_approval.qingyang_ao.collect.QingYangAOCollectFragment"
+  },
+  {
+    "id": "6",
+    "tabTitle" : "明细修改",
+    "fragmentTag": "qingyang_ao_edit_fragment_tag",
+    "bizType": "00",
+    "refType": "0",
+    "fragmentType" : -1,
+    "className": "com.richfit.barcodesystemproduct.module_approval.qingyang_ao.edit.QingYangAOEditFragment"
+  },
+  {
+    "id": "7",
+    "tabTitle" : "抬头",
+    "fragmentTag": "qingyang_ao_1header_fragment_tag",
+    "bizType": "00",
+    "refType": "1",
+    "fragmentType" : 0,
+    "className": "com.richfit.barcodesystemproduct.module_approval.qingyang_ao.header.QingYangAO_1HeaderFragment"
+  },
+  {
+    "id": "8",
+    "tabTitle" : "数据明细",
+    "fragmentTag": "qingyang_ao_1detail_fragment_tag",
+    "bizType": "00",
+    "refType": "1",
+    "fragmentType" : 1,
+    "className": "com.richfit.barcodesystemproduct.module_approval.qingyang_ao.detail.QingYangAO_1DetailFragment"
+  },
+  {
+    "id": "9",
+    "tabTitle" : "数据采集",
+    "fragmentTag": "qingyang_ao_1collect_fragment_tag",
+    "bizType": "00",
+    "refType": "1",
+    "fragmentType" : 2,
+    "className": "com.richfit.barcodesystemproduct.module_approval.qingyang_ao.collect.QingYangAO_1CollectFragment"
+  },
+
+  {
+    "id": "10",
+    "tabTitle" : "抬头",
+    "fragmentTag": "qingyang_dsy_header_fragment_tag",
+    "bizType": "24",
+    "refType": "10",
+    "fragmentType" : 0,
+    "className": "com.richfit.barcodesystemproduct.module_delivery.qingyang_dsy.QingYangDSYHeaderFragment"
+  },
+  {
+    "id": "11",
+    "tabTitle" : "数据明细",
+    "fragmentTag": "qingyang_dsy_detail_fragment_tag",
+    "bizType": "24",
+    "refType": "10",
+    "fragmentType" : 1,
+    "className": "com.richfit.barcodesystemproduct.module_delivery.qingyang_dsy.QingYangDSYDetailFragment"
+  },
+  {
+    "id": "12",
+    "tabTitle" : "数据采集",
+    "fragmentTag": "qingyang_dsy_collect_fragment_tag",
+    "bizType": "24",
+    "refType": "10",
+    "fragmentType" : 2,
+    "className": "com.richfit.barcodesystemproduct.module_delivery.qingyang_dsy.QingYangDSYCollectFragment"
+  },
+  {
+    "id": "13",
+    "tabTitle" : "明细修改",
+    "fragmentTag": "qingyang_dsy_edit_fragment_tag",
+    "bizType": "24",
+    "refType": "10",
+    "fragmentType" : -1,
+    "className": "com.richfit.barcodesystemproduct.module_delivery.qingyang_dsy.QingYangDSYEditFragment"
+  },
+  {
+    "id": "14",
+    "tabTitle" : "明细修改",
+    "fragmentTag": "qingyang_asn_edit_fragment_tag",
+    "bizType": "16",
+    "refType": "1",
+    "fragmentType" : -1,
+    "className": "com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.edit.QingYangASNEditFragment"
+  },
+  {
+    "id": "15",
+    "tabTitle" : "抬头",
+    "fragmentTag": "qingyang_nms301_header_fragment_tag",
+    "bizType": "94",
+    "refType": "1",
+    "fragmentType" : 0,
+    "className": "com.richfit.barcodesystemproduct.module_movestore.qingyang_301n.QingYangNMS301HeaderFragment"
+  },
+  {
+    "id": "16",
+    "tabTitle" : "数据明细",
+    "fragmentTag": "qingyang_nms301_detail_fragment_tag",
+    "bizType": "94",
+    "refType": "1",
+    "fragmentType" : 1,
+    "className": "com.richfit.barcodesystemproduct.module_movestore.qingyang_301n.QingYangNMS301DetailFragment"
+  },
+  {
+    "id": "17",
+    "tabTitle" : "数据采集",
+    "fragmentTag": "qingyang_nms301_collect_fragment_tag",
+    "bizType": "94",
+    "refType": "1",
+    "fragmentType" : 2,
+    "className": "com.richfit.barcodesystemproduct.module_movestore.qingyang_301n.QingYangNMS301CollectFragment"
+  },
+  {
+    "id": "18",
+    "tabTitle" : "明细修改",
+    "fragmentTag": "qingyang_nms301_edit_fragment_tag",
+    "bizType": "94",
+    "refType": "1",
+    "fragmentType" : -1,
+    "className": "com.richfit.barcodesystemproduct.module_movestore.qingyang_301n.QingYangNMS301EditFragment"
+  }
+]

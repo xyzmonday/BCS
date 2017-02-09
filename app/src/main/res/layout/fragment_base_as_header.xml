@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@id/root_id"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/ref_name" />
+
+        <com.richfit.common_lib.widget.RichEditText
+            android:id="@+id/et_ref_num"
+            style="@style/RightRichEditTextItemStyle" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/ref_name" />
+
+        <TextView
+            android:id="@+id/tv_ref_num"
+            style="@style/RightTextViewItemStyle" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/supplier" />
+
+        <TextView
+            android:id="@+id/tv_supplier"
+            style="@style/RightTextViewItemStyle" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/transfer_date" />
+
+        <com.richfit.common_lib.widget.RichEditText
+            android:id="@+id/et_transfer_date"
+            style="@style/RightRichEditTextItemStyle"
+            android:drawableRight="@mipmap/icon_find"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
+    </LinearLayout>
+
+
+</LinearLayout>
