@@ -159,7 +159,7 @@ public class DSDetailPresenterImp extends BasePresenter<IDSDetailView>
                     //该子节点的id
                     bundle.putString(Global.EXTRA_REF_LINE_ID_KEY, node.refLineId);
                     //该子节点的LocationId
-                    bundle.putString(Global.EXTRA_LOCATION_KEY,node.locationId);
+                    bundle.putString(Global.EXTRA_LOCATION_KEY, node.locationId);
 
 
                     //入库子菜单类型
@@ -250,9 +250,9 @@ public class DSDetailPresenterImp extends BasePresenter<IDSDetailView>
 
     @Override
     public void submitData2SAP(String transId, String bizType, String refType, String userId,
-                               String voucherDate, Map<String, Object> extraHeaderMap) {
+                               String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
         mView = getView();
-        RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, Global.USER_ID, voucherDate, extraHeaderMap)
+        RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, Global.USER_ID, voucherDate, flagMap, extraHeaderMap)
                 .retryWhen(new RetryWhenNetworkException(3, 3000))
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext, "正在上传数据...") {

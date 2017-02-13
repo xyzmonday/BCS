@@ -176,7 +176,7 @@ public class NMSDetailPresenterImp extends BasePresenter<INMSDetailView>
     public void submitData2BarcodeSystem(String transId, String bizType, String refType, String voucherDate) {
         mView = getView();
         RxSubscriber<String> subscriber =
-                mRepository.uploadCollectionData("", transId, bizType, refType,-1, voucherDate, "", "")
+                mRepository.uploadCollectionData("", transId, bizType, refType, -1, voucherDate, "", "")
                         .retryWhen(new RetryWhenNetworkException(3, 3000))
                         .compose(TransformerHelper.io2main())
                         .subscribeWith(new RxSubscriber<String>(mContext) {
@@ -219,9 +219,10 @@ public class NMSDetailPresenterImp extends BasePresenter<INMSDetailView>
     }
 
     @Override
-    public void submitData2SAP(String transId, String bizType, String refType, String userId, String voucherDate, Map<String, Object> extraHeaderMap) {
+    public void submitData2SAP(String transId, String bizType, String refType, String userId,
+                               String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
         mView = getView();
-        RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, Global.USER_ID, voucherDate, extraHeaderMap)
+        RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, Global.USER_ID, voucherDate, flagMap, extraHeaderMap)
                 .retryWhen(new RetryWhenNetworkException(3, 3000))
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext) {

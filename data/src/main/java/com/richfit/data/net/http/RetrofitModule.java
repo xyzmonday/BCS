@@ -130,7 +130,8 @@ public class RetrofitModule {
                             .addQueryParameter("macAddress", Global.macAddress)
                             .addQueryParameter("serialNum", Global.serialNum)
                             .addQueryParameter("loginId",Global.LOGIN_ID)
-                            .addQueryParameter("userId",Global.USER_ID);
+                            .addQueryParameter("userId",Global.USER_ID)
+                            .addQueryParameter("companyCode",Global.companyCode);
 
 
                     // 新的请求

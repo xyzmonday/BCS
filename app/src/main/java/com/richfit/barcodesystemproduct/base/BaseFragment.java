@@ -316,6 +316,13 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
         return "";
     }
 
+    protected int getInteger(int resId) {
+        if (resId != 0) {
+            return mActivity.getResources().getInteger(resId);
+        }
+        return -1;
+    }
+
     /**
      * 通过物资条码信息和批次信息匹配
      * 这里的逻辑是：如果启用了批次管理那么明细里面可能有也可能没有批次，如果没有启用批次管理，那么

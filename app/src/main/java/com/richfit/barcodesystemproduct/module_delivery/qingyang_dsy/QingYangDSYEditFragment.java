@@ -1,5 +1,6 @@
 package com.richfit.barcodesystemproduct.module_delivery.qingyang_dsy;
 
+import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.module_delivery.baseedit.BaseDSEditFragment;
 
 /**
@@ -14,6 +15,11 @@ public class QingYangDSYEditFragment extends BaseDSEditFragment {
 
     @Override
     protected String getInvType() {
-        return "01";
+        return getString(R.string.invTypeNorm);
+    }
+
+    @Override
+    protected String getInventoryQueryType() {
+        return getString(R.string.inventoryQueryTypeSAPTotal);
     }
 }

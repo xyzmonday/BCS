@@ -21,6 +21,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Debug;
 import android.support.multidex.MultiDex;
 
 import com.github.moduth.blockcanary.BlockCanary;
@@ -73,6 +74,8 @@ public class SampleApplicationLike extends DefaultApplicationLike {
     @Override
     public void onBaseContextAttached(Context base) {
         super.onBaseContextAttached(base);
+        Debug.startMethodTracing("BarcodeSystem");
+
         //you must install multiDex whatever tinker is installed!
         MultiDex.install(base);
 
@@ -114,6 +117,7 @@ public class SampleApplicationLike extends DefaultApplicationLike {
             SPrefUtil.initSharePreference(application);
             initAppConfig(application);
             BlockCanary.install(application, new AppBlockCanaryContext()).start();
+            Debug.stopMethodTracing();
         } catch (Exception e) {
             e.printStackTrace();
         }

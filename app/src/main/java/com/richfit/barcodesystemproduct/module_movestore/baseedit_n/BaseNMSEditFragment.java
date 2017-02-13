@@ -8,7 +8,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxAdapterView;
-import com.jakewharton.rxbinding.widget.RxTextView;
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.LocationAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
@@ -25,12 +24,10 @@ import com.richfit.domain.bean.ResultEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 
 /**
@@ -115,14 +112,6 @@ public abstract class BaseNMSEditFragment extends BaseFragment<NMSEditPresenterI
                     loadLocationQuantity(mInventoryDatas.get(position).location,
                             getString(tvSendBatchFlag), mInventoryDatas.get(position).invQuantity);
                 });
-
-        //接收仓位
-        RxTextView.textChanges(etRecLoc)
-                .debounce(200, TimeUnit.MILLISECONDS)
-                .filter(recLoc -> !TextUtils.isEmpty(recLoc) && recLoc.length() > 0)
-                .filter(recLoc -> isValidatedRecLocation(recLoc.toString()))
-                .subscribe(str -> {
-                });
     }
 
     @Override
@@ -138,19 +127,14 @@ public abstract class BaseNMSEditFragment extends BaseFragment<NMSEditPresenterI
         mSendLocation = bundle.getString(Global.EXTRA_LOCATION_KEY);
         //发出批次
         final String batchFlag = bundle.getString(Global.EXTRA_BATCH_FLAG_KEY);
-
         //接收仓位
         final String recLocation = bundle.getString(Global.EXTRA_REC_LOCATION_KEY);
-
         //接收批次
         final String recBatchFlag = bundle.getString(Global.EXTRA_REC_BATCH_FLAG_KEY);
-
         //移库数量
         mQuantity = bundle.getString(Global.EXTRA_QUANTITY_KEY);
-
         //其他子节点的发出仓位列表
         mSendLocations = bundle.getStringArrayList(Global.EXTRA_LOCATION_LIST_KEY);
-
         //其他子节点的接收仓位列表
         mRecLocations = bundle.getStringArrayList(Global.EXTRA_REC_LOCATION_LIST_KEY);
         mLocationId = bundle.getString(Global.EXTRA_LOCATION_ID_KEY);
@@ -161,9 +145,7 @@ public abstract class BaseNMSEditFragment extends BaseFragment<NMSEditPresenterI
         tvSendInv.setTag(invId);
         etQuantity.setText(mQuantity);
         tvSendBatchFlag.setText(batchFlag);
-
         isWareHouseSame = TextUtils.isEmpty(recLocation) ? false : true;
-
         if (isWareHouseSame) {
             etRecLoc.setText(recLocation);
             etRecLoc.setEnabled(true);
@@ -171,9 +153,7 @@ public abstract class BaseNMSEditFragment extends BaseFragment<NMSEditPresenterI
             etRecLoc.setText("");
             etRecLoc.setEnabled(false);
         }
-
         tvRecBatchFlag.setText(recBatchFlag);
-
         //获取缓存信息
         mPresenter.getTransferInfoSingle(mRefData.bizType, materialNum,
                 Global.USER_ID, mRefData.workId, mRefData.invId, mRefData.recWorkId,
@@ -197,10 +177,10 @@ public abstract class BaseNMSEditFragment extends BaseFragment<NMSEditPresenterI
     @Override
     public void loadTransferSingleInfoComplete() {
         //获取库存信息
-        mPresenter.getInventoryInfo("03", mRefData.workId,
+        mPresenter.getInventoryInfo(getInventoryQueryType(), mRefData.workId,
                 tvSendInv.getTag().toString(), mRefData.workCode, getString(tvSendInv),
                 "", getString(tvMaterialNum), tvMaterialNum.getTag().toString(),
-                "", getString(tvSendBatchFlag), "1");
+                "", getString(tvSendBatchFlag), getInvType());
     }
 
     @Override
@@ -327,7 +307,7 @@ public abstract class BaseNMSEditFragment extends BaseFragment<NMSEditPresenterI
             return true;
         for (String location : mRecLocations) {
             if (recLocation.equalsIgnoreCase(location)) {
-                showMessage("您修改的仓位不合理,请重新输入");
+
                 etRecLoc.setText("");
                 return false;
             }
@@ -346,6 +326,16 @@ public abstract class BaseNMSEditFragment extends BaseFragment<NMSEditPresenterI
 
         if (Float.parseFloat(getString(etQuantity)) <= 0.0f) {
             showMessage("输入移库数量有误，请重新输入");
+            return false;
+        }
+
+        if(spSendLoc.getSelectedItemPosition() == 0) {
+            showMessage("请先选择发出仓位");
+            return false;
+        }
+
+        if (isValidatedRecLocation(getString(etRecLoc))) {
+            showMessage("您修改的仓位不合理,请重新输入");
             return false;
         }
 
@@ -386,40 +376,56 @@ public abstract class BaseNMSEditFragment extends BaseFragment<NMSEditPresenterI
         builder.show();
     }
 
+    /**
+     * 检查发出仓位是否存在，子类可以重写给出不同的仓位检查策略
+     */
+    protected void checkLocation() {
+        mPresenter.checkLocation("04", mRefData.recWorkId, mRefData.recInvId, getString(tvRecBatchFlag),
+                getString(etRecLoc));
+    }
+
+    @Override
+    public void checkLocationFail(String message) {
+        showMessage(message);
+    }
+
+    @Override
+    public void checkLocationSuccess() {
+        Flowable.create((FlowableOnSubscribe<ResultEntity>) emitter -> {
+            ResultEntity result = new ResultEntity();
+            result.businessType = mRefData.bizType;
+            result.voucherDate = mRefData.voucherDate;
+            result.moveType = mRefData.moveType;
+            result.userId = Global.USER_ID;
+            result.workId = mRefData.workId;
+            result.locationId = mLocationId;
+            result.invId = tvSendInv.getTag().toString();
+            result.recWorkId = mRefData.recWorkId;
+            result.recInvId = mRefData.recInvId;
+            result.materialId = tvMaterialNum.getTag().toString();
+            result.batchFlag = getString(tvSendBatchFlag);
+            result.location = mInventoryDatas.get(spSendLoc.getSelectedItemPosition()).location;
+            result.recLocation = getString(etRecLoc);
+            result.recBatchFlag = getString(tvRecBatchFlag);
+            result.quantity = getString(etQuantity);
+            result.modifyFlag = "Y";
+            result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
+            result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
+            result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
+            emitter.onNext(result);
+            emitter.onComplete();
+        }, BackpressureStrategy.BUFFER)
+                .compose(TransformerHelper.io2main())
+                .subscribe(result -> mPresenter.uploadCollectionDataSingle(result));
+    }
+
+
     @Override
     public void saveCollectedData() {
         if (!checkCollectedDataBeforeSave()) {
             return;
         }
-        Flowable.create(new FlowableOnSubscribe<ResultEntity>() {
-            @Override
-            public void subscribe(FlowableEmitter<ResultEntity> emitter) throws Exception {
-                ResultEntity result = new ResultEntity();
-                result.businessType = mRefData.bizType;
-                result.voucherDate = mRefData.voucherDate;
-                result.moveType = mRefData.moveType;
-                result.userId = Global.USER_ID;
-                result.workId = mRefData.workId;
-                result.locationId = mLocationId;
-                result.invId = tvSendInv.getTag().toString();
-                result.recWorkId = mRefData.recWorkId;
-                result.recInvId = mRefData.recInvId;
-                result.materialId = tvMaterialNum.getTag().toString();
-                result.batchFlag = getString(tvSendBatchFlag);
-                result.location = mInventoryDatas.get(spSendLoc.getSelectedItemPosition()).location;
-                result.recLocation = getString(etRecLoc);
-                result.recBatchFlag = getString(tvRecBatchFlag);
-                result.quantity = getString(etQuantity);
-                result.modifyFlag = "Y";
-                result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
-                result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
-                result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
-                emitter.onNext(result);
-                emitter.onComplete();
-            }
-        }, BackpressureStrategy.BUFFER)
-                .compose(TransformerHelper.io2main())
-                .subscribe(result -> mPresenter.uploadCollectionDataSingle(result));
+        checkLocation();
 
     }
 
@@ -453,5 +459,12 @@ public abstract class BaseNMSEditFragment extends BaseFragment<NMSEditPresenterI
         }
         super.retry(retryAction);
     }
+
+    /**
+     * 子类返回获取库存的类型
+     * 0:表示代管库存,1:表示正常库存
+     */
+    protected abstract String getInvType();
+    protected abstract String getInventoryQueryType();
 }
 

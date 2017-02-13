@@ -45,27 +45,20 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
         implements IDSDetailView, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String[] MENUS_NAMES = {"过账", "数据上传"};
-
     private static final int[] MENUS_IMAGES = {R.mipmap.icon_transfer,
             R.mipmap.icon_data_submit};
 
     @BindView(R.id.actQuantity)
     protected TextView actQuantityName;
-
     @BindView(R.id.data_details_recycle_view)
     protected RecyclerView mRecycleView;
-
     @BindView(R.id.swipe_refresh_layout)
     AutoSwipeRefreshLayout mSwipeRefreshLayout;
-
     @BindView(R.id.horizontal_scroll)
     HorizontalScrollView mHorizontalScroll;
-
     @BindView(R.id.root_id)
     LinearLayout mExtraContainer;
-
     String mVisa;
-
     protected String mTransId;
 
     @Override
@@ -135,11 +128,6 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
         showMessage(message);
         mSubFunEntity.parentNodeConfigs = null;
         mSubFunEntity.childNodeConfigs = null;
-    }
-
-    @Override
-    public void readConfigsComplete() {
-
     }
 
     @Override
@@ -347,7 +335,7 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
             return;
         }
         mPresenter.submitData2SAP(mTransId, mRefData.bizType, mRefType, Global.USER_ID,
-                mRefData.voucherDate, createExtraHeaderMap());
+                mRefData.voucherDate,null, createExtraHeaderMap());
     }
 
     /**

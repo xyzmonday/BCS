@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/root_id"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/parent_node_bg"
+    android:orientation="horizontal">
+
+    <View style="@style/ItemSeperatorLayout" />
+
+    <TextView
+        android:id="@+id/rowNum"
+        style="@style/TableHeaderStyle"
+        android:layout_width="60dp"
+        android:text="@string/row_num" />
+
+    <View style="@style/ItemSeperatorLayout" />
+
+    <TextView
+        android:id="@+id/refLineNum"
+        style="@style/TableHeaderStyle"
+        android:layout_width="80dp"
+        android:text="@string/ref_num" />
+
+    <View style="@style/ItemSeperatorLayout" />
+
+
+    <TextView
+        android:id="@+id/materialNum"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/material_num" />
+
+    <View style="@style/ItemSeperatorLayout" />
+
+    <TextView
+        android:id="@+id/materialDesc"
+        style="@style/TableHeaderStyle"
+        android:layout_width="240dp"
+        android:text="@string/material_desc" />
+
+    <View style="@style/ItemSeperatorLayout" />
+
+
+    <TextView
+        android:id="@+id/materialGroup"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/material_group" />
+
+    <View style="@style/ItemSeperatorLayout" />
+
+    <TextView
+        android:id="@+id/actQuantity"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/act_delivery_quantity" />
+
+    <View style="@style/ItemSeperatorLayout" />
+
+
+    <TextView
+        android:id="@+id/totalQuantity"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/total_quantity" />
+
+    <View style="@style/ItemSeperatorLayout" />
+
+    <TextView
+        android:id="@+id/sendInv"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/send_inv" />
+
+    <View style="@style/ItemSeperatorLayout" />
+
+</LinearLayout>

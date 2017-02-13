@@ -2,6 +2,7 @@ package com.richfit.barcodesystemproduct.module_movestore.qingyang_301n;
 
 import android.text.TextUtils;
 
+import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.module_movestore.basecollect_n.BaseNMSCollectFragment;
 
 /**
@@ -40,9 +41,32 @@ public class QingYangNMS301CollectFragment extends BaseNMSCollectFragment {
     }
 
     @Override
+    public boolean checkCollectedDataBeforeSave() {
+        if(isWareHouseSame && TextUtils.isEmpty(getString(etRecLoc))) {
+            showMessage("请输入接收仓位");
+            return false;
+        }
+
+        if(mIsOpenBatchManager && TextUtils.isEmpty(getString(etRecBatchFlag))) {
+            showMessage("请输入接收批次");
+            return false;
+        }
+        return super.checkCollectedDataBeforeSave();
+    }
+
+    @Override
     protected String getInvType() {
-        //代管库存
-        return "0";
+        return getString(R.string.invTypeDaiGuan);
+    }
+
+    @Override
+    protected String getInventoryType() {
+        return getString(R.string.inventoryQueryTypePrecise);
+    }
+
+    @Override
+    protected String getSpecialFlag() {
+        return "N";
     }
 
     @Override
@@ -52,7 +76,7 @@ public class QingYangNMS301CollectFragment extends BaseNMSCollectFragment {
 
     @Override
     protected int getOrgFlag() {
-        return 1;
+        return getInteger(R.integer.orgSecond);
     }
 
     @Override

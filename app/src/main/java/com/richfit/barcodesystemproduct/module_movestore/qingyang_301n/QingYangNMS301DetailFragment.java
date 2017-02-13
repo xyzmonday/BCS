@@ -7,10 +7,12 @@ import android.view.View;
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.QingYangNMS301DetailAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
+import com.richfit.barcodesystemproduct.module.edit.EditActivity;
 import com.richfit.barcodesystemproduct.module_movestore.basedetail_n.BaseNMSDetailFragment;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.domain.bean.RefDetailEntity;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,7 +38,7 @@ public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment {
         }
         setRefreshing(true, "加载明细成功");
         QingYangNMS301DetailAdapter adapter = new QingYangNMS301DetailAdapter(mActivity,
-                R.layout.base_nms_detail_item,allNodes,mConfigs, null,mCompanyCode);
+                R.layout.base_nms_detail_item, allNodes, mConfigs, null, mCompanyCode);
         mRecycleView.setAdapter(adapter);
         adapter.setOnItemEditAndDeleteListener(this);
     }
@@ -54,6 +56,29 @@ public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment {
             }
         }
     }
+
+    @Override
+    public void editNode(final RefDetailEntity node, int position) {
+        if (!TextUtils.isEmpty(mVisa)) {
+            showMessage("本次入库已经过账,不允许在进行修改");
+            return;
+        }
+        //获取与该子节点的物料编码和发出库位一致的发出仓位和接收仓位列表
+        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
+        if (adapter != null && QingYangNMS301DetailAdapter.class.isInstance(adapter)) {
+            QingYangNMS301DetailAdapter detailAdapter = (QingYangNMS301DetailAdapter) adapter;
+            ArrayList<String> sendLocations = detailAdapter.getLocations(node.materialNum, node.invId, position, 0);
+            ArrayList<String> recLocations = detailAdapter.getLocations(node.materialNum, node.invId, position, 1);
+            mPresenter.editNode(sendLocations, recLocations, node, EditActivity.class, mCompanyCode,
+                    mBizType, mRefType, getSubFunName());
+        }
+    }
+
+    @Override
+    public void submitBarcodeSystemSuccess() {
+        submitSAPSuccess();
+    }
+
 
     @Override
     public void submitSAPSuccess() {
@@ -75,6 +100,6 @@ public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment {
 
     @Override
     protected List<String> getBottomMenuTitles() {
-        return Arrays.asList(MENUS_NAMES).subList(0,1);
+        return Arrays.asList(MENUS_NAMES).subList(0, 1);
     }
 }

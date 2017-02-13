@@ -25,6 +25,10 @@ import com.richfit.barcodesystemproduct.module_delivery.qingyang_dsy.QingYangDSY
 import com.richfit.barcodesystemproduct.module_delivery.qingyang_dsy.QingYangDSYHeaderFragment;
 import com.richfit.barcodesystemproduct.module_locationadjust.collect.LACollectFragment;
 import com.richfit.barcodesystemproduct.module_locationadjust.header.LAHeaderFragment;
+import com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto351.QingHaiUbSto351CollectFragment;
+import com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto351.QingHaiUbSto351DetailFragment;
+import com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto351.QingHaiUbSto351EditFragment;
+import com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto351.QingHaiUbSto351HeaderFragment;
 import com.richfit.barcodesystemproduct.module_movestore.qingyang_301n.QingYangNMS301CollectFragment;
 import com.richfit.barcodesystemproduct.module_movestore.qingyang_301n.QingYangNMS301DetailFragment;
 import com.richfit.barcodesystemproduct.module_movestore.qingyang_301n.QingYangNMS301EditFragment;
@@ -66,6 +70,11 @@ public interface FragmentComponent {
     void inject(QingHaiDSXSDetailFFragment fragment);
     void inject(QingHaiDSXSCollectFragment fragment);
     void inject(QingHaiDSXSEditFragment fragment);
+
+    void inject(QingHaiUbSto351HeaderFragment fragment);
+    void inject(QingHaiUbSto351DetailFragment fragment);
+    void inject(QingHaiUbSto351CollectFragment fragment);
+    void inject(QingHaiUbSto351EditFragment fragment);
 
     void inject(LAHeaderFragment fragment);
     void inject(LACollectFragment fragment);

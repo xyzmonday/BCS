@@ -341,6 +341,10 @@ public abstract class MultiItemTypeTreeAdapter<T extends TreeNode> extends Recyc
      */
     public abstract void notifyParentNodeChanged(int childNodePosition, int parentNodePosition);
 
+    /**
+     * 对于无参考或者验收等没有父子节点结构明细界面，直接删除该节点
+     * @param position
+     */
     public abstract void notifyNodeChanged(int position);
 
 

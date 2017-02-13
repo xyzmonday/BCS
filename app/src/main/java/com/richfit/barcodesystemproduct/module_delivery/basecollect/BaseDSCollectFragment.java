@@ -93,12 +93,12 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
     /*库存信息*/
     private List<InventoryEntity> mInventoryDatas;
     private LocationAdapter mLocationAdapter;
-
-    String mSelectedRefLineNum;
+    /*当前操作的明细行号*/
+    private String mSelectedRefLineNum;
     /*缓存的批次*/
-    String mCachedBatchFlag;
+    private String mCachedBatchFlag;
     /*缓存的仓位级别的额外字段*/
-    Map<String, Object> mExtraLocationMap;
+    private Map<String, Object> mExtraLocationMap;
 
     @Override
     protected int getContentId() {
@@ -111,12 +111,12 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
             final String materialNum = list[2];
             final String batchFlag = list[11];
             if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
-                mPresenter.getInventoryInfo(getInvType(), getLineData(mSelectedRefLineNum).workId,
+                mPresenter.getInventoryInfo(getInventoryQueryType(), getLineData(mSelectedRefLineNum).workId,
                         mInvDatas.get(spInv.getSelectedItemPosition()).invId,
                         "", "", "",
                         getString(etMaterialNum),
                         etMaterialNum.getTag().toString(),
-                        "", batchFlag, "1");
+                        "", batchFlag, getInvType());
             } else if (!cbSingle.isChecked()) {
                 //非单品模式下，先清除控件
                 loadMaterialInfo(materialNum, batchFlag);
@@ -165,11 +165,10 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
 
         /*库存地点，选择库存地点加载库存数据*/
         RxAdapterView.itemSelections(spInv)
-                .doOnSubscribe(() -> tvLocQuantity.setText(""))
-                .filter(position -> position > 0)
-                .subscribe(position -> mPresenter.getInventoryInfo(getInvType(), getLineData(mSelectedRefLineNum).workId,
-                        mInvDatas.get(position).invId, "", "", "",getString(etMaterialNum), getLineData(mSelectedRefLineNum).materialId,
-                        "", getString(etBatchFlag), "1"));
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                //注意工厂和库存地点必须使用行里面的
+                .subscribe(position -> loadInventory(position.intValue()));
 
        /*下架仓位,选择下架仓位刷新库存数量，并且获取缓存*/
         RxAdapterView
@@ -186,7 +185,6 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
             etQuantity.setText(isChecked ? "1" : "");
             etQuantity.setEnabled(!isChecked);
         });
-
     }
 
     /**
@@ -264,7 +262,7 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
         //刷新界面(在单据行明细查询是否有该物料条码，如果有那么刷新界面)
         matchMaterialInfo(materialNum, batchFlag)
                 .compose(TransformerHelper.io2main())
-                .subscribe(details -> setupRefLineAdapter(details));
+                .subscribe(details -> setupRefLineAdapter(details), e -> showMessage(e.getMessage()));
     }
 
     /**
@@ -319,7 +317,7 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
             etBatchFlag.setText(mIsOpenBatchManager ? lineData.batchFlag : "");
         }
 
-        etBatchFlag.setEnabled(mIsOpenBatchManager ? true : false);
+        etBatchFlag.setEnabled(mIsOpenBatchManager);
 
         //先将库存地点选择器打开，获取缓存后在判断是否需要锁定
         spInv.setEnabled(true);
@@ -327,7 +325,7 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
         //初始化额外字段的数据,注意这仅仅是服务器返回的数据，不含有任何缓存数据。
         bindExtraUI(mSubFunEntity.collectionConfigs, lineData.mapExt);
         if (!cbSingle.isChecked())
-            mPresenter.getInvsByWorkId(lineData.workId,getOrgFlag());
+            mPresenter.getInvsByWorkId(lineData.workId, getOrgFlag());
     }
 
     @Override
@@ -349,6 +347,29 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
         }
         //默认选择第一个
         spInv.setSelection(0);
+    }
+
+    private void loadInventory(int position) {
+        tvInvQuantity.setText("");
+        tvLocQuantity.setText("");
+        tvTotalQuantity.setText("");
+        if(mLocationAdapter != null) {
+            mInventoryDatas.clear();
+            mLocationAdapter.notifyDataSetChanged();
+        }
+        if(position <= 0) {
+            return;
+        }
+        final RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
+        final InvEntity invEntity = mInvDatas.get(position);
+
+        if (mIsOpenBatchManager && TextUtils.isEmpty(getString(etBatchFlag))) {
+            showMessage("请输入批次");
+            return;
+        }
+        mPresenter.getInventoryInfo(getInventoryQueryType(),lineData.workId,
+                invEntity.invId, lineData.workCode, invEntity.invCode, "", getString(etMaterialNum),
+                lineData.materialId, "", getString(etBatchFlag), getInvType());
     }
 
     /**
@@ -721,13 +742,13 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
     }
 
     @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
+    public void _onPause() {
+        clearAllUI();
     }
 
     @Override
-    public void _onPause() {
-        clearAllUI();
+    public void networkConnectError(String retryAction) {
+        showNetConnectErrorDialog(retryAction);
     }
 
     @Override
@@ -748,6 +769,14 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
      * @return
      */
     protected abstract String getInvType();
+
+    /**
+     * 子类返回库存查询类型
+     *
+     * @return
+     */
+    protected abstract String getInventoryQueryType();
+
     protected abstract int getOrgFlag();
 
 }

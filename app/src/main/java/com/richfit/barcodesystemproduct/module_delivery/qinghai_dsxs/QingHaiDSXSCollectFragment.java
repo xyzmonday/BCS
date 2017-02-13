@@ -1,5 +1,6 @@
 package com.richfit.barcodesystemproduct.module_delivery.qinghai_dsxs;
 
+import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.module_delivery.basecollect.BaseDSCollectFragment;
 
 /**
@@ -19,7 +20,12 @@ public class QingHaiDSXSCollectFragment extends BaseDSCollectFragment {
     }
 
     @Override
+    protected String getInventoryQueryType() {
+        return getString(R.string.inventoryQueryTypePrecise);
+    }
+
+    @Override
     protected int getOrgFlag() {
-        return 0;
+        return getInteger(R.integer.orgNorm);
     }
 }

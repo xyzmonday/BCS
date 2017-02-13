@@ -188,4 +188,21 @@
     <string name="approval_type">验收类别</string>
     <string name="target_location">目标仓位</string>
 
+
+    //库存查询类型
+    //获取总库存
+    <string name="inventoryQueryTypeSAPTotal">01</string>
+    <string name="inventoryQueryTypeUnPrecise">02</string>
+    <string name="inventoryQueryTypePrecise">"03</string>
+    //获取某仓位的库存
+    <string name="inventoryQueryTypeSAPLocation">04</string>
+
+    //库存类型
+    <string name="invTypeDaiGuan">0</string>
+    <string name="invTypeNorm">1</string>
+
+    //组织机构
+    <integer name="orgNorm">0</integer>
+    <integer name="orgSecond">1</integer>
+
 </resources>

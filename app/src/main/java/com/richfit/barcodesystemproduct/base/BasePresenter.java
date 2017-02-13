@@ -100,7 +100,9 @@ public class BasePresenter<T extends BaseView> implements IPresenter<T> {
 
     /*添加订阅*/
     public void addSubscriber(Disposable disposable) {
-        mCompositeDisposable.add(disposable);
+        if(disposable != null) {
+            mCompositeDisposable.add(disposable);
+        }
     }
 
     /*取消订阅*/

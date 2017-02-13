@@ -103,10 +103,11 @@ public interface IServerRepository extends IRepository {
      * @param userId:登陆的用户ID
      * @param transId:缓存抬头id
      * @param extraHeaderMap:抬头界面的额外字段
+     * @param flagMap:不同的公司根据需求添加的标志位集合
      * @return
      */
     Flowable<String> transferCollectionData(String transId, String bizType, String refType, String userId, String voucherDate,
-                                            Map<String, Object> extraHeaderMap);
+                                            Map<String, Object> flagMap, Map<String, Object> extraHeaderMap);
 
     /**
      * 获取预留单据号列表
@@ -140,7 +141,7 @@ public interface IServerRepository extends IRepository {
     /**
      * 获取库存
      *
-     * @param queryType：01:获取SAP的库存,"02":获取模糊库存信息,"03":获取精确库存信息,"04":获取SAP的库存信息
+     * @param queryType：01:获取SAP的库存,"02":获取模糊库存信息,"03":获取精确库存信息,"04":获取SAP的库存信息(必须有仓位)
      * @param workId：工厂id
      * @param invId：库存地点id
      * @param materialId:物料id

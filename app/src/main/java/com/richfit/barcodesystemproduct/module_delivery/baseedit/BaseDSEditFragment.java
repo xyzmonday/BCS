@@ -59,7 +59,7 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
     TextView tvInvQuantity;
 
     protected String mRefLineId;
-    protected String mLocatinId;
+    protected String mLocationId;
     protected int mPosition;
     //该子节点修改前的出库数量
     private String mQuantity;
@@ -133,7 +133,7 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
         mQuantity = bundle.getString(Global.EXTRA_QUANTITY_KEY);
         mLocations = bundle.getStringArrayList(Global.EXTRA_LOCATION_LIST_KEY);
         mRefLineId = bundle.getString(Global.EXTRA_REF_LINE_ID_KEY);
-        mLocatinId = bundle.getString(Global.EXTRA_LOCATION_ID_KEY);
+        mLocationId = bundle.getString(Global.EXTRA_LOCATION_ID_KEY);
         if (mRefData != null) {
             /*单据数据中的库存地点不一定有，而且用户可以录入新的库存地点，所以只有子节点的库存地点才是正确的*/
             final RefDetailEntity lineData = mRefData.billDetailList.get(mPosition);
@@ -177,7 +177,8 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
             showMessage("库存地点");
             return;
         }
-        mPresenter.getInventoryInfo(getInvType(), workId, invId, "", "", "", getString(tvMaterialNum),materialId, location, batchFlag, "1");
+
+        mPresenter.getInventoryInfo(getInventoryQueryType(), workId, invId, "", "", "", getString(tvMaterialNum), materialId, location, batchFlag, getInvType());
     }
 
     @Override
@@ -298,7 +299,7 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
             result.userId = Global.USER_ID;
             result.refLineId = lineData.refLineId;
             result.workId = lineData.workId;
-            result.locationId = mLocatinId;
+            result.locationId = mLocationId;
             result.invId = tvInv.getTag().toString();
             result.materialId = lineData.materialId;
             result.location = mInventoryDatas.get(spLocation.getSelectedItemPosition()).location;
@@ -350,4 +351,5 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
      * @return
      */
     protected abstract String getInvType();
+    protected abstract String getInventoryQueryType();
 }

@@ -312,7 +312,7 @@ public abstract class BaseASDetailFragment extends BaseFragment<BaseASDetailPres
             return;
         }
         mPresenter.submitData2SAP(mTransId, mBizType, mRefType, Global.USER_ID,
-                mRefData.voucherDate, createExtraHeaderMap());
+                mRefData.voucherDate, null, createExtraHeaderMap());
     }
 
     @Override

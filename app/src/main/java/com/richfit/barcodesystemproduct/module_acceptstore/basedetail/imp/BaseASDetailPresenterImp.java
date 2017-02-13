@@ -240,9 +240,9 @@ public class BaseASDetailPresenterImp extends BasePresenter<IASDetailView>
 
     @Override
     public void submitData2SAP(String transId, String bizType, String refType, String userId,
-                               String voucherDate, Map<String, Object> extraHeaderMap) {
+                               String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
         mView = getView();
-        RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate, extraHeaderMap)
+        RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate, flagMap, extraHeaderMap)
                 .retryWhen(new RetryWhenNetworkException(3, 3000))
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext, "正在上传数据...") {

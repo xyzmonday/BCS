@@ -106,7 +106,7 @@ public class LoginPresenterImp extends BasePresenter<LoginContract.View>
                     @Override
                     public void onError(Throwable t) {
                         if(mView != null) {
-                            mView.loadUserInfosFai(t.getMessage());
+                            mView.loadUserInfosFail(t.getMessage());
                         }
                     }
 

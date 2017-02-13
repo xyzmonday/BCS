@@ -63,7 +63,8 @@ public interface IASDetailPresenter extends IPresenter<IASDetailView> {
      * @param voucherDate:过账日期
      * @param userId：用户id
      */
-    void submitData2SAP(String transId, String bizType, String refType, String userId, String voucherDate, Map<String, Object> extraHeaderMap);
+    void submitData2SAP(String transId, String bizType, String refType, String userId,
+                        String voucherDate,Map<String,Object> flagMap, Map<String, Object> extraHeaderMap);
 
     /**
      * 数据提交到sap后，从数据明细界面跳转到抬头界面

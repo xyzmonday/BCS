@@ -104,7 +104,7 @@ public class LACollectFragment extends BaseFragment<LACollectPresenterImp, Objec
         //获取物料
         etMaterialNum.setOnRichEditTouchListener((view, materialNum) -> loadMaterialInfo(materialNum, getString(etBatchFlag)));
         //获取仓位的库存
-        etSendLocation.setOnRichEditTouchListener((view, location) -> loadLocationInfo(location));
+        etSendLocation.setOnRichEditTouchListener((view, location) -> loadInventoryInfo(location));
     }
 
     /**
@@ -143,27 +143,6 @@ public class LACollectFragment extends BaseFragment<LACollectPresenterImp, Objec
         mPresenter.getMaterialInfo("01", materialNum);
     }
 
-    protected void loadLocationInfo(String location) {
-        Object tag = etMaterialNum.getTag();
-        if (tag == null || TextUtils.isEmpty(tag.toString())) {
-            showMessage("请先获取物料信息");
-            return;
-        }
-
-        if (TextUtils.isEmpty(location)) {
-            showMessage("先输入目标仓位");
-            return;
-        }
-
-        if (TextUtils.isEmpty(mRefData.storageNum)) {
-            showMessage("仓位为空");
-            return;
-        }
-
-        mPresenter.getInventoryInfo("04", mRefData.workId, mRefData.invId, mRefData.workCode,
-                mRefData.invCode, mRefData.storageNum, getString(etMaterialNum), tag.toString(), "", "", getString(etBatchFlag), location, "1");
-    }
-
     @Override
     public void getMaterialInfoSuccess(MaterialEntity materialEntity) {
         etMaterialNum.setTag(materialEntity.id);
@@ -176,6 +155,33 @@ public class LACollectFragment extends BaseFragment<LACollectPresenterImp, Objec
     @Override
     public void getMaterialInfoFail(String message) {
         showMessage(message);
+    }
+
+    /**
+     * 获取库存信息，注意
+     * @param location
+     */
+    protected void loadInventoryInfo(String location) {
+        Object tag = etMaterialNum.getTag();
+        if (tag == null || TextUtils.isEmpty(tag.toString())) {
+            showMessage("请先获取物料信息");
+            return;
+        }
+
+        if (TextUtils.isEmpty(location)) {
+            showMessage("先输入目标仓位");
+            return;
+        }
+        //获取某一仓位的库存，必须检查仓位是否存在
+        final String queryType = getString(R.string.inventoryQueryTypeSAPLocation);
+        if ("04".equals(queryType)) {
+            showMessage("仓位为空");
+            return;
+        }
+
+        mPresenter.getInventoryInfo(queryType, mRefData.workId, mRefData.invId, mRefData.workCode,
+                mRefData.invCode, mRefData.storageNum, getString(etMaterialNum), tag.toString(),
+                "", "", getString(etBatchFlag), location, getString(R.string.invTypeNorm));
     }
 
     @Override
@@ -318,7 +324,7 @@ public class LACollectFragment extends BaseFragment<LACollectPresenterImp, Objec
                 loadMaterialInfo(getString(etMaterialNum), getString(etBatchFlag));
                 break;
             case Global.RETRY_LOAD_INVENTORY_ACTION:
-                loadLocationInfo(getString(etRecLocation));
+                loadInventoryInfo(getString(etRecLocation));
                 break;
         }
         super.retry(action);

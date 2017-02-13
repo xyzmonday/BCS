@@ -63,6 +63,7 @@ public interface IASCollectView extends BaseView {
      */
     void loadCacheFail(String message);
 
+
     void saveCollectedDataSuccess();
     void saveCollectedDataFail(String message);
 

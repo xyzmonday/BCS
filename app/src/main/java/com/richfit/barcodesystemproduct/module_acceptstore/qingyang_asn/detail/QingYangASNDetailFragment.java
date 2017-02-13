@@ -332,7 +332,7 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
             return;
         }
         mPresenter.submitData2SAP(mTransId, mBizType, mRefType, Global.USER_ID,
-                mRefData.voucherDate, createExtraHeaderMap());
+                mRefData.voucherDate,null, createExtraHeaderMap());
     }
 
     @Override

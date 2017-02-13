@@ -15,7 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.richfit.barcodesystemproduct.R;
-import com.richfit.barcodesystemproduct.adapter.BootomSheetDialogAdapter;
+import com.richfit.barcodesystemproduct.adapter.BottomSheetDialogAdapter;
 import com.richfit.barcodesystemproduct.adapter.ModularAdapter;
 import com.richfit.barcodesystemproduct.base.BaseActivity;
 import com.richfit.barcodesystemproduct.module.main.MainActivity;
@@ -183,7 +183,7 @@ public class HomeActivity extends BaseActivity<HomePresenterImp> implements Home
 
         View view = getLayoutInflater().inflate(R.layout.menu_bottom, null);
         GridView subFunGridList = (GridView) view.findViewById(R.id.gridview);
-        final BootomSheetDialogAdapter adapter = new BootomSheetDialogAdapter(this, R.layout.item_bottom_menu,
+        final BottomSheetDialogAdapter adapter = new BottomSheetDialogAdapter(this, R.layout.item_bottom_bizmenu,
                 menuNode.getChildren(), MENUS_IMAGES);
         subFunGridList.setAdapter(adapter);
 

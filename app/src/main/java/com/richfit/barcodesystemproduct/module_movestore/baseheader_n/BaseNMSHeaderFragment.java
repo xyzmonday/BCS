@@ -274,9 +274,15 @@ public abstract class BaseNMSHeaderFragment extends BaseFragment<NMSHeaderPresen
     @Override
     public void clearAllUI() {
         spSendWork.setSelection(0);
+        spSendInv.setSelection(0);
         spRecWork.setSelection(0);
         spRecInv.setSelection(0);
         clearExtraUI(mSubFunEntity.headerConfigs);
+    }
+
+    @Override
+    public void networkConnectError(String retryAction) {
+
     }
 
     protected abstract String getMoveType();

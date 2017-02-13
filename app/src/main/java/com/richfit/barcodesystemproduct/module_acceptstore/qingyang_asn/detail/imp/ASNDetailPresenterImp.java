@@ -168,7 +168,7 @@ public class ASNDetailPresenterImp extends BasePresenter<IASNDetailView>
     public void submitData2BarcodeSystem(String transId, String bizType, String refType, String voucherDate) {
         mView = getView();
         RxSubscriber<String> subscriber =
-                mRepository.uploadCollectionData("", transId, bizType, refType,-1, voucherDate, "", "")
+                mRepository.uploadCollectionData("", transId, bizType, refType, -1, voucherDate, "", "")
                         .retryWhen(new RetryWhenNetworkException(3, 3000))
                         .compose(TransformerHelper.io2main())
                         .subscribeWith(new RxSubscriber<String>(mContext, "正在过账数据...") {
@@ -211,9 +211,10 @@ public class ASNDetailPresenterImp extends BasePresenter<IASNDetailView>
     }
 
     @Override
-    public void submitData2SAP(String transId, String bizType, String refType, String userId, String voucherDate, Map<String, Object> extraHeaderMap) {
+    public void submitData2SAP(String transId, String bizType, String refType, String userId,
+                               String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
         mView = getView();
-        RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate, extraHeaderMap)
+        RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate, flagMap, extraHeaderMap)
                 .retryWhen(new RetryWhenNetworkException(3, 3000))
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext, "正在上传数据...") {
@@ -258,7 +259,7 @@ public class ASNDetailPresenterImp extends BasePresenter<IASNDetailView>
         if (MainActivity.class.isInstance(mContext)) {
             MainActivity activity = (MainActivity) mContext;
             activity.showFragmentByPosition(position);
-            mRxManager.post(Global.CLEAR_HEADER_UI,true);
+            mRxManager.post(Global.CLEAR_HEADER_UI, true);
         }
     }
 

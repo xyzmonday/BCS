@@ -11,7 +11,6 @@ import com.richfit.barcodesystemproduct.di.ContextLife;
 import com.richfit.barcodesystemproduct.module.home.HomeActivity;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.LocalFileUtil;
 import com.richfit.domain.bean.BizFragmentConfig;
 import com.richfit.domain.bean.RowConfig;
@@ -94,14 +93,14 @@ public class WelcomePresenterImp extends BasePresenter<WelcomeContract.View>
 //                    }
 //                });
 //        addSubscriber(subscriber);
-        final String jsonPath = "bizConfig.json";
+        final String jsonPath = "bizConfig_QingYang.json";
+//        final String jsonPath = "bizConfig_QingHai.json";
         Flowable.just(jsonPath)
                 .map(path -> LocalFileUtil.getStringFormAsset(mContext, path))
                 .map(json -> {
                     Gson gson = new Gson();
                     ArrayList<BizFragmentConfig> list=
                             gson.fromJson(json,new TypeToken<ArrayList<BizFragmentConfig>>(){}.getType());
-                    L.e("list = " + list);
                     return list;
                 })
                 .flatMap(list -> mRepository.saveBizFragmentConfig(list))

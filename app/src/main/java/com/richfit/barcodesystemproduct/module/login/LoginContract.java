@@ -18,7 +18,7 @@ public interface LoginContract {
         void loginFail(String message);
         //显示历史登陆用户
         void showUserInfos(ArrayList<String> list);
-        void loadUserInfosFai(String message);
+        void loadUserInfosFail(String message);
     }
 
     interface Presenter extends IPresenter<View> {

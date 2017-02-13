@@ -847,7 +847,7 @@ public class CommonDao extends BaseDao {
         Cursor cursor = db.rawQuery("select storage_code from p_auth_org where parent_id = ? and org_code = ? and org_level = ?",
                 new String[]{workId, invCode, "3"});
 
-        String storageNum = null;
+        String storageNum = "";
         while (cursor.moveToNext()) {
             storageNum = cursor.getString(0);
         }

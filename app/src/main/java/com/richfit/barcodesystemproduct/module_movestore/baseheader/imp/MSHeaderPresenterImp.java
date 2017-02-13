@@ -10,10 +10,7 @@ import com.richfit.barcodesystemproduct.module_movestore.baseheader.IMSHeaderVie
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.domain.bean.RefNumEntity;
 import com.richfit.domain.bean.ReferenceEntity;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -41,24 +38,6 @@ public class MSHeaderPresenterImp extends BasePresenter<IMSHeaderView>
         super.onStart();
 
         mView = getView();
-
-        mRxManager.register(Global.SHOW_REF_NUM_LIST, new Consumer<List<RefNumEntity>>() {
-            @Override
-            public void accept(List<RefNumEntity> list) throws Exception {
-                if (list != null && list.size() > 0 && mView != null) {
-                    mView.loadRefNumListSuccess(list);
-                }
-            }
-        });
-
-        mRxManager.register(Global.SHOW_ERROR_MESSAGE, new Consumer<String>() {
-            @Override
-            public void accept(String message) throws Exception {
-                if (mView != null) {
-                    mView.loadRefNumListFail(message);
-                }
-            }
-        });
 
         mRxManager.register(Global.CLEAR_HEADER_UI, new Consumer<Boolean>() {
             @Override

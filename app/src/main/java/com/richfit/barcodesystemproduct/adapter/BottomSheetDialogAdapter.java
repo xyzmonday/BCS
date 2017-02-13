@@ -13,9 +13,9 @@ import java.util.List;
  * Created by monday on 2017/1/11.
  */
 
-public class BootomSheetDialogAdapter extends CommonAdapter<MenuNode> {
+public class BottomSheetDialogAdapter extends CommonAdapter<MenuNode> {
     private int[] mImages;
-    public BootomSheetDialogAdapter(Context context, int layoutId, List<MenuNode> datas,int[] images) {
+    public BottomSheetDialogAdapter(Context context, int layoutId, List<MenuNode> datas, int[] images) {
         super(context, layoutId, datas);
         this.mImages = images;
     }

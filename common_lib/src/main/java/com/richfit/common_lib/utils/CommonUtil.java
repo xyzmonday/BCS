@@ -15,6 +15,7 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 import okhttp3.Request;
 import okio.Buffer;
@@ -41,6 +42,12 @@ public class CommonUtil {
             return "";
         }
         return object.toString();
+    }
+
+    public static void putAll(Map<String,Object> originMap,Map<String,Object> targetMap) {
+        if(originMap != null && targetMap != null) {
+            originMap.putAll(targetMap);
+        }
     }
 
     /**

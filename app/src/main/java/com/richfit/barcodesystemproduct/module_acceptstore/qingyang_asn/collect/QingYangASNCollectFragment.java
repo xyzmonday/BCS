@@ -385,7 +385,7 @@ public class QingYangASNCollectFragment extends BaseFragment<ASNCollectPresenter
                 result.quantity = getString(etQuantity);
                 result.specialFlag = getString(tvSpecialInvFlag);
                 result.supplierId = mRefData.supplierId;
-                result.invType = "1";
+                result.invType = getString(R.string.invTypeNorm);
                 result.modifyFlag = "N";
                 result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
                 result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, mExtraLineMap, mExtraLocationMap);

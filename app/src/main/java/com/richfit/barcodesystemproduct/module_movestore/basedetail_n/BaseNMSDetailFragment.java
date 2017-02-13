@@ -32,7 +32,6 @@ import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.RowConfig;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -50,35 +49,25 @@ public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresen
 
     @BindView(R.id.sendInv)
     protected TextView sendInv;
-
     @BindView(R.id.sendLoc)
     protected TextView sendLoc;
-
     @BindView(R.id.sendBatchFlag)
     protected TextView sendBatchFlag;
-
     @BindView(R.id.recLoc)
     protected TextView recLoc;
-
     @BindView(R.id.recBatchFlag)
     protected TextView recRecBatchFlag;
-
     @BindView(R.id.data_details_recycle_view)
     protected RecyclerView mRecycleView;
-
     @BindView(R.id.swipe_refresh_layout)
     AutoSwipeRefreshLayout mSwipeRefreshLayout;
-
     @BindView(R.id.horizontal_scroll)
     HorizontalScrollView mHorizontalScroll;
 
     @BindView(R.id.root_id)
     protected LinearLayout mExtraContainer;
-
     protected String mTransId;
-
     protected String mVisa;
-
     //父子节点的配置信息结合
     protected ArrayList<RowConfig> mConfigs;
 
@@ -207,6 +196,7 @@ public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresen
         showMessage(message);
     }
 
+
     @Override
     public boolean checkDataBeforeOperationOnDetail() {
         if (mRefData == null) {
@@ -235,7 +225,7 @@ public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresen
         View rootView = LayoutInflater.from(mActivity).inflate(R.layout.menu_bottom, null);
         GridView menu = (GridView) rootView.findViewById(R.id.gridview);
         BottomMenuAdapter adapter = new BottomMenuAdapter(mActivity, R.layout.item_bottom_menu,
-                Arrays.asList(MENUS_NAMES), MENUS_IMAGES);
+                getBottomMenuTitles(), MENUS_IMAGES);
         menu.setAdapter(adapter);
 
         final Dialog dialog = new Dialog(mActivity, R.style.MaterialDialogSheet);
@@ -257,6 +247,7 @@ public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresen
                     dialog.dismiss();
                     break;
             }
+            dialog.dismiss();
         });
     }
 
@@ -305,7 +296,7 @@ public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresen
             return;
         }
         mPresenter.submitData2SAP(mTransId, mRefData.bizType, mRefType, Global.USER_ID,
-                mRefData.voucherDate, createExtraHeaderMap());
+                mRefData.voucherDate, null, createExtraHeaderMap());
     }
 
     @Override
@@ -340,6 +331,7 @@ public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresen
     /**
      * 返回底部菜单标题，这是为了控制有些只需要上传到条码系统，有些
      * 需要需要上传到条码系统和ERP系统
+     *
      * @return
      */
     protected abstract List<String> getBottomMenuTitles();

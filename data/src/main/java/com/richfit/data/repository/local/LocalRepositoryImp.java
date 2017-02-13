@@ -319,10 +319,12 @@ public class LocalRepositoryImp implements ILocalRepository {
 
     @Override
     public Flowable<String> getStorageNum(String workId, String workCode, String invId, String invCode) {
-        return Flowable.create(new SimpleSubscriber<String>() {
+        return Flowable.create(new FlowableOnSubscribe<String>() {
             @Override
-            String execute() throws Throwable {
-                return mCommonDao.getStorageNum(workId, workCode, invId, invCode);
+            public void subscribe(FlowableEmitter<String> e) throws Exception {
+                String storageNum =  mCommonDao.getStorageNum(workId, workCode, invId, invCode);
+                e.onNext(storageNum);
+                e.onComplete();
             }
         }, BackpressureStrategy.LATEST);
     }

@@ -128,6 +128,7 @@ public abstract class BaseDSHeaderFragment extends BaseFragment<DSHeaderPresente
     @Override
     public void getTransferInfoFail(String message) {
         showMessage(message);
+        bindCommonHeaderUI();
     }
 
     /**
@@ -140,6 +141,9 @@ public abstract class BaseDSHeaderFragment extends BaseFragment<DSHeaderPresente
             tvRefNum.setText(mRefData.recordNum);
             //创建人
             tvCreator.setText(mRefData.recordCreator);
+            //过账日期
+            if (!TextUtils.isEmpty(mRefData.voucherDate))
+                etTransferDate.setText(mRefData.voucherDate);
             //绑定额外字段
             bindExtraUI(mSubFunEntity.headerConfigs, mRefData.mapExt);
         }

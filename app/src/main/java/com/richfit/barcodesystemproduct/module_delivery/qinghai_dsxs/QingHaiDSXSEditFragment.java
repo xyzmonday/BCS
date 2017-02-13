@@ -1,5 +1,6 @@
 package com.richfit.barcodesystemproduct.module_delivery.qinghai_dsxs;
 
+import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.module_delivery.baseedit.BaseDSEditFragment;
 
 /**
@@ -16,5 +17,10 @@ public class QingHaiDSXSEditFragment extends BaseDSEditFragment {
     @Override
     protected String getInvType() {
         return "01";
+    }
+
+    @Override
+    protected String getInventoryQueryType() {
+        return getString(R.string.inventoryQueryTypePrecise);
     }
 }

@@ -50,11 +50,13 @@ public class LoginActivity extends BaseActivity<LoginPresenterImp> implements Lo
         RxView.clicks(btnLogin)
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(a -> mPresenter.login("wangzheng1", "123456"));
+                .subscribe(a -> mPresenter.login(etUsername.getText().toString(),
+                        etPassword.getText().toString()));
 
         RxCilck.clicks(etUsername)
                 .subscribe(a -> {
                     if (etUsername.getAdapter() != null) {
+                        etUsername.setThreshold(0);
                         etUsername.showDropDown();
                     }
                 });
@@ -85,12 +87,10 @@ public class LoginActivity extends BaseActivity<LoginPresenterImp> implements Lo
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line, list);
         etUsername.setAdapter(adapter);
-        etUsername.setThreshold(1);
-        etUsername.setDropDownWidth(etUsername.getWidth());
     }
 
     @Override
-    public void loadUserInfosFai(String message) {
+    public void loadUserInfosFail(String message) {
         showMessage(message);
     }
 

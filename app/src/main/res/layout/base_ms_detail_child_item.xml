@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.richfit.common_lib.widget.SwipeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <!--背景层-->
+    <LinearLayout
+        android:id="@+id/id_ll_hider"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <View style="@style/ItemSeperatorLayout" />
+
+        <TextView
+            android:id="@+id/item_delete"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@color/colorAccent"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:padding="3dp"
+            android:text="@string/delete"
+            android:textSize="15sp" />
+
+        <View style="@style/ItemSeperatorLayout" />
+
+        <TextView
+            android:id="@+id/item_edit"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@color/deep_orange_200"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:padding="3dp"
+            android:text="@string/edit"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@id/root_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/child_node_bg">
+
+        <include
+            layout="@layout/base_ms_detail_child_header"/>
+
+    </LinearLayout>
+</com.richfit.common_lib.widget.SwipeLayout>

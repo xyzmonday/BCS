@@ -38,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -389,7 +388,7 @@ public abstract class BaseNMSCollectFragment extends BaseFragment<INMSCollectPre
             showMessage("请先获取物料信息");
             return;
         }
-        mPresenter.getInventoryInfo("03", workId, invId, workCode, invCode, storageNum, getString(etMaterialNum),
+        mPresenter.getInventoryInfo(getInventoryType(), workId, invId, workCode, invCode, storageNum, getString(etMaterialNum),
                 etMaterialNum.getTag().toString(), "", batchFlag, getInvType());
     }
 
@@ -475,9 +474,11 @@ public abstract class BaseNMSCollectFragment extends BaseFragment<INMSCollectPre
 
     private void checkWareHouseNum(final boolean isOpenWM, final String sendWorkId, final String sendInvCode,
                                    final String recWorkId, final String recInvCode) {
-
-        if (!isOpenWM)
+        if (isOpenWM) {
+            //没有打开WM，不需要检查ERP仓库号是否一致
+            isWareHouseSame = true;
             return;
+        }
         if (TextUtils.isEmpty(sendWorkId)) {
             showMessage("发出工厂为空");
             return;
@@ -496,7 +497,6 @@ public abstract class BaseNMSCollectFragment extends BaseFragment<INMSCollectPre
             showMessage("接收工厂为空");
             return;
         }
-
         mPresenter.checkWareHouseNum(isOpenWM, sendWorkId, sendInvCode, recWorkId, recInvCode, getOrgFlag());
     }
 
@@ -562,7 +562,7 @@ public abstract class BaseNMSCollectFragment extends BaseFragment<INMSCollectPre
 
         //发出仓位
         if (spSendLoc.getSelectedItemPosition() == 0) {
-            showMessage("请先输入上架仓位");
+            showMessage("请先输入发出仓位");
             return false;
         }
 
@@ -602,16 +602,16 @@ public abstract class BaseNMSCollectFragment extends BaseFragment<INMSCollectPre
      * 子类可以重写该方法，进行仓位检查
      */
     protected void checkLocation() {
-        if(TextUtils.isEmpty(mRefData.recWorkId)) {
+        if (TextUtils.isEmpty(mRefData.recWorkId)) {
             showMessage("请先选择接收工厂");
             return;
         }
-        if(TextUtils.isEmpty(mRefData.recInvId)) {
+        if (TextUtils.isEmpty(mRefData.recInvId)) {
             showMessage("请先选择发出库位");
             return;
         }
 
-        if(TextUtils.isEmpty(getString(etRecLoc))) {
+        if (TextUtils.isEmpty(getString(etRecLoc))) {
             showMessage("请先输入接收仓位");
             return;
         }
@@ -626,31 +626,30 @@ public abstract class BaseNMSCollectFragment extends BaseFragment<INMSCollectPre
 
     @Override
     public void checkLocationSuccess() {
-        Flowable.create(new FlowableOnSubscribe<ResultEntity>() {
-            @Override
-            public void subscribe(FlowableEmitter<ResultEntity> emitter) throws Exception {
-                ResultEntity result = new ResultEntity();
-                result.businessType = mRefData.bizType;
-                result.voucherDate = mRefData.voucherDate;
-                result.moveType = mRefData.moveType;
-                result.userId = Global.USER_ID;
-                result.workId = mRefData.workId;
-                result.invId = mSendInvs.get(spSendInv.getSelectedItemPosition()).invId;
-                result.recWorkId = mRefData.recWorkId;
-                result.recInvId = mRefData.recInvId;
-                result.materialId = etMaterialNum.getTag().toString();
-                result.batchFlag = getString(etSendBatchFlag);
-                result.location = mInventoryDatas.get(spSendLoc.getSelectedItemPosition()).location;
-                result.recLocation = getString(etRecLoc);
-                result.recBatchFlag = getString(etRecBatchFlag);
-                result.quantity = getString(etQuantity);
-                result.modifyFlag = "N";
-                result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
-                result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
-                result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
-                emitter.onNext(result);
-                emitter.onComplete();
-            }
+        Flowable.create((FlowableOnSubscribe<ResultEntity>) emitter -> {
+            ResultEntity result = new ResultEntity();
+            result.businessType = mRefData.bizType;
+            result.voucherDate = mRefData.voucherDate;
+            result.moveType = mRefData.moveType;
+            result.userId = Global.USER_ID;
+            result.workId = mRefData.workId;
+            result.invId = mSendInvs.get(spSendInv.getSelectedItemPosition()).invId;
+            result.recWorkId = mRefData.recWorkId;
+            result.recInvId = mRefData.recInvId;
+            result.materialId = etMaterialNum.getTag().toString();
+            result.batchFlag = getString(etSendBatchFlag);
+            result.location = mInventoryDatas.get(spSendLoc.getSelectedItemPosition()).location;
+            result.recLocation = getString(etRecLoc);
+            result.recBatchFlag = getString(etRecBatchFlag);
+            result.quantity = getString(etQuantity);
+            result.invType = getInvType();
+            result.modifyFlag = "N";
+            result.specialFlag = getSpecialFlag();
+            result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
+            result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
+            result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
+            emitter.onNext(result);
+            emitter.onComplete();
         }, BackpressureStrategy.BUFFER)
                 .compose(TransformerHelper.io2main())
                 .subscribe(result -> mPresenter.uploadCollectionDataSingle(result));
@@ -754,6 +753,10 @@ public abstract class BaseNMSCollectFragment extends BaseFragment<INMSCollectPre
      * 子类返回库存查询的类型
      */
     protected abstract String getInvType();
+
+    protected abstract String getInventoryType();
+
+    protected abstract String getSpecialFlag();
 
     /**
      * 子类实现是否打开WM管理。如果打开了WM，那么需要检查发出库位和接收库位

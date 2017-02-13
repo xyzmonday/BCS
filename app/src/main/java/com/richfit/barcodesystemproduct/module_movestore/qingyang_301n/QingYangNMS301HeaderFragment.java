@@ -60,11 +60,8 @@ public class QingYangNMS301HeaderFragment extends BaseNMSHeaderFragment {
 
     @Override
     protected int getOrgFlag() {
-        return 1;
+        return getInteger(R.integer.orgSecond);
     }
 
-    @Override
-    public void networkConnectError(String retryAction) {
 
-    }
 }

@@ -38,4 +38,8 @@ public interface INMSEditView extends BaseView {
     void saveCollectedDataSuccess();
 
     void saveCollectedDataFail(String message);
+
+    void checkLocationFail(String message);
+    void checkLocationSuccess();
+
 }

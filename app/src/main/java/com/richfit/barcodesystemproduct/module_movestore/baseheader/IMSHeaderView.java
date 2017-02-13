@@ -2,10 +2,7 @@ package com.richfit.barcodesystemproduct.module_movestore.baseheader;
 
 
 import com.richfit.barcodesystemproduct.base.BaseView;
-import com.richfit.domain.bean.RefNumEntity;
 import com.richfit.domain.bean.ReferenceEntity;
-
-import java.util.List;
 
 /**
  * Created by monday on 2016/11/20.
@@ -60,8 +57,6 @@ public interface IMSHeaderView extends BaseView {
     void cacheProcessor(String cacheFlag, String transId, String refCodeId,
                         String refNum, String refType, String bizType);
 
-    void loadRefNumListSuccess(List<RefNumEntity> list);
-    void loadRefNumListFail(String message);
     void clearAllUI();
     void clearAllUIAfterSubmitSuccess();
 }

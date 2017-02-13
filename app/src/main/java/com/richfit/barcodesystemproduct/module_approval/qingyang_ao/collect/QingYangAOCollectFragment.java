@@ -88,16 +88,11 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
 
     //匹配的检验批行明细
     List<String> mRefLines;
-
     ArrayAdapter<String> mRefLineAdapter;
-
     //当前正在操作的单据行号
     String mSelectedRefLineNum;
-
     ArrayList<String> mMenuNames;
-
     ArrayList<Integer> mTakePhotoTypes;
-
     /**
      * 缓存的到货数量
      */
@@ -109,7 +104,6 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
 
     /*额外字段的缓存信息*/
     Map<String, Object> mCachedExtraLineMap;
-
     List<InvEntity> mInvDatas;//库存地点
     InvAdapter mInvAdapter;
 
@@ -431,6 +425,7 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
 
         if (spInv.getSelectedItemPosition() == 0) {
             showMessage("请选择库存点");
+            return false;
         }
 
         if (!refreshQuantity(getString(tvActQuantity))) {
@@ -494,7 +489,7 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
                 case 3:
                 case 4:
                     //2.拍照
-                    toTakePhoto(mMenuNames.get(position % mMenuNames.size()), mTakePhotoTypes.get(position - 1));
+                    toTakePhoto(mMenuNames.get(position % mMenuNames.size()), mTakePhotoTypes.get(position));
                     break;
             }
             dialog.dismiss();
@@ -569,8 +564,6 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
         //单据号
         bundle.putString(Global.EXTRA_REF_NUM_KEY, mRefData.recordNum);
 
-        L.e("拍照bizType" + mBizType);
-        L.e("拍照refType" + mRefType);
         bundle.putString(Global.EXTRA_BIZ_TYPE_KEY, mBizType);
         bundle.putString(Global.EXTRA_REF_TYPE_KEY, mRefType);
         //单据行号

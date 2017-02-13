@@ -31,6 +31,7 @@ public class ResultEntity {
     //    手持上图片的完整路径+名称
     public String imagePath;
     //    当前登陆用户的userId
+    // 特殊库存标识 N:普通 E:订单 W:寄售 D:带储代销
     public String specialFlag;
     public String createdBy;
     //    创建日期（照片拍照保存的时间 Date格式）
