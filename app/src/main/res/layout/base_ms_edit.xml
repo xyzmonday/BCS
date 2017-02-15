@@ -190,44 +190,6 @@
                 android:id="@+id/tv_total_quantity"
                 style="@style/RightTextViewItemStyle" />
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_rec_location"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <TextView
-                style="@style/LeftTextViewItemStyle"
-                android:text="@string/send_loc" />
-
-
-            <EditText
-                android:id="@+id/et_rec_location"
-                style="@style/RightTextViewItemStyle" />
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/ll_rec_batch_flag"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <TextView
-
-                style="@style/LeftTextViewItemStyle"
-                android:text="@string/rec_batch_flag" />
-
-            <TextView
-                android:id="@+id/tv_rec_batch_flag"
-                style="@style/RightTextViewItemStyle" />
-        </LinearLayout>
-
-
     </LinearLayout>
 
 </android.support.v4.widget.NestedScrollView>

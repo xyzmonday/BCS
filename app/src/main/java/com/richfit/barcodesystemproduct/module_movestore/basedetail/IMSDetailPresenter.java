@@ -52,7 +52,8 @@ public interface IMSDetailPresenter extends IPresenter<IMSDetailView> {
      * @param bizType:业务类型
      * @param voucherDate:过账日期
      */
-    void submitData2BarcodeSystem(String transId, String bizType, String refType, String voucherDate,int submitFlag);
+    void submitData2BarcodeSystem(String transId, String bizType, String refType, String userId, String voucherDate,
+                                  Map<String, Object> flagMap, Map<String, Object> extraHeaderMap, int submitFlag);
 
     /**
      * 提交数据到sap
@@ -63,7 +64,22 @@ public interface IMSDetailPresenter extends IPresenter<IMSDetailView> {
      * @param userId：用户id
      */
     void submitData2SAP(String transId, String bizType, String refType, String userId, String voucherDate,
-                        Map<String, Object> flagMap, Map<String, Object> extraHeaderMap,int submitFlag);
+                        Map<String, Object> flagMap, Map<String, Object> extraHeaderMap, int submitFlag);
+
+    /**
+     * sap上下架处理
+     *
+     * @param transId
+     * @param bizType
+     * @param refType
+     * @param userId
+     * @param voucherDate
+     * @param flagMap
+     * @param extraHeaderMap
+     * @param submitFlag
+     */
+    void sapUpAndDownLocation(String transId, String bizType, String refType, String userId, String voucherDate,
+                              Map<String, Object> flagMap, Map<String, Object> extraHeaderMap, int submitFlag);
 
     /**
      * 数据提交到sap后，从数据明细界面跳转到抬头界面

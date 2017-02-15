@@ -32,11 +32,11 @@ import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.RowConfig;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
-import cn.pedant.SweetAlert.SweetAlertDialog;
+
+import static com.richfit.common_lib.utils.SPrefUtil.getData;
 
 /**
  * Created by monday on 2016/11/27.
@@ -44,11 +44,6 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterImp, RefDetailEntity>
         implements IASNDetailView, SwipeRefreshLayout.OnRefreshListener {
-
-    private static final String[] MENUS_NAMES = {"过账", "数据上传"};
-
-    private static final int[] MENUS_IMAGES = {R.mipmap.icon_transfer,
-            R.mipmap.icon_data_submit};
 
     @BindView(R.id.horizontal_scroll)
     HorizontalScrollView mHorizontalScroll;
@@ -64,7 +59,7 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
     LinearLayout mExtraContainer;
 
     String mTransId;
-    String mVisa;
+    String mTransNum;
     //父子节点的配置信息结合
     ArrayList<RowConfig> mConfigs;
 
@@ -147,6 +142,11 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
 
     @Override
     public void onRefresh() {
+        String transferFlag = (String) getData(mBizType + mRefType, "0");
+        if ("1".equals(transferFlag)) {
+            showMessage("本次采集已经过账,请先进行数据上传操作");
+            return;
+        }
         //单据抬头id
         final String refCodeId = mRefData.refCodeId;
         //业务类型
@@ -156,7 +156,7 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
         //清除缓存id
         mTransId = "";
         //清除过账凭证
-        mVisa = "";
+        mTransNum = "";
         //获取缓存
         mPresenter.getTransferInfo(refCodeId, bizType, refType, Global.USER_ID, mRefData.workId,
                 mRefData.invId, mRefData.recWorkId, mRefData.recInvId);
@@ -186,8 +186,9 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
 
     @Override
     public void deleteNode(final RefDetailEntity node, int position) {
-        if (!TextUtils.isEmpty(mVisa)) {
-            showMessage("本次移库操作已经过账");
+        String state = (String) getData(mBizType + mRefType, "0");
+        if (!"0".equals(state)) {
+            showMessage("已经过账,不允许删除");
             return;
         }
         mPresenter.deleteNode("N", node.transId, node.transLineId, node.locationId, mRefData.refType,
@@ -202,8 +203,9 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
      */
     @Override
     public void editNode(final RefDetailEntity node, int position) {
-        if (!TextUtils.isEmpty(mVisa)) {
-            showMessage("本次入库已经过账,不允许在进行修改");
+        String state = (String) getData(mBizType + mRefType, "0");
+        if (!"0".equals(state)) {
+            showMessage("已经过账,不允许修改");
             return;
         }
         //获取与该子节点的物料编码和发出库位一致的发出仓位和接收仓位列表
@@ -262,7 +264,7 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
         View rootView = LayoutInflater.from(mActivity).inflate(R.layout.menu_bottom, null);
         GridView menu = (GridView) rootView.findViewById(R.id.gridview);
         BottomMenuAdapter adapter = new BottomMenuAdapter(mActivity, R.layout.item_bottom_menu,
-                Arrays.asList(MENUS_NAMES), MENUS_IMAGES);
+                provideDefaultBottomMenu());
         menu.setAdapter(adapter);
 
         final Dialog dialog = new Dialog(mActivity, R.style.MaterialDialogSheet);
@@ -292,7 +294,7 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
      * 1.过账
      */
     private void submit2BarcodeSystem() {
-        String transferFlag = (String) SPrefUtil.getData(mBizType, "0");
+        String transferFlag = (String) getData(mBizType, "0");
         if ("1".equals(transferFlag)) {
             showMessage("本次采集已经过账,请先进行数据上传操作");
             return;
@@ -302,20 +304,12 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
 
     @Override
     public void showTransferedVisa(String visa) {
-        mVisa = visa;
+        mTransNum = visa;
     }
 
     @Override
     public void submitBarcodeSystemSuccess() {
-        showDialog(mVisa);
-        SPrefUtil.saveData(mBizType, "1");
-    }
-
-    private void showDialog(String message) {
-        new SweetAlertDialog(mActivity,SweetAlertDialog.SUCCESS_TYPE)
-                .setTitleText("温馨提示")
-                .setContentText(message)
-                .show();
+        showSuccessDialog("过账成功" + mTransNum);
     }
 
     @Override
@@ -327,7 +321,7 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
      * 2.数据上传
      */
     private void submit2SAP() {
-        if (TextUtils.isEmpty(mVisa)) {
+        if (TextUtils.isEmpty(mTransNum)) {
             showMessage("请先过账");
             return;
         }
@@ -338,12 +332,6 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
     @Override
     public void submitSAPSuccess() {
         setRefreshing(false, "数据上传成功");
-        SPrefUtil.saveData(mBizType, "0");
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && ASNDetailAdapter.class.isInstance(adapter)) {
-            ASNDetailAdapter detailAdapter = (ASNDetailAdapter) adapter;
-            detailAdapter.removeAllVisibleNodes();
-        }
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 

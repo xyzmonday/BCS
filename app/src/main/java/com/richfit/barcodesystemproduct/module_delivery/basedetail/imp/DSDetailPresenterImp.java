@@ -17,6 +17,7 @@ import com.richfit.common_lib.rxutils.RetryWhenNetworkException;
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.domain.bean.LocationInfoEntity;
 import com.richfit.domain.bean.RefDetailEntity;
@@ -209,6 +210,8 @@ public class DSDetailPresenterImp extends BasePresenter<IDSDetailView>
         mView = getView();
         mRepository.uploadCollectionData("", transId, bizType, refType, -1, voucherDate, "", "")
                 .retryWhen(new RetryWhenNetworkException(3, 3000))
+                .doOnError(e-> SPrefUtil.saveData(bizType + refType,"0"))
+                .doOnComplete(()->SPrefUtil.saveData(bizType + refType,"1"))
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext, "正在过账数据...") {
                     @Override
@@ -254,6 +257,7 @@ public class DSDetailPresenterImp extends BasePresenter<IDSDetailView>
         mView = getView();
         RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, Global.USER_ID, voucherDate, flagMap, extraHeaderMap)
                 .retryWhen(new RetryWhenNetworkException(3, 3000))
+                .doOnComplete(()->SPrefUtil.saveData(bizType + refType,"0"))
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext, "正在上传数据...") {
                     @Override

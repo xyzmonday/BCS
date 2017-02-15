@@ -27,7 +27,7 @@ import io.reactivex.subscribers.ResourceSubscriber;
 public class ASCollectPresenterImp extends BasePresenter<IASCollectView>
         implements IASCollectPresenter {
 
-    IASCollectView mView;
+    protected IASCollectView mView;
 
     @Inject
     public ASCollectPresenterImp(@ContextLife("Activity") Context context) {

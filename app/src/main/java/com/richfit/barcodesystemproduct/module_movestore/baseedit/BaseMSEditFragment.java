@@ -3,7 +3,6 @@ package com.richfit.barcodesystemproduct.module_movestore.baseedit;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -15,6 +14,7 @@ import com.richfit.barcodesystemproduct.module_movestore.baseedit.imp.MSEditPres
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.CommonUtil;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.domain.bean.InventoryEntity;
 import com.richfit.domain.bean.LocationInfoEntity;
@@ -63,14 +63,6 @@ public abstract class BaseMSEditFragment extends BaseFragment<MSEditPresenterImp
     TextView tvLocQuantity;
     @BindView(R.id.tv_total_quantity)
     TextView tvTotalQuantity;
-    @BindView(R.id.ll_rec_location)
-    LinearLayout llRecLocation;
-    @BindView(R.id.et_rec_location)
-    EditText etRecLoc;
-    @BindView(R.id.ll_rec_batch_flag)
-    LinearLayout llRecBatchFlag;
-    @BindView(R.id.tv_rec_batch_flag)
-    TextView tvRecBatchFlag;
 
     protected String mRefLineId;
     protected String mLocationId;
@@ -159,15 +151,13 @@ public abstract class BaseMSEditFragment extends BaseFragment<MSEditPresenterImp
             tvBatchFlag.setText(batchFlag);
             tvInv.setText(invCode);
             tvInv.setTag(invId);
-
             etQuantity.setText(mQuantity);
             tvTotalQuantity.setText(totalQuantity);
            /*绑定额外字段的数据*/
             bindExtraUI(mSubFunEntity.collectionConfigs, lineData.mapExt, false);
             bindExtraUI(mSubFunEntity.locationConfigs, mExtraLocationMap, false);
-
             //初始化库存地点
-            loadInventoryInfo(lineData.workId, invId, lineData.materialId, "", batchFlag);
+            loadInventoryInfo(lineData.workId, invId, lineData.workCode, invCode, lineData.materialId, "", batchFlag);
         }
     }
 
@@ -180,19 +170,20 @@ public abstract class BaseMSEditFragment extends BaseFragment<MSEditPresenterImp
      * @param location
      * @param batchFlag
      */
-    protected void loadInventoryInfo(String workId, String invId, String materialId, String
+    protected void loadInventoryInfo(String workId, String invId, String workCode, String invCode, String materialId, String
             location, String batchFlag) {
         //检查批次，库存地点等字段
         if (TextUtils.isEmpty(workId)) {
-            showMessage("工厂为空");
+            showMessage("发出工厂为空");
             return;
         }
         if (TextUtils.isEmpty(invId)) {
-            showMessage("库存地点");
+            showMessage("发出库位");
             return;
         }
-
-        mPresenter.getInventoryInfo(getInventoryQueryType(), workId, invId, "", "", "", getString(tvMaterialNum), materialId, location, batchFlag, getInvType());
+        L.e("执行了加载库存");
+        mPresenter.getInventoryInfo(getInventoryQueryType(), workId, invId, workCode, invCode,
+                "", getString(tvMaterialNum), materialId, location, batchFlag, getInvType());
     }
 
     @Override
@@ -320,11 +311,7 @@ public abstract class BaseMSEditFragment extends BaseFragment<MSEditPresenterImp
             result.location = mInventoryDatas.get(spLocation.getSelectedItemPosition()).location;
             result.batchFlag = getString(tvBatchFlag);
             result.quantity = getString(etQuantity);
-            //接收仓位和批次
-            result.recLocatin = getString(etRecLoc);
-            result.recBatchFlag = getString(tvRecBatchFlag);
             result.modifyFlag = "Y";
-
             result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
             result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
             result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
@@ -337,8 +324,9 @@ public abstract class BaseMSEditFragment extends BaseFragment<MSEditPresenterImp
 
     @Override
     public void saveCollectedDataSuccess(String message) {
-        tvTotalQuantity.setText(String.valueOf(mTotalQuantity));
+        tvTotalQuantity.setText(getString(etQuantity));
         tvLocQuantity.setText(getString(etQuantity));
+
         showMessage(message);
     }
 
@@ -357,7 +345,9 @@ public abstract class BaseMSEditFragment extends BaseFragment<MSEditPresenterImp
         switch (retryAction) {
             case Global.RETRY_LOAD_INVENTORY_ACTION:
                 final RefDetailEntity lineData = mRefData.billDetailList.get(mPosition);
-                loadInventoryInfo(lineData.workId, tvInv.getTag().toString(), lineData.materialId, "", getString(tvBatchFlag));
+                loadInventoryInfo(lineData.workId, tvInv.getTag().toString(),
+                        lineData.workCode,getString(tvInv),
+                        lineData.materialId, "", getString(tvBatchFlag));
                 break;
         }
         super.retry(retryAction);
@@ -369,6 +359,7 @@ public abstract class BaseMSEditFragment extends BaseFragment<MSEditPresenterImp
      * @return
      */
     protected abstract String getInvType();
+
     protected abstract String getInventoryQueryType();
 
 }

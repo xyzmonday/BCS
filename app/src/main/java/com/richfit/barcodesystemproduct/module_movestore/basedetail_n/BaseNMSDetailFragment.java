@@ -3,9 +3,7 @@ package com.richfit.barcodesystemproduct.module_movestore.basedetail_n;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -20,10 +18,7 @@ import android.widget.TextView;
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.BottomMenuAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
-import com.richfit.barcodesystemproduct.module.main.MainActivity;
-import com.richfit.barcodesystemproduct.module_movestore.basedetail_n.imp.NMSDetailPresenterImp;
 import com.richfit.common_lib.animationrv.Animation.animators.FadeInDownAnimator;
-import com.richfit.common_lib.dialog.ShowErrorMessageDialog;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
@@ -40,12 +35,8 @@ import butterknife.BindView;
  * Created by monday on 2016/11/20.
  */
 
-public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresenterImp, RefDetailEntity>
+public abstract class BaseNMSDetailFragment<P extends INMSDetailPresenter> extends BaseFragment<P, RefDetailEntity>
         implements INMSDetailView, SwipeRefreshLayout.OnRefreshListener {
-
-    protected static final String[] MENUS_NAMES = {"过账", "数据上传"};
-
-    private static final int[] MENUS_IMAGES = {R.mipmap.icon_transfer, R.mipmap.icon_data_submit};
 
     @BindView(R.id.sendInv)
     protected TextView sendInv;
@@ -67,7 +58,7 @@ public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresen
     @BindView(R.id.root_id)
     protected LinearLayout mExtraContainer;
     protected String mTransId;
-    protected String mVisa;
+    protected String mTransNum;
     //父子节点的配置信息结合
     protected ArrayList<RowConfig> mConfigs;
 
@@ -117,13 +108,6 @@ public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresen
             showMessage("请先在抬头界面输入必要的信息");
             return;
         }
-
-        String transferKey = (String) SPrefUtil.getData(mBizType, "0");
-        if ("1".equals(transferKey)) {
-            showMessage("本次采集已经过账,请先到数据明细界面进行数据上传操作");
-            mSwipeRefreshLayout.setRefreshing(false);
-            return;
-        }
         startAutoRefresh();
     }
 
@@ -166,6 +150,12 @@ public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresen
 
     @Override
     public void onRefresh() {
+        String transferKey = (String) SPrefUtil.getData(mBizType, "0");
+        if ("1".equals(transferKey)) {
+            showMessage("本次采集已经过账,请先到数据明细界面进行数据上传操作");
+            mSwipeRefreshLayout.setRefreshing(false);
+            return;
+        }
         //单据抬头id
         final String refCodeId = mRefData.refCodeId;
         //业务类型
@@ -175,7 +165,7 @@ public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresen
         //清除缓存id
         mTransId = "";
         //清除过账凭证
-        mVisa = "";
+        mTransNum = "";
         //获取缓存
         mPresenter.getTransferInfo(refCodeId, bizType, refType, Global.USER_ID, mRefData.workId,
                 mRefData.invId, mRefData.recWorkId, mRefData.recInvId);
@@ -183,7 +173,7 @@ public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresen
 
     @Override
     public void deleteNode(final RefDetailEntity node, int position) {
-        if (!TextUtils.isEmpty(mVisa)) {
+        if (!TextUtils.isEmpty(mTransNum)) {
             showMessage("本次移库操作已经过账");
             return;
         }
@@ -195,7 +185,6 @@ public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresen
     public void deleteNodeFail(String message) {
         showMessage(message);
     }
-
 
     @Override
     public boolean checkDataBeforeOperationOnDetail() {
@@ -225,7 +214,7 @@ public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresen
         View rootView = LayoutInflater.from(mActivity).inflate(R.layout.menu_bottom, null);
         GridView menu = (GridView) rootView.findViewById(R.id.gridview);
         BottomMenuAdapter adapter = new BottomMenuAdapter(mActivity, R.layout.item_bottom_menu,
-                getBottomMenuTitles(), MENUS_IMAGES);
+               provideDefaultBottomMenu());
         menu.setAdapter(adapter);
 
         final Dialog dialog = new Dialog(mActivity, R.style.MaterialDialogSheet);
@@ -265,33 +254,15 @@ public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresen
 
     @Override
     public void showTransferedVisa(String visa) {
-        mVisa = visa;
+        mTransNum = visa;
     }
 
-    @Override
-    public void submitBarcodeSystemSuccess() {
-        showDialog(mVisa);
-        SPrefUtil.saveData(mBizType, "1");
-    }
-
-    private void showDialog(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-        builder.setTitle("提示");
-        builder.setMessage("过账成功;过账凭证" + message);
-        builder.setPositiveButton("确定", (dialog, l) -> dialog.dismiss());
-        builder.show();
-    }
-
-    @Override
-    public void submitBarcodeSystemFail(String message) {
-        showMessage(message);
-    }
 
     /**
      * 2.数据上传
      */
     private void submit2SAP() {
-        if (TextUtils.isEmpty(mVisa)) {
+        if (TextUtils.isEmpty(mTransNum)) {
             showMessage("请先过账");
             return;
         }
@@ -301,10 +272,7 @@ public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresen
 
     @Override
     public void submitSAPFail(String[] messages) {
-        MainActivity activity = (MainActivity) mActivity;
-        FragmentManager fm = activity.getSupportFragmentManager();
-        ShowErrorMessageDialog dialog = ShowErrorMessageDialog.newInstance(messages);
-        dialog.show(fm, "nms_show_error_messages");
+        showErrorDialog(messages);
     }
 
     @Override
@@ -327,13 +295,4 @@ public abstract class BaseNMSDetailFragment extends BaseFragment<NMSDetailPresen
 
     /*子类返回修改模块的名称*/
     protected abstract String getSubFunName();
-
-    /**
-     * 返回底部菜单标题，这是为了控制有些只需要上传到条码系统，有些
-     * 需要需要上传到条码系统和ERP系统
-     *
-     * @return
-     */
-    protected abstract List<String> getBottomMenuTitles();
-
 }

@@ -1,7 +1,6 @@
 package com.richfit.barcodesystemproduct.module_movestore.baseedit_n.imp;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
 import com.richfit.barcodesystemproduct.di.ContextLife;
@@ -18,6 +17,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Flowable;
 import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
@@ -27,7 +27,7 @@ import io.reactivex.subscribers.ResourceSubscriber;
 public class NMSEditPresenterImp extends BasePresenter<INMSEditView>
         implements INMSEditPresenter {
 
-    INMSEditView mView;
+    protected INMSEditView mView;
 
     @Inject
     public NMSEditPresenterImp(@ContextLife("Activity") Context context) {
@@ -130,7 +130,8 @@ public class NMSEditPresenterImp extends BasePresenter<INMSEditView>
     public void uploadCollectionDataSingle(ResultEntity result) {
         mView = getView();
         ResourceSubscriber<String> subscriber =
-                        mRepository.uploadCollectionDataSingle(result)
+                Flowable.concat(mRepository.getLocationInfo("04", result.workId, result.invId, result.location),
+                        mRepository.uploadCollectionDataSingle(result))
                         .compose(TransformerHelper.io2main())
                         .subscribeWith(new RxSubscriber<String>(mContext) {
                             @Override
@@ -168,43 +169,4 @@ public class NMSEditPresenterImp extends BasePresenter<INMSEditView>
                         });
         addSubscriber(subscriber);
     }
-
-    @Override
-    public void checkLocation(String queryType, String workId, String invId, String batchFlag, String location) {
-        mView = getView();
-        if (TextUtils.isEmpty(workId) && mView != null) {
-            mView.checkLocationFail("工厂为空");
-            return;
-        }
-
-        if (TextUtils.isEmpty(invId) && mView != null) {
-            mView.checkLocationFail("库存地点为空");
-            return;
-        }
-
-        ResourceSubscriber<String> subscriber = mRepository.getLocationInfo(queryType, workId, invId, location)
-                .compose(TransformerHelper.io2main())
-                .subscribeWith(new ResourceSubscriber<String>() {
-                    @Override
-                    public void onNext(String s) {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-                        if (mView != null) {
-                            mView.checkLocationFail(t.getMessage());
-                        }
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        if (mView != null) {
-                            mView.checkLocationSuccess();
-                        }
-                    }
-                });
-        addSubscriber(subscriber);
-    }
-
 }

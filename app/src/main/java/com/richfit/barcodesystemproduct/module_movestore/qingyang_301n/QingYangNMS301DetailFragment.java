@@ -9,19 +9,19 @@ import com.richfit.barcodesystemproduct.adapter.QingYangNMS301DetailAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.barcodesystemproduct.module.edit.EditActivity;
 import com.richfit.barcodesystemproduct.module_movestore.basedetail_n.BaseNMSDetailFragment;
-import com.richfit.common_lib.utils.SPrefUtil;
+import com.richfit.barcodesystemproduct.module_movestore.qingyang_301n.imp.QingHaiNMS301DetailPresenterImp;
+import com.richfit.domain.bean.BottomMenuEntity;
 import com.richfit.domain.bean.RefDetailEntity;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
+ * 庆阳301数据过账只有一步
  * Created by monday on 2017/2/8.
  */
 
-public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment {
-
+public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment<QingHaiNMS301DetailPresenterImp> {
 
     @Override
     public void initInjector() {
@@ -59,7 +59,7 @@ public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment {
 
     @Override
     public void editNode(final RefDetailEntity node, int position) {
-        if (!TextUtils.isEmpty(mVisa)) {
+        if (!TextUtils.isEmpty(mTransNum)) {
             showMessage("本次入库已经过账,不允许在进行修改");
             return;
         }
@@ -76,30 +76,29 @@ public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment {
 
     @Override
     public void submitBarcodeSystemSuccess() {
-        submitSAPSuccess();
-    }
-
-
-    @Override
-    public void submitSAPSuccess() {
         setRefreshing(false, "数据上传成功");
-        SPrefUtil.saveData(mBizType, "0");
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && QingYangNMS301DetailAdapter.class.isInstance(adapter)) {
-            QingYangNMS301DetailAdapter detailAdapter = (QingYangNMS301DetailAdapter) adapter;
-            detailAdapter.removeAllVisibleNodes();
-        }
+        showSuccessDialog(mTransNum);
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 
+    @Override
+    public void submitBarcodeSystemFail(String message) {
+        showMessage(message);
+    }
+
+    @Override
+    public void submitSAPSuccess() {
+
+    }
+
+    @Override
+    public List<BottomMenuEntity> provideDefaultBottomMenu() {
+        List<BottomMenuEntity> menus = super.provideDefaultBottomMenu();
+        return menus.subList(0, 1);
+    }
 
     @Override
     protected String getSubFunName() {
         return "301无参考移库";
-    }
-
-    @Override
-    protected List<String> getBottomMenuTitles() {
-        return Arrays.asList(MENUS_NAMES).subList(0, 1);
     }
 }

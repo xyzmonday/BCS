@@ -57,6 +57,8 @@ public interface IASDetailView extends BaseView {
      */
     void submitBarcodeSystemFail(String message);
 
+    void showInspectionNum(String message);
+
     /**
      * 数据提交到SAP成功
      */
@@ -65,5 +67,8 @@ public interface IASDetailView extends BaseView {
      * 数据提交到SAP失败
      */
     void submitSAPFail(String[] messages);
+
+    void upAndDownLocationFail(String[] messages);
+    void upAndDownLocationSuccess();
 
 }

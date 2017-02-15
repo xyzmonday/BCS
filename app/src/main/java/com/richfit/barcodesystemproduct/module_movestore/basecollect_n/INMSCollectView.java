@@ -47,8 +47,4 @@ public interface INMSCollectView extends BaseView {
      */
     void checkWareHouseSuccess();
     void checkWareHouseFail(String message);
-
-    void checkLocationFail(String message);
-    void checkLocationSuccess();
-
 }

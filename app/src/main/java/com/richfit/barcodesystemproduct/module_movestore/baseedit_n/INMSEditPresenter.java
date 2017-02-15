@@ -43,15 +43,5 @@ public interface INMSEditPresenter extends IPresenter<INMSEditView> {
      * @param result:用户采集的数据(json格式)
      */
     void uploadCollectionDataSingle(ResultEntity result);
-
-    /**
-     * 检查仓位是否存在
-     * @param queryType
-     * @param workId
-     * @param invId
-     * @param batchFlag
-     * @param location
-     */
-    void checkLocation(String queryType, String workId, String invId, String batchFlag, String location);
 }
 

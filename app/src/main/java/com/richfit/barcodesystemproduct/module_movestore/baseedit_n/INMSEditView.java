@@ -36,10 +36,5 @@ public interface INMSEditView extends BaseView {
      * 保存单条数据
      */
     void saveCollectedDataSuccess();
-
     void saveCollectedDataFail(String message);
-
-    void checkLocationFail(String message);
-    void checkLocationSuccess();
-
 }

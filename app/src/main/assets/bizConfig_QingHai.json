@@ -1,5 +1,5 @@
 [
-  {
+   {
     "id": "1",
     "tabTitle" : "抬头",
     "fragmentTag" : "qinghai_dsxs_header_fragment_tag",
@@ -7,8 +7,8 @@
     "refType": "4",
     "fragmentType" : 0,
     "className": "com.richfit.barcodesystemproduct.module_delivery.qinghai_dsxs.QingHaiDSXSHeaderFragment"
-  },
-  {
+   },
+   {
     "id": "2",
     "tabTitle" : "数据明细",
     "fragmentTag" : "qinghai_dsxs_detail_fragment_tag",
@@ -16,9 +16,9 @@
     "refType": "4",
     "fragmentType" : 1,
     "className": "com.richfit.barcodesystemproduct.module_delivery.qinghai_dsxs.QingHaiDSXSDetailFFragment"
-  },
+   },
 
-  {
+   {
     "id": "3",
     "tabTitle" : "数据采集",
     "fragmentTag" : "qinghai_dsxs_collect_fragment_tag",
@@ -26,8 +26,8 @@
     "refType": "4",
     "fragmentType" : 2,
     "className": "com.richfit.barcodesystemproduct.module_delivery.qinghai_dsxs.QingHaiDSXSCollectFragment"
-  },
-  {
+   },
+   {
     "id": "4",
     "tabTitle" : "明细修改",
     "fragmentTag" : "qinghai_dsxs_edit_fragment_tag",
@@ -35,8 +35,8 @@
     "refType": "4",
     "fragmentType" : -1,
     "className": "com.richfit.barcodesystemproduct.module_delivery.qinghai_dsxs.QingHaiDSXSEditFragment"
-  },
-  {
+   },
+   {
     "id": "5",
     "tabTitle" : "抬头",
     "fragmentTag" : "la_header_fragment_tag",
@@ -44,8 +44,8 @@
     "refType": "4",
     "fragmentType" : 1,
     "className": "com.richfit.barcodesystemproduct.module_locationadjust.header.LAHeaderFragment"
-  },
-  {
+   },
+   {
     "id": "6",
     "tabTitle" : "数据采集",
     "fragmentTag" : "la_collect_fragment_tag",
@@ -53,7 +53,7 @@
     "refType": "4",
     "fragmentType" : 2,
     "className": "com.richfit.barcodesystemproduct.module_locationadjust.collect.LACollectFragment"
-  },
+   },
    {
       "id": "7",
       "tabTitle" : "抬头",
@@ -62,8 +62,8 @@
       "refType": "0",
       "fragmentType" : 0,
       "className": "com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto351.QingHaiUbSto351HeaderFragment"
-    },
-    {
+     },
+     {
           "id": "8",
           "tabTitle" : "数据明细",
           "fragmentTag" : "ubsto351_header_fragment_tag",
@@ -71,17 +71,17 @@
           "refType": "0",
           "fragmentType" : 1,
           "className": "com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto351.QingHaiUbSto351DetailFragment"
-        },
-    {
-      "id": "9",
-      "tabTitle" : "数据采集",
-      "fragmentTag" : "ubsto351_collect_fragment_tag",
-      "bizType": "38",
-      "refType": "0",
-      "fragmentType" : 2,
-      "className": "com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto351.QingHaiUbSto351CollectFragment"
-    },
-    {
+      },
+      {
+          "id": "9",
+          "tabTitle" : "数据采集",
+          "fragmentTag" : "ubsto351_collect_fragment_tag",
+          "bizType": "38",
+          "refType": "0",
+          "fragmentType" : 2,
+          "className": "com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto351.QingHaiUbSto351CollectFragment"
+       },
+       {
           "id": "10",
           "tabTitle" : "明细修改",
           "fragmentTag" : "ubsto351_edit_fragment_tag",
@@ -89,5 +89,44 @@
           "refType": "0",
           "fragmentType" : -1,
           "className": "com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto351.QingHaiUbSto351EditFragment"
-        }
+        },
+       {
+
+          "id": "11",
+          "tabTitle" : "抬头",
+          "fragmentTag" : "ubsto101_header_fragment_tag",
+          "bizType": "311",
+          "refType": "0",
+          "fragmentType" : 0,
+          "className": "com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto101.QingHaiUbSto101HeaderFragment"
+       },
+       {
+
+           "id": "12",
+           "tabTitle" : "数据明细",
+           "fragmentTag" : "ubsto101_detail_fragment_tag",
+           "bizType": "311",
+           "refType": "0",
+           "fragmentType" : 1,
+            "className": "com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto101.QingHaiUbSto101DetailFragment"
+        },
+        {
+
+            "id": "13",
+            "tabTitle" : "数据采集",
+            "fragmentTag" : "ubsto101_collct_fragment_tag",
+            "bizType": "311",
+            "refType": "0",
+            "fragmentType" : 2,
+            "className": "com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto101.QingHaiUbSto101CollectFragment"
+         },
+         {
+            "id":"14",
+            "tabTitle" : "明细修改",
+            "fragmentTag" : "ubsto101_edit_fragment_tag",
+            "bizType": "311",
+            "refType": "0",
+            "fragmentType" : -1,
+            "className": "com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto101.QingHaiUbSto101EditFragment"
+         }
 ]

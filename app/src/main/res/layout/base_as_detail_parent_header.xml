@@ -53,6 +53,7 @@
     <TextView
         android:id="@+id/specailInventoryFlag"
         style="@style/TableHeaderStyle"
+        android:visibility="gone"
         android:layout_width="120dp"
         android:text="@string/special_inventory_flags" />
 
@@ -93,6 +94,7 @@
         android:id="@+id/y_n_location"
         style="@style/TableHeaderStyle"
         android:layout_width="80dp"
+        android:visibility="gone"
         android:text="@string/yes_no_location" />
 
     <View style="@style/ItemSeperatorLayout"/>

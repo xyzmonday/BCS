@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,45 +10,53 @@
     android:paddingRight="@dimen/error_message_vertical_margin"
     tools:ignore="MissingPrefix">
 
-    <net.qiujuer.example.timeline.widget.TimeLineMarker
-        android:id="@+id/item_time_line_mark"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:paddingBottom="@dimen/len_16"
-        android:paddingLeft="@dimen/len_4"
-        android:paddingRight="@dimen/len_4"
-        android:paddingTop="@dimen/len_16"
-        app:beginLine="@color/black_alpha_32"
-        app:endLine="@color/black_alpha_32"
-        app:lineSize="2dp"
-        app:marker="@drawable/icon_timeline_default_marker"
-        app:markerSize="24dp" />
+    <!--<com.richfit.common_lib.widget.TimeLineMarker-->
+        <!--android:id="@+id/item_time_line_mark"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:paddingBottom="@dimen/len_16"-->
+        <!--android:paddingLeft="@dimen/len_4"-->
+        <!--android:paddingRight="@dimen/len_4"-->
+        <!--android:paddingTop="@dimen/len_16"-->
+        <!--app:beginLine="@color/black_alpha_32"-->
+        <!--app:endLine="@color/black_alpha_32"-->
+        <!--app:lineSize="2dp"-->
+        <!--app:marker="@drawable/icon_timeline_default_marker"-->
+        <!--app:markerSize="24dp" />-->
 
-    <com.ms.square.android.expandabletextview.ExpandableTextView
-        android:id="@+id/item_time_line_txt"
+    <!--<com.ms.square.android.expandabletextview.ExpandableTextView-->
+        <!--android:id="@+id/item_time_line_txt"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--app:animDuration="200"-->
+        <!--app:collapseDrawable="@mipmap/icon_arrow_up"-->
+        <!--app:expandDrawable="@mipmap/icon_arrow_down"-->
+        <!--app:maxCollapsedLines="4">-->
+
+        <!--<TextView-->
+            <!--android:id="@id/expandable_text"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginLeft="10dp"-->
+            <!--android:layout_marginRight="10dp"-->
+            <!--android:textColor="#666666"-->
+            <!--android:textSize="16sp" />-->
+
+        <!--<ImageButton-->
+            <!--android:id="@id/expand_collapse"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="right|bottom"-->
+            <!--android:background="@android:color/transparent"-->
+            <!--android:padding="16dp" />-->
+    <!--</com.ms.square.android.expandabletextview.ExpandableTextView>-->
+    <TextView
+        android:id="@id/expandable_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:animDuration="200"
-        app:collapseDrawable="@mipmap/icon_arrow_up"
-        app:expandDrawable="@mipmap/icon_arrow_down"
-        app:maxCollapsedLines="4">
-
-        <TextView
-            android:id="@id/expandable_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:textColor="#666666"
-            android:textSize="16sp" />
-
-        <ImageButton
-            android:id="@id/expand_collapse"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right|bottom"
-            android:background="@android:color/transparent"
-            android:padding="16dp" />
-    </com.ms.square.android.expandabletextview.ExpandableTextView>
-
-</LinearLayout>
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="@dimen/len_10"
+        android:textColor="#666666"
+        android:textSize="16sp" />
+</RelativeLayout>

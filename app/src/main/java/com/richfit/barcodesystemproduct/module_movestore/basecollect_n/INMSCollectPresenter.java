@@ -58,13 +58,13 @@ public interface INMSCollectPresenter extends IPresenter<INMSCollectView> {
     void checkWareHouseNum(final boolean isOpenWM, final String sendWorkId, final String sendInvCode,
                            final String recWorkId, final String recInvCode,int flag);
 
-    /**
-     * 检查仓位是否存在
-     * @param queryType
-     * @param workId
-     * @param invId
-     * @param batchFlag
-     * @param location
-     */
-    void checkLocation(String queryType, String workId, String invId, String batchFlag, String location);
+//    /**
+//     * 检查仓位是否存在
+//     * @param queryType
+//     * @param workId
+//     * @param invId
+//     * @param batchFlag
+//     * @param location
+//     */
+//    void checkLocation(String queryType, String workId, String invId, String batchFlag, String location);
 }

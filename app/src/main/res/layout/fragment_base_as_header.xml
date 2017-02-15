@@ -42,10 +42,12 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_supplier"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="@dimen/collect_row_padding">
+        android:padding="@dimen/collect_row_padding"
+        android:visibility="gone">
 
         <TextView
             style="@style/LeftTextViewItemStyle"
@@ -53,6 +55,24 @@
 
         <TextView
             android:id="@+id/tv_supplier"
+            style="@style/RightTextViewItemStyle" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_send_work"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/send_work" />
+
+        <TextView
+            android:id="@+id/tv_send_work"
             style="@style/RightTextViewItemStyle" />
 
     </LinearLayout>

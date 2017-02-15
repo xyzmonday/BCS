@@ -39,7 +39,6 @@ public class MSEditPresenterImp extends BasePresenter<IMSEditView>
         mView = getView();
         RxSubscriber<List<InventoryEntity>> subscriber = null;
         if ("04".equals(queryType)) {
-
             subscriber = mRepository.getStorageNum(workId, workCode, invId, invCode)
                     .filter(num -> !TextUtils.isEmpty(num))
                     .flatMap(num -> mRepository.getInventoryInfo(queryType, workId, invId,

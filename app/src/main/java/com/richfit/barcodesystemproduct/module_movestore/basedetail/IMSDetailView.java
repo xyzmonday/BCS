@@ -47,9 +47,9 @@ public interface IMSDetailView extends BaseView{
 
     /**
      * 显示过账成功后的凭证
-     * @param visa
+     * @param message
      */
-    void showTransferedVisa(String visa);
+    void showTransferedVisa(String message);
     /**
      * 数据提交到条码系统成功
      */
@@ -65,8 +65,12 @@ public interface IMSDetailView extends BaseView{
      * 数据提交到SAP成功
      */
     void submitSAPSuccess();
+    void showInspectionNum(String inspectionNum);
     /**
      * 数据提交到SAP失败
      */
     void submitSAPFail(String[] messages);
+
+    void upAndDownLocationFail(String[] messages);
+    void upAndDownLocationSuccess();
 }

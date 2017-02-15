@@ -89,6 +89,7 @@
 
             <TextView
                 style="@style/LeftTextViewItemStyle"
+                android:id="@+id/tv_work_name"
                 android:text="@string/work" />
 
             <TextView

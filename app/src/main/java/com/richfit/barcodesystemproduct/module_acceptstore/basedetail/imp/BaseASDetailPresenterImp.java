@@ -43,7 +43,7 @@ import io.reactivex.subscribers.ResourceSubscriber;
 public class BaseASDetailPresenterImp extends BasePresenter<IASDetailView>
         implements IASDetailPresenter {
 
-    IASDetailView mView;
+    protected IASDetailView mView;
 
     @Inject
     public BaseASDetailPresenterImp(@ContextLife("Activity") Context context) {
@@ -194,9 +194,9 @@ public class BaseASDetailPresenterImp extends BasePresenter<IASDetailView>
     }
 
     @Override
-    public void submitData2BarcodeSystem(String transId, String bizType, String refType, int inspectionType, String voucherDate) {
+    public void submitData2BarcodeSystem(String transId, String bizType, String refType, String userId, String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap, int submitFlag) {
         mView = getView();
-        RxSubscriber<String> subscriber = mRepository.uploadCollectionData("", transId, bizType, refType, inspectionType, voucherDate, "", "")
+        RxSubscriber<String> subscriber = mRepository.uploadCollectionData("", transId, bizType, refType, -1, voucherDate, "", "")
                 .retryWhen(new RetryWhenNetworkException(3, 3000))
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext, "正在过账数据...") {
@@ -239,8 +239,7 @@ public class BaseASDetailPresenterImp extends BasePresenter<IASDetailView>
     }
 
     @Override
-    public void submitData2SAP(String transId, String bizType, String refType, String userId,
-                               String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
+    public void submitData2SAP(String transId, String bizType, String refType, String userId, String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap, int submitFlag) {
         mView = getView();
         RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate, flagMap, extraHeaderMap)
                 .retryWhen(new RetryWhenNetworkException(3, 3000))
@@ -281,6 +280,12 @@ public class BaseASDetailPresenterImp extends BasePresenter<IASDetailView>
                 });
         addSubscriber(subscriber);
     }
+
+    @Override
+    public void sapUpAndDownLocation(String transId, String bizType, String refType, String userId, String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap, int submitFlag) {
+
+    }
+
 
     @Override
     public void showHeadFragmentByPosition(int position) {

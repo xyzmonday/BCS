@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.base.BasePresenter;
 import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.MenuTreeHelper;
@@ -46,9 +47,32 @@ public class HomePresenterImp extends BasePresenter<HomeContract.View>
                         .filter(listMenu -> listMenu != null && listMenu.size() > 0)
                         .map(listMenu -> initMenu(listMenu))
                         .compose(TransformerHelper.io2main())
-                        .subscribe(modules -> {
-                            if (mView != null) {
-                                mView.initModulesComplete(modules);
+                        .subscribeWith(new RxSubscriber<List<MenuNode>>(mContext,"正在初始化主功能菜单...") {
+                            @Override
+                            public void _onNext(List<MenuNode> menuNodes) {
+                                if (mView != null) {
+                                    mView.initModulesComplete(menuNodes);
+                                }
+                            }
+
+                            @Override
+                            public void _onNetWorkConnectError(String message) {
+
+                            }
+
+                            @Override
+                            public void _onCommonError(String message) {
+
+                            }
+
+                            @Override
+                            public void _onServerError(String code, String message) {
+
+                            }
+
+                            @Override
+                            public void _onComplete() {
+
                             }
                         });
         addSubscriber(subscriber);

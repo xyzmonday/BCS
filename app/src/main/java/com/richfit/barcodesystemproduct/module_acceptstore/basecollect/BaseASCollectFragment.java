@@ -17,7 +17,6 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.InvAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
-import com.richfit.barcodesystemproduct.module_acceptstore.basecollect.imp.ASCollectPresenterImp;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.SPrefUtil;
@@ -50,7 +49,7 @@ import rx.android.schedulers.AndroidSchedulers;
  * Created by monday on 2016/11/15.
  */
 
-public abstract class BaseASCollectFragment extends BaseFragment<ASCollectPresenterImp, Object>
+public abstract class BaseASCollectFragment<P extends IASCollectPresenter> extends BaseFragment<P, Object>
         implements IASCollectView {
 
     @BindView(R.id.ref_line_num_spinner)
@@ -63,6 +62,8 @@ public abstract class BaseASCollectFragment extends BaseFragment<ASCollectPresen
     TextView tvSpecialInvFlag;
     @BindView(R.id.tv_work)
     TextView tvWork;
+    @BindView(R.id.tv_work_name)
+    protected TextView tvWorkName;
     @BindView(R.id.act_quantity_name)
     protected TextView tvActQuantityName;
     @BindView(R.id.tv_act_quantity)
@@ -86,30 +87,21 @@ public abstract class BaseASCollectFragment extends BaseFragment<ASCollectPresen
 
     /*是否不上架.对于非质检的物资isNLocation=false。也就是说子类如果不处理那么默认需要输入上架仓位*/
     protected boolean isNLocation;
-
     /*当前匹配的行明细（行号）*/
     protected ArrayList<String> mRefLines;
-
     /*单据行适配器*/
     ArrayAdapter<String> mRefLineAdapter;
-
     /*库存地点列表*/
     protected ArrayList<InvEntity> mInvDatas;
-
     /*库存地点适配器*/
     private InvAdapter mInvAdapter;
-
     /*累计数量*/
 //    protected float mCurrentTotalQuantity;
-
     protected String mSelectedRefLineNum;
-
     /*缓存的批次*/
     String mCachedBatchFlag;
-
     /*缓存的仓位级别的额外字段*/
     Map<String, Object> mExtraLocationMap;
-
     //校验仓位是否存在，如果false表示校验该仓位不存在或者没有校验该仓位，不允许保存数据
     boolean isLocationChecked = false;
 
@@ -238,7 +230,6 @@ public abstract class BaseASCollectFragment extends BaseFragment<ASCollectPresen
         }
         etMaterialNum.setEnabled(true);
         etBatchFlag.setEnabled(mIsOpenBatchManager);
-
     }
 
     /**
@@ -281,7 +272,7 @@ public abstract class BaseASCollectFragment extends BaseFragment<ASCollectPresen
         //刷新界面(在单据行明细查询是否有该物料条码，如果有那么刷新界面)
         matchMaterialInfo(materialNum, batchFlag)
                 .compose(TransformerHelper.io2main())
-                .subscribe(details -> setupRefLineAdapter(details),e->showMessage(e.getMessage()));
+                .subscribe(details -> setupRefLineAdapter(details), e -> showMessage(e.getMessage()));
     }
 
     /**
@@ -344,7 +335,7 @@ public abstract class BaseASCollectFragment extends BaseFragment<ASCollectPresen
         //初始化额外字段的数据,注意这仅仅是服务器返回的数据，不含有任何缓存数据。
         bindExtraUI(mSubFunEntity.collectionConfigs, lineData.mapExt);
         if (!cbSingle.isChecked())
-            mPresenter.getInvsByWorkId(lineData.workId,getOrgFlag());
+            mPresenter.getInvsByWorkId(lineData.workId, getOrgFlag());
     }
 
     /**
@@ -362,6 +353,7 @@ public abstract class BaseASCollectFragment extends BaseFragment<ASCollectPresen
             showMessage("请先选择库存地点");
             return;
         }
+
         //批次处理
         if (mIsOpenBatchManager)
             if (TextUtils.isEmpty(batchFlag)) {
@@ -370,6 +362,11 @@ public abstract class BaseASCollectFragment extends BaseFragment<ASCollectPresen
             }
         if (TextUtils.isEmpty(location)) {
             showMessage("请先输入上架仓位");
+            return;
+        }
+
+        if (location.length() > 10) {
+            showMessage("您输入的仓位长度大于10位,请重新输入");
             return;
         }
         final RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
@@ -555,7 +552,7 @@ public abstract class BaseASCollectFragment extends BaseFragment<ASCollectPresen
 
     @Override
     public boolean checkCollectedDataBeforeSave() {
-        if(!isLocationChecked) {
+        if (!isLocationChecked) {
             showMessage("您输入的仓位不存在");
             return false;
         }

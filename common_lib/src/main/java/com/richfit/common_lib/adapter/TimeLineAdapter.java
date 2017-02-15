@@ -23,17 +23,17 @@ public class TimeLineAdapter extends RecyclerView.Adapter<TimeLineViewHolder> {
         mCollapsedStatus = new SparseBooleanArray();
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        final int size = mDataSet.size() - 1;
-        if (size == 0)
-            return ItemType.ATOM;
-        else if (position == 0)
-            return ItemType.START;
-        else if (position == size)
-            return ItemType.END;
-        else return ItemType.NORMAL;
-    }
+//    @Override
+//    public int getItemViewType(int position) {
+//        final int size = mDataSet.size() - 1;
+//        if (size == 0)
+//            return ItemType.ATOM;
+//        else if (position == 0)
+//            return ItemType.START;
+//        else if (position == size)
+//            return ItemType.END;
+//        else return ItemType.NORMAL;
+//    }
 
     @Override
     public TimeLineViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {

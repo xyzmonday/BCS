@@ -10,7 +10,4 @@ import com.richfit.barcodesystemproduct.base.BaseView;
 public interface IASEditView extends BaseView {
     void saveEditedDataSuccess(String message);
     void saveEditedDataFail(String message);
-
-    void checkLocationFail(String message);
-    void checkLocationSuccess();
 }

@@ -11,7 +11,6 @@ import com.jakewharton.rxbinding.widget.RxAdapterView;
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.LocationAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
-import com.richfit.barcodesystemproduct.module_movestore.baseedit_n.imp.NMSEditPresenterImp;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.UiUtil;
@@ -34,7 +33,7 @@ import io.reactivex.FlowableOnSubscribe;
  * Created by monday on 2016/11/22.
  */
 
-public abstract class BaseNMSEditFragment extends BaseFragment<NMSEditPresenterImp, Object>
+public abstract class BaseNMSEditFragment<P extends INMSEditPresenter> extends BaseFragment<P, Object>
         implements INMSEditView {
 
     @BindView(R.id.tv_material_num)
@@ -376,21 +375,11 @@ public abstract class BaseNMSEditFragment extends BaseFragment<NMSEditPresenterI
         builder.show();
     }
 
-    /**
-     * 检查发出仓位是否存在，子类可以重写给出不同的仓位检查策略
-     */
-    protected void checkLocation() {
-        mPresenter.checkLocation("04", mRefData.recWorkId, mRefData.recInvId, getString(tvRecBatchFlag),
-                getString(etRecLoc));
-    }
-
     @Override
-    public void checkLocationFail(String message) {
-        showMessage(message);
-    }
-
-    @Override
-    public void checkLocationSuccess() {
+    public void saveCollectedData() {
+        if (!checkCollectedDataBeforeSave()) {
+            return;
+        }
         Flowable.create((FlowableOnSubscribe<ResultEntity>) emitter -> {
             ResultEntity result = new ResultEntity();
             result.businessType = mRefData.bizType;
@@ -417,16 +406,6 @@ public abstract class BaseNMSEditFragment extends BaseFragment<NMSEditPresenterI
         }, BackpressureStrategy.BUFFER)
                 .compose(TransformerHelper.io2main())
                 .subscribe(result -> mPresenter.uploadCollectionDataSingle(result));
-    }
-
-
-    @Override
-    public void saveCollectedData() {
-        if (!checkCollectedDataBeforeSave()) {
-            return;
-        }
-        checkLocation();
-
     }
 
     @Override

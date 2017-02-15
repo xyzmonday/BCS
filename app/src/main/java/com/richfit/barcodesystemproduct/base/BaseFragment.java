@@ -28,12 +28,15 @@ import com.richfit.barcodesystemproduct.SampleApplicationLike;
 import com.richfit.barcodesystemproduct.di.component.DaggerFragmentComponent;
 import com.richfit.barcodesystemproduct.di.component.FragmentComponent;
 import com.richfit.barcodesystemproduct.di.module.FragmentModule;
+import com.richfit.barcodesystemproduct.module.main.MainActivity;
 import com.richfit.common_lib.IInterface.IFragmentState;
 import com.richfit.common_lib.IInterface.IPresenter;
 import com.richfit.common_lib.dialog.NetConnectErrorDialogFragment;
+import com.richfit.common_lib.dialog.ShowErrorMessageDialog;
 import com.richfit.common_lib.utils.CreateExtraUIHelper;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.UiUtil;
+import com.richfit.domain.bean.BottomMenuEntity;
 import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.ReferenceEntity;
 import com.richfit.domain.bean.RowConfig;
@@ -50,6 +53,7 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import io.reactivex.Flowable;
 
 /**
@@ -453,6 +457,8 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
             mNetConnectErrorDialogFragment.dismiss();
         }
     }
+
+
 
     /**
      * 所有对额外字段的处理都写成方法，以便子类能够扩展
@@ -937,6 +943,29 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
         return TextUtils.isEmpty(str);
     }
 
+    protected void showSuccessDialog(String message) {
+        new SweetAlertDialog(mActivity, SweetAlertDialog.SUCCESS_TYPE)
+                .setTitleText("温馨提示")
+                .setContentText(message)
+                .show();
+    }
+
+    protected void showErrorDialog(String message) {
+        String[] errors = message.split("______");
+        MainActivity activity = (MainActivity) mActivity;
+        FragmentManager fm = activity.getSupportFragmentManager();
+        ShowErrorMessageDialog dialog = ShowErrorMessageDialog.newInstance(errors);
+        dialog.show(fm, "nms_show_error_messages");
+    }
+
+    protected void showErrorDialog(String[] messages) {
+        MainActivity activity = (MainActivity) mActivity;
+        FragmentManager fm = activity.getSupportFragmentManager();
+        ShowErrorMessageDialog dialog = ShowErrorMessageDialog.newInstance(messages);
+        dialog.show(fm, "nms_show_error_messages");
+    }
+
+
     /**
      * 获取抬头+行+仓位的所有配置信息
      *
@@ -1012,6 +1041,25 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
 
     public void setTabTitle(String title) {
         this.mTabTitle = title;
+    }
+
+    protected List<BottomMenuEntity> provideDefaultBottomMenu() {
+        ArrayList<BottomMenuEntity> menus = new ArrayList<>();
+        BottomMenuEntity menu = new BottomMenuEntity();
+        menu.menuName = "过账";
+        menu.menuImageRes = R.mipmap.icon_transfer;
+        menus.add(menu);
+
+        menu = new BottomMenuEntity();
+        menu.menuName = "数据上传";
+        menu.menuImageRes = R.mipmap.icon_data_submit;
+        menus.add(menu);
+
+        menu = new BottomMenuEntity();
+        menu.menuName = "下架";
+        menu.menuImageRes = R.mipmap.icon_down_location;
+        menus.add(menu);
+        return menus;
     }
 
     //初始化相关变量

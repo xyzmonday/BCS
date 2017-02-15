@@ -26,9 +26,9 @@ import com.richfit.barcodesystemproduct.camera.TakephotoActivity;
 import com.richfit.barcodesystemproduct.module_approval.qingyang_ao.collect.imp.ApprovalOtherPresenterImp;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.RichEditText;
+import com.richfit.domain.bean.BottomMenuEntity;
 import com.richfit.domain.bean.InvEntity;
 import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.ResultEntity;
@@ -52,16 +52,6 @@ import io.reactivex.FlowableOnSubscribe;
 
 public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresenterImp, Object>
         implements IApprovalOtherView {
-
-    public static final String[] INSPECTION_RESULTS = {"请选择", "合格", "不合格"};
-
-    protected static final int[] MENUS_IMAGES = {
-            R.mipmap.icon_save_data,
-            R.mipmap.icon_take_photo1,
-            R.mipmap.icon_take_photo2,
-            R.mipmap.icon_take_photo3,
-            R.mipmap.icon_take_photo4,
-    };
 
     @BindView(R.id.sp_ref_line_num)
     Spinner spRefLine;
@@ -91,8 +81,6 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
     ArrayAdapter<String> mRefLineAdapter;
     //当前正在操作的单据行号
     String mSelectedRefLineNum;
-    ArrayList<String> mMenuNames;
-    ArrayList<Integer> mTakePhotoTypes;
     /**
      * 缓存的到货数量
      */
@@ -143,9 +131,7 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
 
     @Override
     public void initVariable(Bundle savedInstanceState) {
-        mMenuNames = new ArrayList<>();
         mRefLines = new ArrayList<>();
-        mTakePhotoTypes = new ArrayList<>();
         mInvDatas = new ArrayList<>();
     }
 
@@ -230,7 +216,7 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
         clearAllUI();
         etBatchFlag.setText(batchFlag);
         //刷新界面(在单据行明细查询是否有该物料条码，如果有那么刷新界面)
-        matchMaterialInfo(materialNum,batchFlag)
+        matchMaterialInfo(materialNum, batchFlag)
                 .compose(TransformerHelper.io2main())
                 .subscribe(details -> setupRefLineAdapter(details), e -> showMessage(e.getMessage()));
     }
@@ -326,7 +312,7 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
         }
         bindExtraUI(mSubFunEntity.collectionConfigs, mCachedExtraLineMap);
         //获取库存地点
-        mPresenter.getInvsByWorkId(lineData.workId,0);
+        mPresenter.getInvsByWorkId(lineData.workId, 0);
     }
 
     @Override
@@ -454,21 +440,8 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
     public void showOperationMenuOnCollection(final String companyCode) {
         View rootView = LayoutInflater.from(mActivity).inflate(R.layout.menu_bottom, null);
         GridView menu = (GridView) rootView.findViewById(R.id.gridview);
-        BottomMenuAdapter adapter = null;
-        mMenuNames.clear();
-        //1：质量证明文件，2：技术附件，3：外观照片，4：其他
-        mMenuNames.add("保存数据");
-        mMenuNames.add("质量证明文件");
-        mMenuNames.add("技术附件");
-        mMenuNames.add("外观照片");
-        mMenuNames.add("其他");
-        //确定拍照类型
-        for (int i = 0, size = mMenuNames.size(); i < size; i++) {
-            mTakePhotoTypes.add(i);
-        }
-
-
-        adapter = new BottomMenuAdapter(mActivity, R.layout.item_bottom_menu, mMenuNames, MENUS_IMAGES);
+        final List<BottomMenuEntity> menus = provideDefaultBottomMenu();
+        BottomMenuAdapter adapter = new BottomMenuAdapter(mActivity, R.layout.item_bottom_menu, menus);
         menu.setAdapter(adapter);
 
         final Dialog dialog = new Dialog(mActivity, R.style.MaterialDialogSheet);
@@ -489,11 +462,45 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
                 case 3:
                 case 4:
                     //2.拍照
-                    toTakePhoto(mMenuNames.get(position % mMenuNames.size()), mTakePhotoTypes.get(position));
+                    toTakePhoto(menus.get(position).menuName,menus.get(position).takePhotoType);
                     break;
             }
             dialog.dismiss();
         });
+    }
+
+    @Override
+    public List<BottomMenuEntity> provideDefaultBottomMenu() {
+        List<BottomMenuEntity> menus = new ArrayList<>();
+        BottomMenuEntity menu = new BottomMenuEntity();
+        menu.menuName = "保存数据";
+        menu.menuImageRes = R.mipmap.icon_save_data;
+        menus.add(menu);
+
+        menu = new BottomMenuEntity();
+        menu.menuName = "质量证明文件";
+        menu.menuImageRes = R.mipmap.icon_take_photo1;
+        menu.takePhotoType = 1;
+        menus.add(menu);
+
+        menu = new BottomMenuEntity();
+        menu.menuName = "技术附件";
+        menu.menuImageRes = R.mipmap.icon_take_photo2;
+        menu.takePhotoType = 2;
+        menus.add(menu);
+
+        menu = new BottomMenuEntity();
+        menu.menuName = "外观照片";
+        menu.menuImageRes = R.mipmap.icon_take_photo3;
+        menu.takePhotoType = 3;
+        menus.add(menu);
+
+        menu = new BottomMenuEntity();
+        menu.menuName = "其他";
+        menu.menuImageRes = R.mipmap.icon_take_photo4;
+        menu.takePhotoType = 5;
+        menus.add(menu);
+        return menus;
     }
 
     @Override

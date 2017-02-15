@@ -1,7 +1,6 @@
 package com.richfit.barcodesystemproduct.module_movestore.basecollect_n.imp;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
 import com.richfit.barcodesystemproduct.di.ContextLife;
@@ -20,48 +19,49 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Flowable;
 import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
  * Created by monday on 2016/11/20.
  */
 
-public class INMSCollectPresenterImp extends BasePresenter<INMSCollectView>
+public class NMSCollectPresenterImp extends BasePresenter<INMSCollectView>
         implements INMSCollectPresenter {
 
-    INMSCollectView mView;
+    protected INMSCollectView mView;
 
     @Inject
-    public INMSCollectPresenterImp(@ContextLife("Activity") Context context) {
+    public NMSCollectPresenterImp(@ContextLife("Activity") Context context) {
         super(context);
     }
 
     @Override
-    public void getSendInvsByWorks(String workId,int flag) {
+    public void getSendInvsByWorks(String workId, int flag) {
         mView = getView();
         ResourceSubscriber<ArrayList<InvEntity>> subscriber =
-                mRepository.getInvsByWorkId(workId,flag)
-                .compose(TransformerHelper.io2main())
-                .subscribeWith(new ResourceSubscriber<ArrayList<InvEntity>>() {
-                    @Override
-                    public void onNext(ArrayList<InvEntity> list) {
-                        if (mView != null) {
-                            mView.showSendInvs(list);
-                        }
-                    }
+                mRepository.getInvsByWorkId(workId, flag)
+                        .compose(TransformerHelper.io2main())
+                        .subscribeWith(new ResourceSubscriber<ArrayList<InvEntity>>() {
+                            @Override
+                            public void onNext(ArrayList<InvEntity> list) {
+                                if (mView != null) {
+                                    mView.showSendInvs(list);
+                                }
+                            }
 
-                    @Override
-                    public void onError(Throwable t) {
-                        if (mView != null) {
-                            mView.loadSendInvsFail(t.getMessage());
-                        }
-                    }
+                            @Override
+                            public void onError(Throwable t) {
+                                if (mView != null) {
+                                    mView.loadSendInvsFail(t.getMessage());
+                                }
+                            }
 
-                    @Override
-                    public void onComplete() {
+                            @Override
+                            public void onComplete() {
 
-                    }
-                });
+                            }
+                        });
         addSubscriber(subscriber);
     }
 
@@ -104,7 +104,7 @@ public class INMSCollectPresenterImp extends BasePresenter<INMSCollectView>
 
                     @Override
                     public void _onComplete() {
-                        if(mView != null) {
+                        if (mView != null) {
                             mView.loadTransferSingleInfoComplete();
                         }
                     }
@@ -163,7 +163,8 @@ public class INMSCollectPresenterImp extends BasePresenter<INMSCollectView>
         mView = getView();
         //注意这里需要检查接收仓位是否存在
         ResourceSubscriber<String> subscriber =
-                        mRepository.uploadCollectionDataSingle(result)
+                Flowable.concat(mRepository.getLocationInfo("04", result.workId, result.invId, result.location),
+                        mRepository.uploadCollectionDataSingle(result))
                         .compose(TransformerHelper.io2main())
                         .subscribeWith(new RxSubscriber<String>(mContext) {
                             @Override
@@ -201,49 +202,12 @@ public class INMSCollectPresenterImp extends BasePresenter<INMSCollectView>
                         });
         addSubscriber(subscriber);
     }
-    @Override
-    public void checkLocation(String queryType, String workId, String invId, String batchFlag, String location) {
-        mView = getView();
-        if (TextUtils.isEmpty(workId) && mView != null) {
-            mView.checkLocationFail("工厂为空");
-            return;
-        }
-
-        if (TextUtils.isEmpty(invId) && mView != null) {
-            mView.checkLocationFail("库存地点为空");
-            return;
-        }
-
-        ResourceSubscriber<String> subscriber = mRepository.getLocationInfo(queryType, workId, invId, location)
-                .compose(TransformerHelper.io2main())
-                .subscribeWith(new ResourceSubscriber<String>() {
-                    @Override
-                    public void onNext(String s) {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-                        if (mView != null) {
-                            mView.checkLocationFail(t.getMessage());
-                        }
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        if (mView != null) {
-                            mView.checkLocationSuccess();
-                        }
-                    }
-                });
-        addSubscriber(subscriber);
-    }
 
     @Override
     public void checkWareHouseNum(boolean isOpenWM, String sendWorkId, String sendInvCode,
-                                  String recWorkId, String recInvCode,int flag) {
+                                  String recWorkId, String recInvCode, int flag) {
         mView = getView();
-        mRepository.checkWareHouseNum(sendWorkId, sendInvCode, recWorkId, recInvCode,flag)
+        mRepository.checkWareHouseNum(sendWorkId, sendInvCode, recWorkId, recInvCode, flag)
                 .compose(TransformerHelper.io2main())
                 .subscribe(new ResourceSubscriber<Boolean>() {
                     @Override

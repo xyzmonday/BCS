@@ -23,6 +23,7 @@ import com.richfit.common_lib.IInterface.IPresenter;
 import com.richfit.common_lib.dialog.NetConnectErrorDialogFragment;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.StatusBarCompat;
+import com.richfit.common_lib.utils.ViewServer;
 import com.richfit.domain.bean.RowConfig;
 
 import java.util.ArrayList;
@@ -70,6 +71,7 @@ public abstract class BaseActivity<T extends IPresenter> extends AppCompatActivi
                 .appComponent(SampleApplicationLike.getAppComponent())
                 .build();
         super.onCreate(savedInstanceState);
+
         int layoutId = getContentId();
         if (layoutId > 0) {
             setContentView(getContentId());
@@ -84,10 +86,17 @@ public abstract class BaseActivity<T extends IPresenter> extends AppCompatActivi
         initEvent();
         if (mOpenStatusBar)
             StatusBarCompat.compat(this);
+        ViewServer.get(this).addWindow(this);
     }
 
     protected void setStatusBar(boolean isOpenStatusBar) {
         mOpenStatusBar = isOpenStatusBar;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ViewServer.get(this).setFocusedWindow(this);
     }
 
     @Override
@@ -101,6 +110,7 @@ public abstract class BaseActivity<T extends IPresenter> extends AppCompatActivi
         if (mPresenter != null)
             //防止内存泄露
             mPresenter.detachView();
+        ViewServer.get(this).removeWindow(this);
     }
 
 

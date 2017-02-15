@@ -21,22 +21,17 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Debug;
 import android.support.multidex.MultiDex;
 
 import com.github.moduth.blockcanary.BlockCanary;
-import com.orhanobut.logger.Logger;
 import com.richfit.barcodesystemproduct.di.component.AppComponent;
 import com.richfit.barcodesystemproduct.di.component.DaggerAppComponent;
 import com.richfit.barcodesystemproduct.di.module.AppModule;
+import com.richfit.barcodesystemproduct.service.InitializeService;
 import com.richfit.barcodesystemproduct.tinker.Log.MyLogImp;
 import com.richfit.barcodesystemproduct.tinker.util.SampleApplicationContext;
 import com.richfit.barcodesystemproduct.tinker.util.TinkerManager;
 import com.richfit.common_lib.blockcanary.AppBlockCanaryContext;
-import com.richfit.common_lib.utils.Global;
-import com.richfit.common_lib.utils.SPrefUtil;
-import com.richfit.common_lib.utils.UiUtil;
-import com.richfit.data.cache.RxCache;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 import com.tencent.tinker.anno.DefaultLifeCycle;
@@ -50,8 +45,8 @@ import com.tencent.tinker.loader.shareutil.ShareConstants;
 
 
 @DefaultLifeCycle(application = "com.richfit.barcodesystemproduct.BarcodeSystemApplication",
-                  flags = ShareConstants.TINKER_ENABLE_ALL,
-                  loadVerifyFlag = false)
+        flags = ShareConstants.TINKER_ENABLE_ALL,
+        loadVerifyFlag = false)
 public class SampleApplicationLike extends DefaultApplicationLike {
 
     private static final String TAG = "yff";
@@ -74,7 +69,6 @@ public class SampleApplicationLike extends DefaultApplicationLike {
     @Override
     public void onBaseContextAttached(Context base) {
         super.onBaseContextAttached(base);
-        Debug.startMethodTracing("BarcodeSystem");
 
         //you must install multiDex whatever tinker is installed!
         MultiDex.install(base);
@@ -104,36 +98,25 @@ public class SampleApplicationLike extends DefaultApplicationLike {
     @Override
     public void onCreate() {
         super.onCreate();
-        try {
-            //初始化自己的全局配置
-            final Application application = getApplication();
-            mAppComponent = DaggerAppComponent.builder()
-                    .appModule(new AppModule(application))
-                    .build();
-            RxCache.init(application);
-            mRefWatcher = LeakCanary.install(application);
-            app = this;
-            Logger.init("yff");
-            SPrefUtil.initSharePreference(application);
-            initAppConfig(application);
-            BlockCanary.install(application, new AppBlockCanaryContext()).start();
-            Debug.stopMethodTracing();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void initAppConfig(Context context) {
-        Global.macAddress = UiUtil.getMacAddress();
-        Global.serialNum = UiUtil.getDeviceId(context.getApplicationContext());
+        //初始化自己的全局配置
+        app = this;
+        final Application application = getApplication();
+        mAppComponent = DaggerAppComponent.builder()
+                .appModule(new AppModule(application))
+                .build();
+        mRefWatcher = LeakCanary.install(application);
+        BlockCanary.install(application, new AppBlockCanaryContext()).start();
+        InitializeService.start(application);
     }
 
     public static SampleApplicationLike getAppContext() {
         return app;
     }
+
     public static AppComponent getAppComponent() {
         return mAppComponent;
     }
+
     public static RefWatcher getRefWatcher() {
         return mRefWatcher;
     }

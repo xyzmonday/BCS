@@ -15,6 +15,7 @@ import com.richfit.common_lib.rxutils.RetryWhenNetworkException;
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.domain.bean.LocationInfoEntity;
 import com.richfit.domain.bean.RefDetailEntity;
@@ -36,7 +37,7 @@ import io.reactivex.subscribers.ResourceSubscriber;
 public class NMSDetailPresenterImp extends BasePresenter<INMSDetailView>
         implements INMSDetailPresenter {
 
-    INMSDetailView mView;
+    protected INMSDetailView mView;
 
     @Inject
     public NMSDetailPresenterImp(@ContextLife("Activity") Context context) {
@@ -178,6 +179,8 @@ public class NMSDetailPresenterImp extends BasePresenter<INMSDetailView>
         RxSubscriber<String> subscriber =
                 mRepository.uploadCollectionData("", transId, bizType, refType, -1, voucherDate, "", "")
                         .retryWhen(new RetryWhenNetworkException(3, 3000))
+                        .doOnError(e-> SPrefUtil.saveData(bizType,"0"))
+                        .doOnComplete(()-> SPrefUtil.saveData(bizType,"1"))
                         .compose(TransformerHelper.io2main())
                         .subscribeWith(new RxSubscriber<String>(mContext) {
                             @Override
@@ -224,6 +227,7 @@ public class NMSDetailPresenterImp extends BasePresenter<INMSDetailView>
         mView = getView();
         RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, Global.USER_ID, voucherDate, flagMap, extraHeaderMap)
                 .retryWhen(new RetryWhenNetworkException(3, 3000))
+                .doOnComplete(()-> SPrefUtil.saveData(bizType,"0"))
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext) {
                     @Override

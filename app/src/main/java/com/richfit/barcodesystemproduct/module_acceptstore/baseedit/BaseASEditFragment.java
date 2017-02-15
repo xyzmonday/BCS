@@ -7,7 +7,6 @@ import android.widget.TextView;
 
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
-import com.richfit.barcodesystemproduct.module_acceptstore.baseedit.imp.ASEditPresenterImp;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.UiUtil;
@@ -27,64 +26,45 @@ import io.reactivex.FlowableOnSubscribe;
  * Created by monday on 2016/11/19.
  */
 
-public abstract class BaseASEditFragment extends BaseFragment<ASEditPresenterImp, Object>
+public abstract class BaseASEditFragment<P extends IASEditPresenter> extends BaseFragment<P, Object>
         implements IASEditView {
 
     @BindView(R.id.tv_ref_line_num)
     TextView tvRefLineNum;
-
     @BindView(R.id.tv_material_num)
     TextView tvMaterialNum;
-
     @BindView(R.id.tv_material_desc)
     TextView tvMaterialDesc;
-
     @BindView(R.id.tv_batch_flag)
     TextView tvBatchFlag;
-
     @BindView(R.id.tv_inv)
     TextView tvInv;
-
     @BindView(R.id.tv_act_rec_quantity)
     TextView tvActRecQuantity;
-
     @BindView(R.id.act_quantity_name)
     protected TextView actQuantityName;
-
     @BindView(R.id.quantity_name)
     protected TextView quantityName;
-
     @BindView(R.id.et_quantity)
     EditText etQuantity;
-
     @BindView(R.id.et_location)
     protected EditText etLocation;
-
     @BindView(R.id.tv_location_quantity)
     protected TextView tvLocationQuantity;
-
     @BindView(R.id.tv_total_quantity)
     TextView tvTotalQuantity;
 
     //已经上架的所有仓位
     protected List<String> mLocations;
-
     ///要修改子节点的id
     String mRefLineId;
-
     String mLocationId;
-
     /*修改之前用户数的数量*/
     String mQuantity;
-
     /*要修改的子节点的父节点在*/
     int mPosition;
-
     //是否上架（直接通过父节点的标志位判断即可）
     boolean isNLocation;
-
-    float mCurrentTotalQuantity;
-
     Map<String, Object> mExtraLocationMap;
     boolean isLocationChecked;
 
@@ -173,7 +153,6 @@ public abstract class BaseASEditFragment extends BaseFragment<ASEditPresenterImp
             return false;
         }
         mQuantity = quantityV + "";
-        mCurrentTotalQuantity = residualQuantity;
         return true;
     }
 
@@ -182,32 +161,6 @@ public abstract class BaseASEditFragment extends BaseFragment<ASEditPresenterImp
         if (!checkCollectedDataBeforeSave()) {
             return;
         }
-        RefDetailEntity lineData = mRefData.billDetailList.get(mPosition);
-        mPresenter.checkLocation("04",lineData.workId,lineData.invId,getString(tvBatchFlag),getString(etLocation));
-    }
-
-
-    @Override
-    public void saveEditedDataSuccess(String message) {
-        showMessage("修改成功");
-        tvLocationQuantity.setText(mQuantity);
-        tvTotalQuantity.setText(mCurrentTotalQuantity + "");
-    }
-
-    @Override
-    public void saveEditedDataFail(String message) {
-        showMessage("修改失败");
-    }
-
-
-    @Override
-    public void checkLocationFail(String message) {
-        isLocationChecked = false;
-        showMessage(message);
-    }
-
-    @Override
-    public void checkLocationSuccess() {
         Flowable.create((FlowableOnSubscribe<ResultEntity>) emitter -> {
             RefDetailEntity lineData = mRefData.billDetailList.get(mPosition);
             ResultEntity result = new ResultEntity();
@@ -233,6 +186,19 @@ public abstract class BaseASEditFragment extends BaseFragment<ASEditPresenterImp
             emitter.onComplete();
         }, BackpressureStrategy.BUFFER).compose(TransformerHelper.io2main())
                 .subscribe(result -> mPresenter.uploadCollectionDataSingle(result));
+    }
+
+
+    @Override
+    public void saveEditedDataSuccess(String message) {
+        showMessage("修改成功");
+        tvLocationQuantity.setText(mQuantity);
+        tvTotalQuantity.setText(mQuantity);
+    }
+
+    @Override
+    public void saveEditedDataFail(String message) {
+        showMessage("修改失败");
     }
 
     @Override

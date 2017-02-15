@@ -1,40 +1,46 @@
 package com.richfit.barcodesystemproduct.module_movestore.basedetail;
 
+import android.app.Dialog;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.GridView;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
 import com.richfit.barcodesystemproduct.R;
+import com.richfit.barcodesystemproduct.adapter.BottomMenuAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
-import com.richfit.barcodesystemproduct.module_movestore.basedetail.imp.MSDetailPresenterImp;
 import com.richfit.common_lib.animationrv.Animation.animators.FadeInDownAnimator;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.AutoSwipeRefreshLayout;
+import com.richfit.domain.bean.BottomMenuEntity;
 import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.RowConfig;
 import com.richfit.domain.bean.TreeNode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
+
+import static com.richfit.common_lib.utils.SPrefUtil.getData;
 
 /**
  * Created by monday on 2017/2/10.
  */
 
-public abstract class BaseMSDetailFragment extends BaseFragment<MSDetailPresenterImp, RefDetailEntity>
-        implements IMSDetailView,SwipeRefreshLayout.OnRefreshListener {
+public abstract class BaseMSDetailFragment<P extends IMSDetailPresenter> extends BaseFragment<P, RefDetailEntity>
+        implements IMSDetailView, SwipeRefreshLayout.OnRefreshListener {
 
-    private static final String[] MENUS_NAMES = {"过账", "数据上传","下架"};
-    private static final int[] MENUS_IMAGES = {R.mipmap.icon_transfer,
-            R.mipmap.icon_data_submit,R.mipmap.icon_down_location};
+    private static final HashMap<String, Object> FLAGMAP = new HashMap<>();
 
     @BindView(R.id.data_details_recycle_view)
     protected RecyclerView mRecycleView;
@@ -44,8 +50,11 @@ public abstract class BaseMSDetailFragment extends BaseFragment<MSDetailPresente
     HorizontalScrollView mHorizontalScroll;
     @BindView(R.id.root_id)
     LinearLayout mExtraContainer;
-    String mVisa;
+    protected String mTransNum;
     protected String mTransId;
+    //第二过账成功后返回的验收单号
+    protected String mInspectionNum;
+    protected List<BottomMenuEntity> mBottomMenus;
 
     @Override
     protected int getContentId() {
@@ -55,7 +64,7 @@ public abstract class BaseMSDetailFragment extends BaseFragment<MSDetailPresente
     @Override
     protected void initView() {
         // 刷新时，指示器旋转后变化的颜色
-        mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light,
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.blue_a700, R.color.red_a400,
                 android.R.color.holo_orange_light, android.R.color.holo_green_light);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         LinearLayoutManager lm = new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false);
@@ -88,19 +97,13 @@ public abstract class BaseMSDetailFragment extends BaseFragment<MSDetailPresente
             return;
         }
 
-
         if (mSubFunEntity.headerConfigs != null && !checkExtraData(mSubFunEntity.headerConfigs, mRefData.mapExt)) {
             showMessage("请在抬头界面输入额外必输字段信息");
             return;
         }
-
-        String transferFlag = (String) SPrefUtil.getData(mBizType + mRefType, "0");
-        if ("1".equals(transferFlag)) {
-            showMessage("本次采集已经过账,请先进行数据上传操作");
-            return;
-        }
         startAutoRefresh();
     }
+
     @Override
     public void readConfigsSuccess(List<ArrayList<RowConfig>> configs) {
         mSubFunEntity.parentNodeConfigs = configs.get(0);
@@ -128,6 +131,11 @@ public abstract class BaseMSDetailFragment extends BaseFragment<MSDetailPresente
      */
     @Override
     public void onRefresh() {
+        String state = (String) getData(mBizType + mRefType, "0");
+        if (!"0".equals(state)) {
+            showMessage("本次采集已经过账,请先进行数据上传操作");
+            return;
+        }
         //单据抬头id
         final String refCodeId = mRefData.refCodeId;
         //业务类型
@@ -137,7 +145,7 @@ public abstract class BaseMSDetailFragment extends BaseFragment<MSDetailPresente
         //清除缓存id
         mTransId = "";
         //清除过账凭证
-        mVisa = "";
+        mTransNum = "";
         //获取缓存累计数量不对
         mPresenter.getTransferInfo(mRefData, refCodeId, bizType, refType);
     }
@@ -159,8 +167,9 @@ public abstract class BaseMSDetailFragment extends BaseFragment<MSDetailPresente
      */
     @Override
     public void editNode(final RefDetailEntity node, int position) {
-        if (!TextUtils.isEmpty(mVisa)) {
-            showMessage("本次入库已经过账,不允许在进行修改");
+        String state = (String) getData(mBizType + mRefType, "0");
+        if (!"0".equals(state)) {
+            showMessage("已经过账,不允许修改");
             return;
         }
         mPresenter.editNode(mRefData, node, mCompanyCode, mBizType, mRefType,
@@ -169,8 +178,9 @@ public abstract class BaseMSDetailFragment extends BaseFragment<MSDetailPresente
 
     @Override
     public void deleteNode(final RefDetailEntity node, int position) {
-        if (!TextUtils.isEmpty(mVisa)) {
-            showMessage("本次入库已经过账,不允许在进行删除");
+        String state = (String) getData(mBizType + mRefType, "0");
+        if (!"0".equals(state)) {
+            showMessage("已经过账,不允许删除");
             return;
         }
         TreeNode parentNode = node.getParent();
@@ -180,7 +190,6 @@ public abstract class BaseMSDetailFragment extends BaseFragment<MSDetailPresente
         } else {
             lineDeleteFlag = parentNode.getChildren().size() > 1 ? "N" : "Y";
         }
-
         mPresenter.deleteNode(lineDeleteFlag, node.transId, node.transLineId,
                 node.locationId, mRefData.refType, mRefData.bizType, position,
                 mCompanyCode);
@@ -193,29 +202,144 @@ public abstract class BaseMSDetailFragment extends BaseFragment<MSDetailPresente
     }
 
     @Override
-    public void showTransferedVisa(String visa) {
+    public boolean checkDataBeforeOperationOnDetail() {
+        if (mRefData == null) {
+            showMessage("请先获取单据数据");
+            return false;
+        }
+        if (TextUtils.isEmpty(mTransId)) {
+            showMessage("未获取缓存标识");
+            return false;
+        }
+
+        if (TextUtils.isEmpty(mRefData.voucherDate)) {
+            showMessage("请先选择过账日期");
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 显示过账，数据上传等菜单对话框
+     *
+     * @param companyCode
+     */
+    @Override
+    public void showOperationMenuOnDetail(final String companyCode) {
+        View rootView = LayoutInflater.from(mActivity).inflate(R.layout.menu_bottom, null);
+        GridView menu = (GridView) rootView.findViewById(R.id.gridview);
+        mBottomMenus = provideDefaultBottomMenu();
+        BottomMenuAdapter adapter = new BottomMenuAdapter(mActivity, R.layout.item_bottom_menu, mBottomMenus);
+        menu.setAdapter(adapter);
+
+        final Dialog dialog = new Dialog(mActivity, R.style.MaterialDialogSheet);
+        dialog.setContentView(rootView);
+        dialog.setCancelable(true);
+        dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+        dialog.show();
+        menu.setOnItemClickListener((adapterView, view, position, id) -> {
+            switch (position) {
+                case 0:
+                    //1.过账
+                    submit2BarcodeSystem(mBottomMenus.get(position).transToSapFlag);
+                    break;
+                case 1:
+                    submit2SAP(mBottomMenus.get(position).transToSapFlag);
+                    break;
+                case 3:
+                    //转储
+                    sapUpAndDownLocation(mBottomMenus.get(position).transToSapFlag);
+                    break;
+            }
+            dialog.dismiss();
+        });
+    }
+
+    /**
+     * 1.过账
+     */
+    protected void submit2BarcodeSystem(String tranToSapFlag) {
+        String state = (String) SPrefUtil.getData(mBizType + mRefType, "0");
+        if (!"0".equals(state)) {
+            showMessage("已经过账成功,请进行数据上传");
+            return;
+        }
+        mTransNum = "";
+        FLAGMAP.clear();
+        FLAGMAP.put("transToSapFlag", tranToSapFlag);
+        mPresenter.submitData2BarcodeSystem(mTransId, mBizType, mRefType, Global.USER_ID,
+                mRefData.voucherDate, FLAGMAP, createExtraHeaderMap(), getSubmitType());
+    }
+
+    @Override
+    public void showTransferedVisa(String message) {
+        mTransNum = message;
+    }
+
+    /**
+     * 2.数据上传
+     */
+    protected void submit2SAP(String tranToSapFlag) {
+        //如果没有进行第一步的过账，那么不允许数据上传
+        String state = (String) getData(mBizType + mRefType, "0");
+        if ("0".equals(state)) {
+            showMessage("请先过账");
+            return;
+        }
+        if (2 == getSubmitType() && !TextUtils.isEmpty(mInspectionNum)) {
+            showMessage("您已经进行过数据上传");
+            return;
+        }
+        FLAGMAP.clear();
+        FLAGMAP.put("transToSapFlag", tranToSapFlag);
+        mInspectionNum = "";
+        mPresenter.submitData2SAP(mTransId, mRefData.bizType, mRefType, Global.USER_ID,
+                mRefData.voucherDate, FLAGMAP, createExtraHeaderMap(), getSubmitType());
+    }
+
+    @Override
+    public void showInspectionNum(String inspectionNum) {
+        mInspectionNum = inspectionNum;
+    }
+
+
+    /**
+     * 3. 如果submitFlag:2那么分三步进行转储处理
+     */
+    private void sapUpAndDownLocation(String tranToSapFlag) {
 
     }
 
     @Override
-    public void submitBarcodeSystemFail(String message) {
+    public void upAndDownLocationSuccess() {
 
     }
 
 
 
+
     @Override
-    public void submitSAPFail(String[] messages) {
+    public void upAndDownLocationFail(String[] messages) {
 
     }
 
 
     @Override
     public void networkConnectError(String retryAction) {
-
+        showNetConnectErrorDialog(retryAction);
     }
 
-
     protected abstract String getSubFunName();
+
+    /**
+     * 返回底部菜单标题，一般来说包括了uploadCollectData,TransCollectData(包括了过账,上架或者下架)
+     * 现在的需求有3中组合一个是uploadCollectData+过账，下架，一个是uploadCollectData+上架或者下架，过账
+     * 最后是uploadCollectData，过账，下架。那么这里分别定义了3中状态。其中0表示第一种组合情况；
+     * 1表示第二种组合情况；2表示第三种组合情况。
+     *
+     * @return
+     */
+    protected abstract int getSubmitType();
 
 }

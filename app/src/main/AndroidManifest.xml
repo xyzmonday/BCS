@@ -66,6 +66,7 @@
             android:windowSoftInputMode="adjustPan|stateHidden" />
          注册Service
         <service android:name=".service.LoadBasicDataService" />
+        <service android:name=".service.InitializeService"/>
         <service
             android:name=".tinker.service.SampleResultService"
             android:exported="false"/>

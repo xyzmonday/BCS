@@ -89,12 +89,12 @@ public class WelcomePresenterImp extends BasePresenter<WelcomeContract.View>
 //                    public void _onComplete() {
 //                        if (mView != null) {
 //                            mView.loadConfigSuccess(mode);
-//                        }
+//                         }
 //                    }
 //                });
 //        addSubscriber(subscriber);
-        final String jsonPath = "bizConfig_QingYang.json";
-//        final String jsonPath = "bizConfig_QingHai.json";
+//        final String jsonPath = "bizConfig_QingYang.json";
+        final String jsonPath = "bizConfig_QingHai.json";
         Flowable.just(jsonPath)
                 .map(path -> LocalFileUtil.getStringFormAsset(mContext, path))
                 .map(json -> {

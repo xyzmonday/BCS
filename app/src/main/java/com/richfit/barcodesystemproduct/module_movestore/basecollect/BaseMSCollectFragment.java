@@ -7,7 +7,6 @@ import android.text.TextUtils;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -76,14 +75,6 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
     CheckBox cbSingle;
     @BindView(R.id.tv_total_quantity)
     TextView tvTotalQuantity;
-    @BindView(R.id.et_rec_loc)
-    protected EditText etRecLoc;
-    @BindView(R.id.et_rec_batch_flag)
-    protected EditText etRecBatchFlag;
-    @BindView(R.id.ll_rec_location)
-    protected LinearLayout llRecLocation;
-    @BindView(R.id.ll_rec_batch)
-    protected LinearLayout llRecBatch;
 
     /*单据行选项*/
     private List<String> mRefLines;
@@ -221,15 +212,14 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
             showMessage("请在抬头界面输入额外必输字段信息");
             return;
         }
-        String transferKey = (String) SPrefUtil.getData(mBizType + mRefType, "0");
-        if ("1".equals(transferKey)) {
+        String state = (String) SPrefUtil.getData(mBizType + mRefType, "0");
+        if (!"0".equals(state)) {
             showMessage("本次采集已经过账,请先到数据明细界面进行数据上传操作");
             return;
         }
         etMaterialNum.setEnabled(true);
         //控制批次
         etSendBatchFlag.setEnabled(mIsOpenBatchManager);
-        etRecBatchFlag.setEnabled(mIsOpenBatchManager);
     }
 
     @Override
@@ -319,11 +309,11 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
         tvInvQuantity.setText("");
         tvLocQuantity.setText("");
         tvTotalQuantity.setText("");
-        if(mLocationAdapter != null) {
+        if (mLocationAdapter != null) {
             mInventoryDatas.clear();
             mLocationAdapter.notifyDataSetChanged();
         }
-        if(position <= 0) {
+        if (position <= 0) {
             return;
         }
         final RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
@@ -508,9 +498,8 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
      * 不论扫描的是否是同一个物料，都清除控件的信息。
      */
     private void clearAllUI() {
-        clearCommonUI(tvMaterialDesc, tvSendWork, tvActQuantity,
-                etSendBatchFlag, tvLocQuantity, etQuantity, tvLocQuantity, tvInvQuantity,
-                tvTotalQuantity, cbSingle, etRecLoc, etRecBatchFlag);
+        clearCommonUI(tvMaterialDesc, tvSendWork, tvActQuantity, etSendBatchFlag, tvLocQuantity,
+                etQuantity, tvLocQuantity, tvInvQuantity, tvTotalQuantity, cbSingle);
         //单据行
         if (mRefLineAdapter != null) {
             mRefLines.clear();
@@ -687,10 +676,7 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
             result.invId = mInvDatas.get(spSendInv.getSelectedItemPosition()).invId;
             result.materialId = lineData.materialId;
             result.location = mInventoryDatas.get(spSendLoc.getSelectedItemPosition()).location;
-            result.batchFlag = getString(etSendBatchFlag);
-            //接收仓位和批次
-            result.recLocatin = getString(etRecLoc);
-            result.recBatchFlag = getString(etRecBatchFlag);
+            result.batchFlag = getString(etSendBatchFlag).toUpperCase();
             result.quantity = getString(etQuantity);
             result.modifyFlag = "N";
 
@@ -739,6 +725,10 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
         super.retry(retryAction);
     }
 
+    @Override
+    public void _onPause() {
+        clearAllUI();
+    }
 
     /**
      * 子类返回获取库存类型 "0"表示代管库存,"1"表示正常库存

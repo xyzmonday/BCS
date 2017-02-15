@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.richfit.barcodesystemproduct.R;
@@ -39,6 +40,13 @@ public abstract class BaseASHeaderFragment extends BaseFragment<ASHeaderPresente
     RichEditText etTransferDate;
     @BindView(R.id.tv_supplier)
     TextView tvSupplier;
+    @BindView(R.id.tv_send_work)
+    TextView tvSendWork;
+    @BindView(R.id.ll_supplier)
+    protected LinearLayout llSupplier;
+    @BindView(R.id.ll_send_work)
+    protected LinearLayout llSendWork;
+
 
     @Override
     public void handleBarCodeScanResult(String type, String[] list) {
@@ -87,7 +95,7 @@ public abstract class BaseASHeaderFragment extends BaseFragment<ASHeaderPresente
     protected void getRefData(String refNum) {
         mRefData = null;
         clearAllUI();
-        mPresenter.getReference(refNum, mRefType, getBizType(), getMoveType(), Global.LOGIN_ID);
+        mPresenter.getReference(refNum, mRefType, mBizType, getMoveType(), Global.USER_ID);
     }
 
     /**
@@ -120,7 +128,7 @@ public abstract class BaseASHeaderFragment extends BaseFragment<ASHeaderPresente
     @Override
     public void getReferenceSuccess(ReferenceEntity refData) {
         SPrefUtil.saveData(mBizType + mRefType, "0");
-        refData.bizType = getBizType();
+        refData.bizType = mBizType;
         refData.moveType = getMoveType();
         refData.refType = mRefType;
         mRefData = refData;
@@ -210,6 +218,8 @@ public abstract class BaseASHeaderFragment extends BaseFragment<ASHeaderPresente
             tvRefNum.setText(mRefData.recordNum);
             //供应商
             tvSupplier.setText(mRefData.supplierNum);
+            //发出工厂
+            tvSendWork.setText(mRefData.workCode);
             //绑定额外字段
             bindExtraUI(mSubFunEntity.headerConfigs, mRefData.mapExt);
         }
@@ -253,17 +263,12 @@ public abstract class BaseASHeaderFragment extends BaseFragment<ASHeaderPresente
     public void retry(String action) {
         switch (action) {
             case Global.RETRY_LOAD_REFERENCE_ACTION:
-                mPresenter.getReference(getString(etRefNum), mRefType, getBizType(), getMoveType(), Global.LOGIN_ID);
+                mPresenter.getReference(getString(etRefNum), mRefType, mBizType, getMoveType(), Global.LOGIN_ID);
                 break;
         }
         super.retry(action);
     }
 
-    /*子类需实现的方法*/
-    /*返回业务类型*/
-    @CheckResult
-    @NonNull
-    protected abstract String getBizType();
 
     /*返回移动类型*/
     @CheckResult

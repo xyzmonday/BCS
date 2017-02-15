@@ -4,12 +4,13 @@ import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.module_movestore.basecollect_n.BaseNMSCollectFragment;
+import com.richfit.barcodesystemproduct.module_movestore.qingyang_301n.imp.QingYangNMS301CollectPresenterImp;
 
 /**
  * Created by monday on 2017/2/8.
  */
 
-public class QingYangNMS301CollectFragment extends BaseNMSCollectFragment {
+public class QingYangNMS301CollectFragment extends BaseNMSCollectFragment<QingYangNMS301CollectPresenterImp> {
 
     @Override
     public void initInjector() {
@@ -77,10 +78,5 @@ public class QingYangNMS301CollectFragment extends BaseNMSCollectFragment {
     @Override
     protected int getOrgFlag() {
         return getInteger(R.integer.orgSecond);
-    }
-
-    @Override
-    protected void checkLocation() {
-        checkLocationSuccess();
     }
 }

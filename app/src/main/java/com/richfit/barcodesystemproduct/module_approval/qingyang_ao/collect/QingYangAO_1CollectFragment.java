@@ -14,6 +14,10 @@ import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.BottomMenuAdapter;
 import com.richfit.barcodesystemproduct.camera.TakephotoActivity;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.domain.bean.BottomMenuEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 庆阳验收清单验收的数据采集模块，用户扫描物料后，仅仅提供拍照功能。
@@ -54,19 +58,8 @@ public class QingYangAO_1CollectFragment extends QingYangAOCollectFragment {
     public void showOperationMenuOnCollection(final String companyCode) {
         View rootView = LayoutInflater.from(mActivity).inflate(R.layout.menu_bottom, null);
         GridView menu = (GridView) rootView.findViewById(R.id.gridview);
-        BottomMenuAdapter adapter;
-        mMenuNames.clear();
-        //1：质量证明文件，2：技术附件，3：外观照片，4：其他
-        mMenuNames.add("质量证明文件");
-        mMenuNames.add("技术附件");
-        mMenuNames.add("外观照片");
-        mMenuNames.add("其他");
-        //确定拍照类型
-        for (int i = 0, size = mMenuNames.size(); i < size; i++) {
-            mTakePhotoTypes.add(i+1);
-        }
-
-        adapter = new BottomMenuAdapter(mActivity, R.layout.item_bottom_menu, mMenuNames, MENUS_IMAGES);
+        final List<BottomMenuEntity> menus = provideDefaultBottomMenu();
+        BottomMenuAdapter adapter = new BottomMenuAdapter(mActivity, R.layout.item_bottom_menu, menus);
         menu.setAdapter(adapter);
 
         final Dialog dialog = new Dialog(mActivity, R.style.MaterialDialogSheet);
@@ -77,9 +70,38 @@ public class QingYangAO_1CollectFragment extends QingYangAOCollectFragment {
         dialog.show();
 
         menu.setOnItemClickListener((adapterView, view, position, id) -> {
-            toTakePhoto(mMenuNames.get(position % mMenuNames.size()), mTakePhotoTypes.get(position));
+            toTakePhoto(menus.get(position).menuName,menus.get(position).takePhotoType);
             dialog.dismiss();
         });
+    }
+
+    @Override
+    public List<BottomMenuEntity> provideDefaultBottomMenu() {
+        List<BottomMenuEntity> menus = new ArrayList<>();
+        BottomMenuEntity menu = new BottomMenuEntity();
+        menu.menuName = "质量证明文件";
+        menu.menuImageRes = R.mipmap.icon_take_photo1;
+        menu.takePhotoType = 1;
+        menus.add(menu);
+
+        menu = new BottomMenuEntity();
+        menu.menuName = "技术附件";
+        menu.menuImageRes = R.mipmap.icon_take_photo2;
+        menu.takePhotoType = 2;
+        menus.add(menu);
+
+        menu = new BottomMenuEntity();
+        menu.menuName = "外观照片";
+        menu.menuImageRes = R.mipmap.icon_take_photo3;
+        menu.takePhotoType = 3;
+        menus.add(menu);
+
+        menu = new BottomMenuEntity();
+        menu.menuName = "其他";
+        menu.menuImageRes = R.mipmap.icon_take_photo4;
+        menu.takePhotoType = 5;
+        menus.add(menu);
+        return menus;
     }
 
     @Override

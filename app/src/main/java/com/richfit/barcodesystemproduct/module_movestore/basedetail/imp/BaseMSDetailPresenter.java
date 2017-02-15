@@ -7,13 +7,11 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
 import com.richfit.barcodesystemproduct.module.edit.EditActivity;
 import com.richfit.barcodesystemproduct.module.main.MainActivity;
 import com.richfit.barcodesystemproduct.module_movestore.basedetail.IMSDetailPresenter;
 import com.richfit.barcodesystemproduct.module_movestore.basedetail.IMSDetailView;
 import com.richfit.common_lib.basetreerv.RecycleTreeViewHelper;
-import com.richfit.common_lib.rxutils.RetryWhenNetworkException;
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
@@ -26,26 +24,21 @@ import com.richfit.domain.bean.TreeNode;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.FlowableEmitter;
-import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
  * Created by monday on 2017/2/10.
  */
 
-public class MSDetailPresenterImp extends BasePresenter<IMSDetailView>
+public abstract class BaseMSDetailPresenter extends BasePresenter<IMSDetailView>
         implements IMSDetailPresenter {
-    IMSDetailView mView;
 
-    @Inject
-    public MSDetailPresenterImp(@ContextLife("Activity") Context context) {
+    protected IMSDetailView mView;
+
+    public BaseMSDetailPresenter(Context context) {
         super(context);
     }
 
@@ -129,6 +122,7 @@ public class MSDetailPresenterImp extends BasePresenter<IMSDetailView>
     @Override
     public void editNode(ReferenceEntity refData, RefDetailEntity node,
                          String companyCode, String bizType, String refType, String subFunName) {
+
         if (refData != null) {
             TreeNode treeNode = node.getParent();
             if (treeNode != null && RefDetailEntity.class.isInstance(treeNode)) {
@@ -202,95 +196,7 @@ public class MSDetailPresenterImp extends BasePresenter<IMSDetailView>
         }
     }
 
-    @Override
-    public void submitData2BarcodeSystem(String transId, String bizType, String refType, String voucherDate,
-                                         int submitFlag) {
-        mView = getView();
-        mRepository.uploadCollectionData("", transId, bizType, refType, -1, voucherDate, "", "")
-                .retryWhen(new RetryWhenNetworkException(3, 3000))
-                .compose(TransformerHelper.io2main())
-                .subscribeWith(new RxSubscriber<String>(mContext, "正在过账数据...") {
-                    @Override
-                    public void _onNext(String message) {
-                        if (mView != null) {
-                            mView.showTransferedVisa(message);
-                        }
-                    }
 
-                    @Override
-                    public void _onNetWorkConnectError(String message) {
-                        if (mView != null) {
-                            mView.networkConnectError(Global.RETRY_TRANSFER_DATA_ACTION);
-                        }
-                    }
-
-                    @Override
-                    public void _onCommonError(String message) {
-                        if (mView != null) {
-                            mView.submitBarcodeSystemFail(message);
-                        }
-                    }
-
-                    @Override
-                    public void _onServerError(String code, String message) {
-                        if (mView != null) {
-                            mView.submitBarcodeSystemFail(message);
-                        }
-                    }
-
-                    @Override
-                    public void _onComplete() {
-                        if (mView != null) {
-                            mView.submitBarcodeSystemSuccess();
-                        }
-                    }
-                });
-    }
-
-    @Override
-    public void submitData2SAP(String transId, String bizType, String refType, String userId,
-                               String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap,
-                               int submitFlag) {
-        mView = getView();
-        RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, Global.USER_ID, voucherDate, flagMap, extraHeaderMap)
-                .retryWhen(new RetryWhenNetworkException(3, 3000))
-                .compose(TransformerHelper.io2main())
-                .subscribeWith(new RxSubscriber<String>(mContext, "正在上传数据...") {
-                    @Override
-                    public void _onNext(String s) {
-
-                    }
-
-                    @Override
-                    public void _onNetWorkConnectError(String message) {
-                        if (mView != null) {
-                            mView.networkConnectError(Global.RETRY_UPLOAD_DATA_ACTION);
-                        }
-                    }
-
-                    @Override
-                    public void _onCommonError(String message) {
-                        if (mView != null && !TextUtils.isEmpty(message)) {
-                            mView.submitSAPFail(message.split("_"));
-                        }
-                    }
-
-                    @Override
-                    public void _onServerError(String code, String message) {
-                        if (mView != null) {
-                            mView.submitSAPFail(new String[]{message});
-                        }
-                    }
-
-                    @Override
-                    public void _onComplete() {
-                        if (mView != null) {
-                            mView.submitSAPSuccess();
-                        }
-                    }
-                });
-        addSubscriber(subscriber);
-    }
 
     @Override
     public void showHeadFragmentByPosition(int position) {
@@ -391,17 +297,14 @@ public class MSDetailPresenterImp extends BasePresenter<IMSDetailView>
      * @return
      */
     protected Flowable<ArrayList<RefDetailEntity>> sortNodes(final ArrayList<RefDetailEntity> nodes) {
-        return Flowable.create(new FlowableOnSubscribe<ArrayList<RefDetailEntity>>() {
-            @Override
-            public void subscribe(FlowableEmitter<ArrayList<RefDetailEntity>> emitter) throws Exception {
-                try {
-                    ArrayList<RefDetailEntity> allNodes = RecycleTreeViewHelper.getSortedNodes(nodes, 1);
-                    emitter.onNext(allNodes);
-                    emitter.onComplete();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    emitter.onError(new Throwable(e.getMessage()));
-                }
+        return Flowable.create(emitter -> {
+            try {
+                ArrayList<RefDetailEntity> allNodes = RecycleTreeViewHelper.getSortedNodes(nodes, 1);
+                emitter.onNext(allNodes);
+                emitter.onComplete();
+            } catch (Exception e) {
+                e.printStackTrace();
+                emitter.onError(new Throwable(e.getMessage()));
             }
         }, BackpressureStrategy.BUFFER);
     }

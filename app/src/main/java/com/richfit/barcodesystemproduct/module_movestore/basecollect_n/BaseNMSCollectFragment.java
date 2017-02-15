@@ -16,7 +16,6 @@ import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.InvAdapter;
 import com.richfit.barcodesystemproduct.adapter.LocationAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
-import com.richfit.barcodesystemproduct.module_movestore.basecollect_n.imp.INMSCollectPresenterImp;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.SPrefUtil;
@@ -48,7 +47,7 @@ import rx.android.schedulers.AndroidSchedulers;
  * Created by monday on 2016/11/20.
  */
 
-public abstract class BaseNMSCollectFragment extends BaseFragment<INMSCollectPresenterImp, Object>
+public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> extends BaseFragment<P, Object>
         implements INMSCollectView {
 
     @BindView(R.id.et_material_num)
@@ -542,6 +541,20 @@ public abstract class BaseNMSCollectFragment extends BaseFragment<INMSCollectPre
      */
     @Override
     public boolean checkCollectedDataBeforeSave() {
+        if (TextUtils.isEmpty(mRefData.recWorkId)) {
+            showMessage("请先选择接收工厂");
+            return false;
+        }
+        if (TextUtils.isEmpty(mRefData.recInvId)) {
+            showMessage("请先选择发出库位");
+            return false;
+        }
+
+        if (TextUtils.isEmpty(getString(etRecLoc))) {
+            showMessage("请先输入接收仓位");
+            return false;
+        }
+
         if (TextUtils.isEmpty(getString(etMaterialNum))) {
             showMessage("物料编码为空");
             return false;
@@ -598,34 +611,10 @@ public abstract class BaseNMSCollectFragment extends BaseFragment<INMSCollectPre
         builder.show();
     }
 
-    /**
-     * 子类可以重写该方法，进行仓位检查
-     */
-    protected void checkLocation() {
-        if (TextUtils.isEmpty(mRefData.recWorkId)) {
-            showMessage("请先选择接收工厂");
+    public void saveCollectedData() {
+        if (!checkCollectedDataBeforeSave()) {
             return;
         }
-        if (TextUtils.isEmpty(mRefData.recInvId)) {
-            showMessage("请先选择发出库位");
-            return;
-        }
-
-        if (TextUtils.isEmpty(getString(etRecLoc))) {
-            showMessage("请先输入接收仓位");
-            return;
-        }
-        mPresenter.checkLocation("04", mRefData.recWorkId, mRefData.recInvId, getString(etRecBatchFlag),
-                getString(etRecLoc));
-    }
-
-    @Override
-    public void checkLocationFail(String message) {
-        showMessage(message);
-    }
-
-    @Override
-    public void checkLocationSuccess() {
         Flowable.create((FlowableOnSubscribe<ResultEntity>) emitter -> {
             ResultEntity result = new ResultEntity();
             result.businessType = mRefData.bizType;
@@ -653,14 +642,6 @@ public abstract class BaseNMSCollectFragment extends BaseFragment<INMSCollectPre
         }, BackpressureStrategy.BUFFER)
                 .compose(TransformerHelper.io2main())
                 .subscribe(result -> mPresenter.uploadCollectionDataSingle(result));
-
-    }
-
-    public void saveCollectedData() {
-        if (!checkCollectedDataBeforeSave()) {
-            return;
-        }
-        checkLocation();
     }
 
     @Override

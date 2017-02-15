@@ -14,6 +14,4 @@ public interface IASEditPresenter extends IPresenter<IASEditView> {
      * @param result:用户采集的数据(json格式)
      */
     void uploadCollectionDataSingle(ResultEntity result);
-
-    void checkLocation(String queryType, String workId, String invId, String batchFlag, String location);
 }

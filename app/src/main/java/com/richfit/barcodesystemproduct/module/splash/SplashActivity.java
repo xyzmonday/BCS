@@ -1,5 +1,6 @@
 package com.richfit.barcodesystemproduct.module.splash;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +12,7 @@ import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.SPrefUtil;
+import com.richfit.common_lib.utils.UiUtil;
 
 import java.util.concurrent.TimeUnit;
 
@@ -50,7 +52,16 @@ public class SplashActivity extends BaseActivity<SplashPresenterImp>
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setStatusBar(false);
         super.onCreate(savedInstanceState);
-        mPresenter.register();
+        Flowable.just(1)
+                .map(a->initAppConfig(getApplicationContext()))
+                .compose(TransformerHelper.io2main())
+                .subscribe(flag-> mPresenter.register());
+    }
+
+    private boolean initAppConfig(Context context) {
+        Global.macAddress = UiUtil.getMacAddress();
+        Global.serialNum = UiUtil.getDeviceId(context.getApplicationContext());
+        return true;
     }
 
     @Override
@@ -66,7 +77,7 @@ public class SplashActivity extends BaseActivity<SplashPresenterImp>
 
     @Override
     public void unRegister(String message) {
-        L.d("mac = " + Global.macAddress + "; serial = " + Global.serialNum);
+        L.e("mac = " + Global.macAddress + "; serial = " + Global.serialNum);
 
         new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE)
                 .setTitleText("提示")

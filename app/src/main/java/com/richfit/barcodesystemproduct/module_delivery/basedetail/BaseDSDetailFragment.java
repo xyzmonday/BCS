@@ -23,7 +23,6 @@ import com.richfit.barcodesystemproduct.module_delivery.basedetail.imp.DSDetailP
 import com.richfit.common_lib.animationrv.Animation.animators.FadeInDownAnimator;
 import com.richfit.common_lib.dialog.ShowErrorMessageDialog;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.AutoSwipeRefreshLayout;
 import com.richfit.domain.bean.RefDetailEntity;
@@ -31,11 +30,11 @@ import com.richfit.domain.bean.RowConfig;
 import com.richfit.domain.bean.TreeNode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
-import cn.pedant.SweetAlert.SweetAlertDialog;
+
+import static com.richfit.common_lib.utils.SPrefUtil.getData;
 
 /**
  * Created by monday on 2016/11/20.
@@ -43,10 +42,6 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresenterImp, RefDetailEntity>
         implements IDSDetailView, SwipeRefreshLayout.OnRefreshListener {
-
-    private static final String[] MENUS_NAMES = {"过账", "数据上传"};
-    private static final int[] MENUS_IMAGES = {R.mipmap.icon_transfer,
-            R.mipmap.icon_data_submit};
 
     @BindView(R.id.actQuantity)
     protected TextView actQuantityName;
@@ -58,7 +53,7 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
     HorizontalScrollView mHorizontalScroll;
     @BindView(R.id.root_id)
     LinearLayout mExtraContainer;
-    String mVisa;
+    protected String mTransNum;
     protected String mTransId;
 
     @Override
@@ -101,16 +96,8 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
             showMessage("未获取到单据类型");
             return;
         }
-
-
         if (mSubFunEntity.headerConfigs != null && !checkExtraData(mSubFunEntity.headerConfigs, mRefData.mapExt)) {
             showMessage("请在抬头界面输入额外必输字段信息");
-            return;
-        }
-
-        String transferFlag = (String) SPrefUtil.getData(mBizType + mRefType, "0");
-        if ("1".equals(transferFlag)) {
-            showMessage("本次采集已经过账,请先进行数据上传操作");
             return;
         }
         startAutoRefresh();
@@ -143,6 +130,11 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
      */
     @Override
     public void onRefresh() {
+        String transferFlag = (String) getData(mBizType + mRefType, "0");
+        if ("1".equals(transferFlag)) {
+            showMessage("本次采集已经过账,请先进行数据上传操作");
+            return;
+        }
         //单据抬头id
         final String refCodeId = mRefData.refCodeId;
         //业务类型
@@ -152,7 +144,7 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
         //清除缓存id
         mTransId = "";
         //清除过账凭证
-        mVisa = "";
+        mTransNum = "";
         //获取缓存累计数量不对
         mPresenter.getTransferInfo(mRefData, refCodeId, bizType, refType);
     }
@@ -169,7 +161,7 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
             }
         }
         DSYDetailAdapter adapter = new DSYDetailAdapter(mActivity, allNodes,
-                mSubFunEntity.parentNodeConfigs,mSubFunEntity.childNodeConfigs,
+                mSubFunEntity.parentNodeConfigs, mSubFunEntity.childNodeConfigs,
                 mCompanyCode);
         mRecycleView.setAdapter(adapter);
         adapter.setOnItemEditAndDeleteListener(this);
@@ -191,8 +183,9 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
      */
     @Override
     public void editNode(final RefDetailEntity node, int position) {
-        if (!TextUtils.isEmpty(mVisa)) {
-            showMessage("本次入库已经过账,不允许在进行修改");
+        String state = (String) getData(mBizType + mRefType, "0");
+        if (!"0".equals(state)) {
+            showMessage("已经过账,不允许修改");
             return;
         }
         mPresenter.editNode(mRefData, node, mCompanyCode, mBizType, mRefType,
@@ -201,8 +194,9 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
 
     @Override
     public void deleteNode(final RefDetailEntity node, int position) {
-        if (!TextUtils.isEmpty(mVisa)) {
-            showMessage("本次入库已经过账,不允许在进行删除");
+        String state = (String) getData(mBizType + mRefType, "0");
+        if (!"0".equals(state)) {
+            showMessage("已经过账,不允许删除");
             return;
         }
         TreeNode parentNode = node.getParent();
@@ -265,7 +259,7 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
         View rootView = LayoutInflater.from(mActivity).inflate(R.layout.menu_bottom, null);
         GridView menu = (GridView) rootView.findViewById(R.id.gridview);
         BottomMenuAdapter adapter = new BottomMenuAdapter(mActivity, R.layout.item_bottom_menu,
-                Arrays.asList(MENUS_NAMES), MENUS_IMAGES);
+                provideDefaultBottomMenu());
         menu.setAdapter(adapter);
 
         final Dialog dialog = new Dialog(mActivity, R.style.MaterialDialogSheet);
@@ -295,7 +289,7 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
      * 1.过账
      */
     private void submit2BarcodeSystem() {
-        String transferFlag = (String) SPrefUtil.getData(mBizType + mRefType, "0");
+        String transferFlag = (String) getData(mBizType + mRefType, "0");
         if ("1".equals(transferFlag)) {
             showMessage("本次采集已经过账,请先进行数据上传操作");
             return;
@@ -305,37 +299,30 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
 
     @Override
     public void showTransferedVisa(String visa) {
-        mVisa = visa;
+        mTransNum = visa;
     }
 
     @Override
     public void submitBarcodeSystemSuccess() {
-        showDialog(mVisa);
-        SPrefUtil.saveData(mBizType + mRefType, "1");
-    }
-
-    private void showDialog(String message) {
-        new SweetAlertDialog(mActivity, SweetAlertDialog.SUCCESS_TYPE)
-                .setTitleText("温馨提示")
-                .setContentText("过账成功;过账凭证" + message)
-                .show();
+        showSuccessDialog("过账成功" + mTransNum);
     }
 
     @Override
     public void submitBarcodeSystemFail(String message) {
         showMessage(message);
+        mTransNum = "";
     }
 
     /**
      * 2.数据上传
      */
     private void submit2SAP() {
-        if (TextUtils.isEmpty(mVisa)) {
+        if (TextUtils.isEmpty(mTransNum)) {
             showMessage("请先过账");
             return;
         }
         mPresenter.submitData2SAP(mTransId, mRefData.bizType, mRefType, Global.USER_ID,
-                mRefData.voucherDate,null, createExtraHeaderMap());
+                mRefData.voucherDate, null, createExtraHeaderMap());
     }
 
     /**
@@ -344,12 +331,6 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
     @Override
     public void submitSAPSuccess() {
         setRefreshing(false, "数据上传成功");
-        SPrefUtil.saveData(mBizType + mRefType, "0");
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && DSYDetailAdapter.class.isInstance(adapter)) {
-            DSYDetailAdapter detailAdapter = (DSYDetailAdapter) adapter;
-            detailAdapter.removeAllVisibleNodes();
-        }
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 

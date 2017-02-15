@@ -30,7 +30,7 @@ public class ShowErrorMessageDialog extends DialogFragment {
 
     public static ShowErrorMessageDialog newInstance(String[] messages) {
         Bundle bundle = new Bundle();
-        bundle.putStringArray(MESSAGES_KEY,messages);
+        bundle.putStringArray(MESSAGES_KEY, messages);
         ShowErrorMessageDialog fragment = new ShowErrorMessageDialog();
         fragment.setArguments(bundle);
         return fragment;
@@ -52,7 +52,7 @@ public class ShowErrorMessageDialog extends DialogFragment {
         mRvmessages = (RecyclerView) view.findViewById(R.id.time_line_recycler);
         //启用窗体的扩展特性。
         getDialog().requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
-        RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
+        RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mRvmessages.setLayoutManager(lm);
         return view;
     }
@@ -67,7 +67,7 @@ public class ShowErrorMessageDialog extends DialogFragment {
                 R.layout.item_show_message_title);
 
         //初始化适配器
-       String[] messages = getArguments().getStringArray(MESSAGES_KEY);
+        String[] messages = getArguments().getStringArray(MESSAGES_KEY);
 
         TimeLineAdapter adapter = new TimeLineAdapter(Arrays.asList(messages));
         mRvmessages.setAdapter(adapter);
