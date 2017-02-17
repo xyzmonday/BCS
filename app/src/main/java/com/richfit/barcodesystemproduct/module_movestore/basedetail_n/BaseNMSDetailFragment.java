@@ -23,10 +23,12 @@ import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.AutoSwipeRefreshLayout;
+import com.richfit.domain.bean.BottomMenuEntity;
 import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.RowConfig;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -38,6 +40,8 @@ import butterknife.BindView;
 public abstract class BaseNMSDetailFragment<P extends INMSDetailPresenter> extends BaseFragment<P, RefDetailEntity>
         implements INMSDetailView, SwipeRefreshLayout.OnRefreshListener {
 
+    private static final HashMap<String, Object> FLAGMAP = new HashMap<>();
+
     @BindView(R.id.sendInv)
     protected TextView sendInv;
     @BindView(R.id.sendLoc)
@@ -47,7 +51,7 @@ public abstract class BaseNMSDetailFragment<P extends INMSDetailPresenter> exten
     @BindView(R.id.recLoc)
     protected TextView recLoc;
     @BindView(R.id.recBatchFlag)
-    protected TextView recRecBatchFlag;
+    protected TextView recBatchFlag;
     @BindView(R.id.data_details_recycle_view)
     protected RecyclerView mRecycleView;
     @BindView(R.id.swipe_refresh_layout)
@@ -61,6 +65,8 @@ public abstract class BaseNMSDetailFragment<P extends INMSDetailPresenter> exten
     protected String mTransNum;
     //父子节点的配置信息结合
     protected ArrayList<RowConfig> mConfigs;
+    protected String mInspectionNum;
+    protected List<BottomMenuEntity> mBottomMenus;
 
     @Override
     protected int getContentId() {
@@ -152,8 +158,7 @@ public abstract class BaseNMSDetailFragment<P extends INMSDetailPresenter> exten
     public void onRefresh() {
         String transferKey = (String) SPrefUtil.getData(mBizType, "0");
         if ("1".equals(transferKey)) {
-            showMessage("本次采集已经过账,请先到数据明细界面进行数据上传操作");
-            mSwipeRefreshLayout.setRefreshing(false);
+            setRefreshing(false, "本次采集已经过账,请先进行数据上传操作");
             return;
         }
         //单据抬头id
@@ -173,8 +178,9 @@ public abstract class BaseNMSDetailFragment<P extends INMSDetailPresenter> exten
 
     @Override
     public void deleteNode(final RefDetailEntity node, int position) {
-        if (!TextUtils.isEmpty(mTransNum)) {
-            showMessage("本次移库操作已经过账");
+        String state = (String) SPrefUtil.getData(mBizType,"0");
+        if (!"0".equals(state)) {
+            showMessage("已经过账,不允许删除");
             return;
         }
         mPresenter.deleteNode("N", node.transId, node.transLineId, node.locationId,
@@ -213,8 +219,8 @@ public abstract class BaseNMSDetailFragment<P extends INMSDetailPresenter> exten
     public void showOperationMenuOnDetail(final String companyCode) {
         View rootView = LayoutInflater.from(mActivity).inflate(R.layout.menu_bottom, null);
         GridView menu = (GridView) rootView.findViewById(R.id.gridview);
-        BottomMenuAdapter adapter = new BottomMenuAdapter(mActivity, R.layout.item_bottom_menu,
-               provideDefaultBottomMenu());
+        mBottomMenus = provideDefaultBottomMenu();
+        BottomMenuAdapter adapter = new BottomMenuAdapter(mActivity, R.layout.item_bottom_menu, mBottomMenus);
         menu.setAdapter(adapter);
 
         final Dialog dialog = new Dialog(mActivity, R.style.MaterialDialogSheet);
@@ -228,12 +234,14 @@ public abstract class BaseNMSDetailFragment<P extends INMSDetailPresenter> exten
             switch (position) {
                 case 0:
                     //1.过账
-                    submit2BarcodeSystem();
+                    submit2BarcodeSystem(mBottomMenus.get(position).transToSapFlag);
                     break;
                 case 1:
-                    //2.数据上传
-                    submit2SAP();
-                    dialog.dismiss();
+                    submit2SAP(mBottomMenus.get(position).transToSapFlag);
+                    break;
+                case 3:
+                    //转储
+                    sapUpAndDownLocation(mBottomMenus.get(position).transToSapFlag);
                     break;
             }
             dialog.dismiss();
@@ -243,13 +251,16 @@ public abstract class BaseNMSDetailFragment<P extends INMSDetailPresenter> exten
     /**
      * 1.过账
      */
-    private void submit2BarcodeSystem() {
+    protected void submit2BarcodeSystem(String tranToSapFlag) {
         String transferFlag = (String) SPrefUtil.getData(mBizType, "0");
         if ("1".equals(transferFlag)) {
             showMessage("本次采集已经过账,请先进行数据上传操作");
             return;
         }
-        mPresenter.submitData2BarcodeSystem(mTransId, mRefData.bizType, mRefType, mRefData.voucherDate);
+        FLAGMAP.clear();
+        FLAGMAP.put("transToSapFlag", tranToSapFlag);
+        mPresenter.submitData2BarcodeSystem(mTransId, mRefData.bizType, mRefType, Global.USER_ID,
+                mRefData.voucherDate, FLAGMAP,createExtraHeaderMap());
     }
 
     @Override
@@ -261,13 +272,24 @@ public abstract class BaseNMSDetailFragment<P extends INMSDetailPresenter> exten
     /**
      * 2.数据上传
      */
-    private void submit2SAP() {
+    protected void submit2SAP(String tranToSapFlag) {
         if (TextUtils.isEmpty(mTransNum)) {
             showMessage("请先过账");
             return;
         }
+        FLAGMAP.clear();
+        FLAGMAP.put("transToSapFlag", tranToSapFlag);
         mPresenter.submitData2SAP(mTransId, mRefData.bizType, mRefType, Global.USER_ID,
-                mRefData.voucherDate, null, createExtraHeaderMap());
+                mRefData.voucherDate, FLAGMAP, createExtraHeaderMap());
+    }
+
+    @Override
+    public void showInspectionNum(String inspectionNum) {
+        mInspectionNum = inspectionNum;
+    }
+
+    private void sapUpAndDownLocation(String tranToSapFlag) {
+
     }
 
     @Override
@@ -284,10 +306,10 @@ public abstract class BaseNMSDetailFragment<P extends INMSDetailPresenter> exten
     public void retry(String retryAction) {
         switch (retryAction) {
             case Global.RETRY_TRANSFER_DATA_ACTION:
-                submit2BarcodeSystem();
+                submit2BarcodeSystem(mBottomMenus.get(0).transToSapFlag);
                 break;
             case Global.RETRY_UPLOAD_DATA_ACTION:
-                submit2SAP();
+                submit2SAP(mBottomMenus.get(1).transToSapFlag);
                 break;
         }
         super.retry(retryAction);

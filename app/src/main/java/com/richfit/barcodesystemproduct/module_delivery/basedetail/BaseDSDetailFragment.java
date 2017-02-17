@@ -132,7 +132,7 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
     public void onRefresh() {
         String transferFlag = (String) getData(mBizType + mRefType, "0");
         if ("1".equals(transferFlag)) {
-            showMessage("本次采集已经过账,请先进行数据上传操作");
+            setRefreshing(false,"本次采集已经过账,请先进行数据上传操作");
             return;
         }
         //单据抬头id

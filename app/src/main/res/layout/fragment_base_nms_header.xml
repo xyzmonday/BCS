@@ -13,6 +13,7 @@
         android:padding="5dp">
 
         <TextView
+            android:id="@+id/tv_send_work_name"
             style="@style/LeftTextViewItemStyle"
             android:text="@string/send_work" />
 
@@ -77,7 +78,6 @@
             android:layout_weight="2" />
     </LinearLayout>
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -89,8 +89,7 @@
             android:text="@string/transfer_date" />
 
         <com.richfit.common_lib.widget.RichEditText
-            android:id="@+id/et_guozhang_date"
-            style="@style/RightRichEditTextItemStyle"
-            android:enabled="false" />
+            android:id="@+id/et_transfer_date"
+            style="@style/RightRichEditTextItemStyle" />
     </LinearLayout>
 </LinearLayout>

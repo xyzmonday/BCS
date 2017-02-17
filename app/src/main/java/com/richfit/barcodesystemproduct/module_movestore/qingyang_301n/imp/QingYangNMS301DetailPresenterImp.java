@@ -15,10 +15,10 @@ import javax.inject.Inject;
  * Created by monday on 2017/2/15.
  */
 
-public class QingHaiNMS301DetailPresenterImp extends NMSDetailPresenterImp {
+public class QingYangNMS301DetailPresenterImp extends NMSDetailPresenterImp {
 
     @Inject
-    public QingHaiNMS301DetailPresenterImp(@ContextLife("Activity") Context context) {
+    public QingYangNMS301DetailPresenterImp(@ContextLife("Activity") Context context) {
         super(context);
     }
 

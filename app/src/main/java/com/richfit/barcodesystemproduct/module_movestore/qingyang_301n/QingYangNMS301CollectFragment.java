@@ -43,12 +43,28 @@ public class QingYangNMS301CollectFragment extends BaseNMSCollectFragment<QingYa
 
     @Override
     public boolean checkCollectedDataBeforeSave() {
-        if(isWareHouseSame && TextUtils.isEmpty(getString(etRecLoc))) {
+        //发出工厂
+        if (TextUtils.isEmpty(mRefData.workId)) {
+            showMessage("请先选择发出工厂");
+            return false;
+        }
+        //接收工厂
+        if (TextUtils.isEmpty(mRefData.recWorkId)) {
+            showMessage("请先选择接收工厂");
+            return false;
+        }
+        //检查发出批次
+        if (mIsOpenBatchManager && TextUtils.isEmpty(getString(etSendBatchFlag))) {
+            showMessage("发出批次为空");
+            return false;
+        }
+
+        if (isWareHouseSame && TextUtils.isEmpty(getString(etRecLoc))) {
             showMessage("请输入接收仓位");
             return false;
         }
 
-        if(mIsOpenBatchManager && TextUtils.isEmpty(getString(etRecBatchFlag))) {
+        if (mIsOpenBatchManager && TextUtils.isEmpty(getString(etRecBatchFlag))) {
             showMessage("请输入接收批次");
             return false;
         }
@@ -61,9 +77,10 @@ public class QingYangNMS301CollectFragment extends BaseNMSCollectFragment<QingYa
     }
 
     @Override
-    protected String getInventoryType() {
+    protected String getInventoryQueryType() {
         return getString(R.string.inventoryQueryTypePrecise);
     }
+
 
     @Override
     protected String getSpecialFlag() {

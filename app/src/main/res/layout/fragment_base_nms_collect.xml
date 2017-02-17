@@ -79,7 +79,7 @@
             android:padding="5dp">
 
             <TextView
-                android:id="@+id/send_batch_flag_name"
+                android:id="@+id/tv_send_batch_flag_name"
                 style="@style/LeftTextViewItemStyle"
                 android:text="@string/send_batch_flag" />
 
@@ -96,7 +96,7 @@
             android:padding="5dp">
 
             <TextView
-                android:id="@+id/send_inv_name"
+                android:id="@+id/tv_send_inv_name"
                 style="@style/LeftTextViewItemStyle"
                 android:text="@string/send_inv" />
 
@@ -116,7 +116,7 @@
             android:padding="5dp">
 
             <TextView
-                android:id="@+id/send_loc_name"
+                android:id="@+id/tv_send_loc_name"
                 style="@style/LeftTextViewItemStyle"
                 android:text="@string/send_loc" />
 

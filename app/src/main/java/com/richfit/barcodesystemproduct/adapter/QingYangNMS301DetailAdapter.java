@@ -1,6 +1,7 @@
 package com.richfit.barcodesystemproduct.adapter;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.common_lib.baseadapterrv.base.ViewHolder;
@@ -11,6 +12,8 @@ import com.richfit.domain.bean.RowConfig;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static com.richfit.barcodesystemproduct.R.id.materialNum;
 
 /**
  * Created by monday on 2016/11/22.
@@ -28,7 +31,7 @@ public class QingYangNMS301DetailAdapter extends CommonTreeAdapter<RefDetailEnti
     @Override
     protected void convert(ViewHolder holder, RefDetailEntity item, int position) {
         holder.setText(R.id.rowNum, String.valueOf(position + 1));
-        holder.setText(R.id.materialNum, item.materialNum);
+        holder.setText(materialNum, item.materialNum);
         holder.setText(R.id.materialDesc, item.materialDesc);
         holder.setText(R.id.materialGroup, item.materialGroup);
 
@@ -64,21 +67,18 @@ public class QingYangNMS301DetailAdapter extends CommonTreeAdapter<RefDetailEnti
     /**
      * 获取发出仓位和接收仓位列表
      *
-     * @param materialNum:物料编码
-     * @param invId:库存地点id
      * @param position:需要修改的子节点的位置
      * @param flag:0表示获取发出仓位,1:表示获取接收仓位
      * @return
      */
-    public ArrayList<String> getLocations(String materialNum, String invId, int position, int flag) {
+    public ArrayList<String> getLocations(int position, int flag) {
         ArrayList<String> locations = new ArrayList<>();
         for (int i = 0; i < mVisibleNodes.size(); i++) {
-            if (i == position)
-                continue;
             RefDetailEntity node = mVisibleNodes.get(i);
-            if (!node.materialNum.equals(materialNum) && !node.invId.equals(invId)) {
-                locations.add(flag == 0 ? node.location : node.recLocation);
+            if (i == position || TextUtils.isEmpty(node.location) || TextUtils.isEmpty(node.recLocation)) {
+                continue;
             }
+            locations.add(0 == flag ? node.location : node.recLocation);
         }
         return locations;
     }

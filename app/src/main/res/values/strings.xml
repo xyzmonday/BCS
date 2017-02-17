@@ -205,9 +205,4 @@
     <integer name="orgNorm">0</integer>
     <integer name="orgSecond">1</integer>
 
-    //明细界面过账组合
-    <integer name="detailSubmitDataType0">0</integer>
-    <integer name="detailSubmitDataType1">1</integer>
-    <integer name="detailSubmitDataType2">2</integer>
-
 </resources>

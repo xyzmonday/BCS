@@ -133,7 +133,7 @@ public abstract class BaseMSDetailFragment<P extends IMSDetailPresenter> extends
     public void onRefresh() {
         String state = (String) getData(mBizType + mRefType, "0");
         if (!"0".equals(state)) {
-            showMessage("本次采集已经过账,请先进行数据上传操作");
+            setRefreshing(false,"本次采集已经过账,请先进行数据上传操作");
             return;
         }
         //单据抬头id
@@ -269,7 +269,7 @@ public abstract class BaseMSDetailFragment<P extends IMSDetailPresenter> extends
         FLAGMAP.clear();
         FLAGMAP.put("transToSapFlag", tranToSapFlag);
         mPresenter.submitData2BarcodeSystem(mTransId, mBizType, mRefType, Global.USER_ID,
-                mRefData.voucherDate, FLAGMAP, createExtraHeaderMap(), getSubmitType());
+                mRefData.voucherDate, FLAGMAP, createExtraHeaderMap());
     }
 
     @Override
@@ -287,15 +287,11 @@ public abstract class BaseMSDetailFragment<P extends IMSDetailPresenter> extends
             showMessage("请先过账");
             return;
         }
-        if (2 == getSubmitType() && !TextUtils.isEmpty(mInspectionNum)) {
-            showMessage("您已经进行过数据上传");
-            return;
-        }
         FLAGMAP.clear();
         FLAGMAP.put("transToSapFlag", tranToSapFlag);
         mInspectionNum = "";
         mPresenter.submitData2SAP(mTransId, mRefData.bizType, mRefType, Global.USER_ID,
-                mRefData.voucherDate, FLAGMAP, createExtraHeaderMap(), getSubmitType());
+                mRefData.voucherDate, FLAGMAP, createExtraHeaderMap());
     }
 
     @Override
@@ -331,15 +327,5 @@ public abstract class BaseMSDetailFragment<P extends IMSDetailPresenter> extends
     }
 
     protected abstract String getSubFunName();
-
-    /**
-     * 返回底部菜单标题，一般来说包括了uploadCollectData,TransCollectData(包括了过账,上架或者下架)
-     * 现在的需求有3中组合一个是uploadCollectData+过账，下架，一个是uploadCollectData+上架或者下架，过账
-     * 最后是uploadCollectData，过账，下架。那么这里分别定义了3中状态。其中0表示第一种组合情况；
-     * 1表示第二种组合情况；2表示第三种组合情况。
-     *
-     * @return
-     */
-    protected abstract int getSubmitType();
 
 }

@@ -96,7 +96,7 @@ public class ShowAndTakePhotoFragment extends BaseFragment<ShowAndTakePhotoPrese
             isLocal = bundle.getBoolean(Global.EXTRA_IS_LOCAL_KEY, false);
 
             //构建图片的SD卡的缓存路径，该路径是操作操作图片的唯一标识。需要考虑针对整单拍照和针对
-            //整行拍照两种业务类型
+            //整单拍照两种业务类型
             if (!TextUtils.isEmpty(mRefNum) && TextUtils.isEmpty(mRefLineNum) && mTakePhotoType >= 0) {
                 mImageDir = isLocal ? FileUtil.getImageCacheDir(mActivity.getApplicationContext(),mRefNum, mTakePhotoType,true).getAbsolutePath() :
                         FileUtil.getImageCacheDir(mActivity.getApplicationContext(),mRefNum, mTakePhotoType,false).getAbsolutePath();

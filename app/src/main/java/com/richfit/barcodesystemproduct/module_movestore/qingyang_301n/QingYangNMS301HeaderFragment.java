@@ -20,9 +20,9 @@ public class QingYangNMS301HeaderFragment extends BaseNMSHeaderFragment {
     }
 
     @Override
-    public void showSendInvs(List<InvEntity> recInvs) {
+    public void showSendInvs(List<InvEntity> sendInvs) {
         mSendInvs.clear();
-        mSendInvs.addAll(recInvs);
+        mSendInvs.addAll(sendInvs);
         if (mSendInvAdapter == null) {
             mSendInvAdapter = new InvAdapter(mActivity, R.layout.item_simple_sp, mSendInvs);
             spSendInv.setAdapter(mSendInvAdapter);
@@ -37,9 +37,9 @@ public class QingYangNMS301HeaderFragment extends BaseNMSHeaderFragment {
     }
 
     @Override
-    public void showRecInvs(List<InvEntity> sendInvs) {
+    public void showRecInvs(List<InvEntity> recInvs) {
         mRecInvs.clear();
-        mRecInvs.addAll(sendInvs);
+        mRecInvs.addAll(recInvs);
         if (mRecInvAdapter == null) {
             mRecInvAdapter = new InvAdapter(mActivity, R.layout.item_simple_sp, mRecInvs);
             spRecInv.setAdapter(mRecInvAdapter);

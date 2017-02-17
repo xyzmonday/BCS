@@ -29,7 +29,6 @@ import javax.inject.Inject;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.subscribers.ResourceSubscriber;
 
@@ -248,17 +247,14 @@ public class ApprovalOtherDetailPresenterImp extends BasePresenter<IApprovalOthe
 
     private Flowable<String> readImagesFromLocalAndUpload(final String refNum, String refCodeId,
                                                           String userId, final boolean isLocal) {
-        return Flowable.create(new FlowableOnSubscribe<ArrayList<ImageEntity>>() {
-            @Override
-            public void subscribe(FlowableEmitter<ArrayList<ImageEntity>> emitter) throws Exception {
-                ArrayList<ImageEntity> images = mRepository.readImagesByRefNum(refNum, isLocal);
-                if (images == null || images.size() == 0) {
-                    emitter.onError(new Throwable("请先拍照"));
-                    return;
-                }
-                emitter.onNext(images);
-                emitter.onComplete();
+        return Flowable.create((FlowableOnSubscribe<ArrayList<ImageEntity>>) emitter -> {
+            ArrayList<ImageEntity> images = mRepository.readImagesByRefNum(refNum, isLocal);
+            if (images == null || images.size() == 0) {
+                emitter.onError(new Throwable("请先拍照"));
+                return;
             }
+            emitter.onNext(images);
+            emitter.onComplete();
         }, BackpressureStrategy.LATEST)
                 .flatMap(images -> Flowable.fromIterable(images))
                 .map(image -> wrapperImage(image, refCodeId, userId))

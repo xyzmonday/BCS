@@ -9,7 +9,7 @@ import com.richfit.barcodesystemproduct.adapter.QingYangNMS301DetailAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.barcodesystemproduct.module.edit.EditActivity;
 import com.richfit.barcodesystemproduct.module_movestore.basedetail_n.BaseNMSDetailFragment;
-import com.richfit.barcodesystemproduct.module_movestore.qingyang_301n.imp.QingHaiNMS301DetailPresenterImp;
+import com.richfit.barcodesystemproduct.module_movestore.qingyang_301n.imp.QingYangNMS301DetailPresenterImp;
 import com.richfit.domain.bean.BottomMenuEntity;
 import com.richfit.domain.bean.RefDetailEntity;
 
@@ -21,7 +21,7 @@ import java.util.List;
  * Created by monday on 2017/2/8.
  */
 
-public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment<QingHaiNMS301DetailPresenterImp> {
+public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment<QingYangNMS301DetailPresenterImp> {
 
     @Override
     public void initInjector() {
@@ -67,8 +67,8 @@ public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment<QingHaiN
         RecyclerView.Adapter adapter = mRecycleView.getAdapter();
         if (adapter != null && QingYangNMS301DetailAdapter.class.isInstance(adapter)) {
             QingYangNMS301DetailAdapter detailAdapter = (QingYangNMS301DetailAdapter) adapter;
-            ArrayList<String> sendLocations = detailAdapter.getLocations(node.materialNum, node.invId, position, 0);
-            ArrayList<String> recLocations = detailAdapter.getLocations(node.materialNum, node.invId, position, 1);
+            ArrayList<String> sendLocations = detailAdapter.getLocations(position, 0);
+            ArrayList<String> recLocations = detailAdapter.getLocations(position, 1);
             mPresenter.editNode(sendLocations, recLocations, node, EditActivity.class, mCompanyCode,
                     mBizType, mRefType, getSubFunName());
         }
@@ -76,7 +76,7 @@ public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment<QingHaiN
 
     @Override
     public void submitBarcodeSystemSuccess() {
-        setRefreshing(false, "数据上传成功");
+        setRefreshing(false, "过账成功");
         showSuccessDialog(mTransNum);
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
@@ -88,6 +88,11 @@ public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment<QingHaiN
 
     @Override
     public void submitSAPSuccess() {
+
+    }
+
+    @Override
+    public void showInspectionNum(String message) {
 
     }
 

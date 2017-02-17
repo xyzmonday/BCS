@@ -233,7 +233,7 @@ public abstract class BaseASHeaderFragment extends BaseFragment<ASHeaderPresente
 
     @Override
     public void clearAllUIAfterSubmitSuccess() {
-        clearCommonUI(etRefNum, tvRefNum);
+        clearCommonUI(etRefNum, tvRefNum, tvSendWork, tvSupplier);
         clearExtraUI(mSubFunEntity.headerConfigs);
         mRefData = null;
     }

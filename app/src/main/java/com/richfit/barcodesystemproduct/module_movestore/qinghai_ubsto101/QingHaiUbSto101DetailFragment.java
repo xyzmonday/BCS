@@ -114,10 +114,6 @@ public class QingHaiUbSto101DetailFragment extends BaseASDetailFragment<QingHaiU
         return "101移库";
     }
 
-    @Override
-    protected int getSubmitType() {
-        return getInteger(R.integer.detailSubmitDataType0);
-    }
 
     @Override
     public List<BottomMenuEntity> provideDefaultBottomMenu() {

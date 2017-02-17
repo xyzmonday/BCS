@@ -30,7 +30,7 @@ public class QingHaiUnSto351DetailPresenterImp extends BaseMSDetailPresenter {
 
     @Override
     public void submitData2BarcodeSystem(String transId, String bizType, String refType, String userId, String voucherDate,
-                                         Map<String, Object> flagMap, Map<String, Object> extraHeaderMap, int submitFlag) {
+                                         Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
         mView = getView();
         RxSubscriber<String> subscriber = Flowable.concat(mRepository.uploadCollectionData("", transId, bizType, refType, -1, voucherDate, "", userId),
                 mRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate, flagMap, extraHeaderMap))
@@ -78,7 +78,8 @@ public class QingHaiUnSto351DetailPresenterImp extends BaseMSDetailPresenter {
     }
 
     @Override
-    public void submitData2SAP(String transId, String bizType, String refType, String userId, String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap, int submitFlag) {
+    public void submitData2SAP(String transId, String bizType, String refType, String userId,
+                               String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
         mView = getView();
         RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, Global.USER_ID, voucherDate, flagMap, extraHeaderMap)
                 .retryWhen(new RetryWhenNetworkException(3, 3000))

@@ -301,12 +301,10 @@ public abstract class BaseNMSEditFragment<P extends INMSEditPresenter> extends B
     }
 
     private boolean isValidatedRecLocation(String recLocation) {
-
         if (mRecLocations == null || mRecLocations.size() == 0)
             return true;
         for (String location : mRecLocations) {
             if (recLocation.equalsIgnoreCase(location)) {
-
                 etRecLoc.setText("");
                 return false;
             }
@@ -333,8 +331,8 @@ public abstract class BaseNMSEditFragment<P extends INMSEditPresenter> extends B
             return false;
         }
 
-        if (isValidatedRecLocation(getString(etRecLoc))) {
-            showMessage("您修改的仓位不合理,请重新输入");
+        if (!isValidatedRecLocation(getString(etRecLoc))) {
+            showMessage("您输入的接收仓位不合理,请重新输入");
             return false;
         }
 

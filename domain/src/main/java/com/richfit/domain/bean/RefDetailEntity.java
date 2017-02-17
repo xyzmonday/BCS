@@ -7,7 +7,7 @@ import java.util.Map;
  * 单据明细实体类
  */
 
-public class RefDetailEntity extends TreeNode{
+public class RefDetailEntity extends TreeNode {
 
     /*单据号*/
     public String recordNum;

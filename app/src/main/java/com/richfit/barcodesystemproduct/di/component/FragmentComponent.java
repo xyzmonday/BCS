@@ -7,6 +7,10 @@ import com.richfit.barcodesystemproduct.camera.ShowAndTakePhotoFragment;
 import com.richfit.barcodesystemproduct.di.ContextLife;
 import com.richfit.barcodesystemproduct.di.FragmentScope;
 import com.richfit.barcodesystemproduct.di.module.FragmentModule;
+import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_103.QingHaiAS103CollectFragment;
+import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_103.QingHaiAS103DetailFragment;
+import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_103.QingHaiAS103EditFragment;
+import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_103.QingHaiAS103HeaderFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.collect.QingYangASNCollectFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.detail.QingYangASNDetailFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.edit.QingYangASNEditFragment;
@@ -25,6 +29,10 @@ import com.richfit.barcodesystemproduct.module_delivery.qingyang_dsy.QingYangDSY
 import com.richfit.barcodesystemproduct.module_delivery.qingyang_dsy.QingYangDSYHeaderFragment;
 import com.richfit.barcodesystemproduct.module_locationadjust.collect.LACollectFragment;
 import com.richfit.barcodesystemproduct.module_locationadjust.header.LAHeaderFragment;
+import com.richfit.barcodesystemproduct.module_movestore.qinghai_311n.QingHaiNMS311CollectFragment;
+import com.richfit.barcodesystemproduct.module_movestore.qinghai_311n.QingHaiNMS311DetailFragment;
+import com.richfit.barcodesystemproduct.module_movestore.qinghai_311n.QingHaiNMS311EditFragment;
+import com.richfit.barcodesystemproduct.module_movestore.qinghai_311n.QingHaiNMS311HeaderFragment;
 import com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto101.QingHaiUbSto101CollectFragment;
 import com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto101.QingHaiUbSto101DetailFragment;
 import com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto101.QingHaiUbSto101EditFragment;
@@ -84,6 +92,17 @@ public interface FragmentComponent {
     void inject(QingHaiUbSto101DetailFragment fragment);
     void inject(QingHaiUbSto101CollectFragment fragment);
     void inject(QingHaiUbSto101EditFragment fragment);
+
+    void inject(QingHaiNMS311HeaderFragment fragment);
+    void inject(QingHaiNMS311DetailFragment fragment);
+    void inject(QingHaiNMS311CollectFragment fragment);
+    void inject(QingHaiNMS311EditFragment fragment);
+
+    void inject(QingHaiAS103HeaderFragment fragment);
+    void inject(QingHaiAS103CollectFragment fragment);
+    void inject(QingHaiAS103DetailFragment fragment);
+    void inject(QingHaiAS103EditFragment fragment);
+
 
     void inject(LAHeaderFragment fragment);
     void inject(LACollectFragment fragment);

@@ -87,4 +87,13 @@
     <dimen name="len_172">172dp</dimen>
     <dimen name="len_224">224dp</dimen>
     <dimen name="len_256">256dp</dimen>
+
+    <dimen name="round_corner">8dp</dimen>
+    <dimen name="line_1px">1px</dimen>
+
+    <dimen name="btn_txt_size">14sp</dimen>
+    <dimen name="title_txt_size">17sp</dimen>
+    <dimen name="msg_txt_size">14sp</dimen>
+    <dimen name="item_txt_size">14sp</dimen>
+    <dimen name="input_txt_size">14sp</dimen>
 </resources>

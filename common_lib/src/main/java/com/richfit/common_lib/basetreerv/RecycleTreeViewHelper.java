@@ -79,7 +79,6 @@ public class RecycleTreeViewHelper {
      */
     public static <T extends TreeNode> List<T> filterVisibleNodes(List<T> nodes) {
         List<T> result = new ArrayList<>();
-
         for (T node : nodes) {
             if (node.isRoot() || node.isParentExpand()) {
 //                setNodeIcon(node);

@@ -16,10 +16,10 @@ public interface INMSHeaderView extends BaseView {
     void showWorks(List<WorkEntity> works);
     void loadWorksFail(String message);
 
-    void showSendInvs(List<InvEntity> invs);
+    void showSendInvs(List<InvEntity> sendInvs);
     void loadSendInvsFail(String message);
 
-    void showRecInvs(List<InvEntity> invs);
+    void showRecInvs(List<InvEntity> recInvs);
     void loadRecInvsFail(String message);
 
     void deleteCacheSuccess(String message);

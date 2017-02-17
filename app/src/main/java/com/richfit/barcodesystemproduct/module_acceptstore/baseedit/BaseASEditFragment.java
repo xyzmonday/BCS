@@ -66,7 +66,6 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
     //是否上架（直接通过父节点的标志位判断即可）
     boolean isNLocation;
     Map<String, Object> mExtraLocationMap;
-    boolean isLocationChecked;
 
     @Override
     protected int getContentId() {
@@ -117,12 +116,39 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
     }
 
     /**
+     * 用户修改的仓位不允许与其他子节点的仓位一致
+     *
+     * @return
+     */
+    protected boolean isValidatedLocation(String location) {
+        if (TextUtils.isEmpty(location)) {
+            showMessage("请输入修改的仓位");
+            return false;
+        }
+        if (mLocations == null || mLocations.size() == 0)
+            return true;
+        for (String str : mLocations) {
+            if (str.equalsIgnoreCase(location)) {
+                showMessage("您修改的仓位不合理,请重新输入");
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /**
      * 保存修改数据前的检查，注意这里之类必须根据业务检查仓位
      *
      * @return
      */
     @Override
     public boolean checkCollectedDataBeforeSave() {
+
+        if(!isValidatedLocation(getString(etLocation))) {
+            return false;
+        }
+
         if (TextUtils.isEmpty(getString(etQuantity))) {
             showMessage("请输入入库数量");
             return false;

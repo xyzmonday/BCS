@@ -103,7 +103,7 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
     /*缓存的仓位级别的额外字段*/
     Map<String, Object> mExtraLocationMap;
     //校验仓位是否存在，如果false表示校验该仓位不存在或者没有校验该仓位，不允许保存数据
-    boolean isLocationChecked = false;
+    protected boolean isLocationChecked = false;
 
     @Override
     protected int getContentId() {
@@ -128,7 +128,7 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
             final String batchFlag = list[11];
             if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
                 //如果已经选中单品，那么说明已经扫描过一次。必须保证每一次的物料都一样
-                getTransferSingle(getString(etBatchFlag), getString(etLocation));
+                getTransferSingle(batchFlag, getString(etLocation));
             } else if (!cbSingle.isChecked()) {
                 //在非单品的情况下，直接先清空控件
                 loadMaterialInfo(materialNum, batchFlag);
@@ -140,7 +140,7 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
         } else if (list != null && list.length == 1 & !cbSingle.isChecked()) {
             final String location = list[0];
             etLocation.setText(location);
-            getTransferSingle(getString(etBatchFlag), getString(etLocation));
+            getTransferSingle(getString(etBatchFlag), location);
         }
     }
 
@@ -230,6 +230,7 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
         }
         etMaterialNum.setEnabled(true);
         etBatchFlag.setEnabled(mIsOpenBatchManager);
+        etLocation.setEnabled(!isNLocation);
     }
 
     /**
@@ -305,7 +306,6 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
         //如果多行设置颜色
         spRefLine.setBackgroundColor(ContextCompat.getColor(mActivity, mRefLines.size() >= 3 ?
                 R.color.colorPrimary : R.color.white));
-
         //默认选择第一个
         spRefLine.setSelection(1);
     }
@@ -362,11 +362,6 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
             }
         if (TextUtils.isEmpty(location)) {
             showMessage("请先输入上架仓位");
-            return;
-        }
-
-        if (location.length() > 10) {
-            showMessage("您输入的仓位长度大于10位,请重新输入");
             return;
         }
         final RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
@@ -656,7 +651,7 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
             result.workId = lineData.workId;
             result.invId = mInvDatas.get(spInv.getSelectedItemPosition()).invId;
             result.materialId = lineData.materialId;
-            result.location = getString(etLocation);
+            result.location = isNLocation ? "barcode" : getString(etLocation);
             result.batchFlag = getString(etBatchFlag);
             result.quantity = getString(etQuantity);
             result.modifyFlag = "N";

@@ -118,11 +118,11 @@ public class FileUtil {
         if (isAvailable()) {
             sb.append(context.getExternalCacheDir().getAbsolutePath());//sdcard/android/data/appname/cache
             sb.append(File.separator);
-            sb.append(isLocal ? LOCAL_INSPECTION_IMAGE_CACHE_ROOT :INSPECTION_IMAGE_CACHE_ROOT);
+            sb.append(isLocal ? LOCAL_INSPECTION_IMAGE_CACHE_ROOT : INSPECTION_IMAGE_CACHE_ROOT);
         } else {
             sb.append(context.getCacheDir().getAbsolutePath());//data/data/appname/cache
             sb.append(File.separator);
-            sb.append(isLocal ? LOCAL_INSPECTION_IMAGE_CACHE_ROOT :INSPECTION_IMAGE_CACHE_ROOT);
+            sb.append(isLocal ? LOCAL_INSPECTION_IMAGE_CACHE_ROOT : INSPECTION_IMAGE_CACHE_ROOT);
         }
         sb.append(File.separator);
         sb.append(refNum);
@@ -142,11 +142,11 @@ public class FileUtil {
         if (isAvailable()) {
             sb.append(context.getExternalCacheDir().getAbsolutePath());//sdcard/android/data/appname/cache
             sb.append(File.separator);
-            sb.append(isLocal ? LOCAL_INSPECTION_IMAGE_CACHE_ROOT :INSPECTION_IMAGE_CACHE_ROOT);
+            sb.append(isLocal ? LOCAL_INSPECTION_IMAGE_CACHE_ROOT : INSPECTION_IMAGE_CACHE_ROOT);
         } else {
             sb.append(context.getCacheDir().getAbsolutePath());//data/data/appname/cache
             sb.append(File.separator);
-            sb.append(isLocal ? LOCAL_INSPECTION_IMAGE_CACHE_ROOT :INSPECTION_IMAGE_CACHE_ROOT);
+            sb.append(isLocal ? LOCAL_INSPECTION_IMAGE_CACHE_ROOT : INSPECTION_IMAGE_CACHE_ROOT);
         }
         sb.append(File.separator);
         sb.append(refNum);
@@ -165,17 +165,17 @@ public class FileUtil {
      * @param refNum：单据号
      * @return
      */
-    public static File getImageCacheDir(Context context, final String refNum,final boolean isLocal) {
+    public static File getImageCacheDir(Context context, final String refNum, final boolean isLocal) {
         File cacheDir = null;
         StringBuilder sb = new StringBuilder();
         if (isAvailable()) {
             sb.append(context.getExternalCacheDir().getAbsolutePath());//sdcard/android/data/appname/cache
             sb.append(File.separator);
-            sb.append(isLocal ? LOCAL_INSPECTION_IMAGE_CACHE_ROOT :INSPECTION_IMAGE_CACHE_ROOT);
+            sb.append(isLocal ? LOCAL_INSPECTION_IMAGE_CACHE_ROOT : INSPECTION_IMAGE_CACHE_ROOT);
         } else {
             sb.append(context.getCacheDir().getAbsolutePath());//data/data/appname/cache
             sb.append(File.separator);
-            sb.append(isLocal ? LOCAL_INSPECTION_IMAGE_CACHE_ROOT :INSPECTION_IMAGE_CACHE_ROOT);
+            sb.append(isLocal ? LOCAL_INSPECTION_IMAGE_CACHE_ROOT : INSPECTION_IMAGE_CACHE_ROOT);
         }
         sb.append(File.separator);
         sb.append(refNum);

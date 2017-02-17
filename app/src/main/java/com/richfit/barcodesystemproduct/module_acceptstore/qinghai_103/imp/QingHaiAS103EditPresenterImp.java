@@ -1,9 +1,9 @@
-package com.richfit.barcodesystemproduct.module_movestore.qingyang_301n.imp;
+package com.richfit.barcodesystemproduct.module_acceptstore.qinghai_103.imp;
 
 import android.content.Context;
 
 import com.richfit.barcodesystemproduct.di.ContextLife;
-import com.richfit.barcodesystemproduct.module_movestore.baseedit_n.imp.NMSEditPresenterImp;
+import com.richfit.barcodesystemproduct.module_acceptstore.baseedit.imp.ASEditPresenterImp;
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
@@ -15,15 +15,16 @@ import io.reactivex.Flowable;
 import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
- * Created by monday on 2017/2/15.
+ * Created by monday on 2017/2/17.
  */
 
-public class QingHaiNMS301EditPresenterImp extends NMSEditPresenterImp{
+public class QingHaiAS103EditPresenterImp extends ASEditPresenterImp {
 
     @Inject
-    public QingHaiNMS301EditPresenterImp(@ContextLife("Activity") Context context) {
+    public QingHaiAS103EditPresenterImp(@ContextLife("Activity") Context context) {
         super(context);
     }
+
     @Override
     public void uploadCollectionDataSingle(ResultEntity result) {
         mView = getView();
@@ -39,32 +40,31 @@ public class QingHaiNMS301EditPresenterImp extends NMSEditPresenterImp{
                             @Override
                             public void _onNetWorkConnectError(String message) {
                                 if (mView != null) {
-                                    mView.networkConnectError(Global.RETRY_SAVE_COLLECTION_DATA_ACTION);
+                                    mView.networkConnectError(Global.RETRY_EDIT_DATA_ACTION);
                                 }
                             }
 
                             @Override
                             public void _onCommonError(String message) {
                                 if (mView != null) {
-                                    mView.saveCollectedDataFail(message);
+                                    mView.saveEditedDataFail(message);
                                 }
                             }
 
                             @Override
                             public void _onServerError(String code, String message) {
                                 if (mView != null) {
-                                    mView.saveCollectedDataFail(message);
+                                    mView.saveEditedDataFail(message);
                                 }
                             }
 
                             @Override
                             public void _onComplete() {
                                 if (mView != null) {
-                                    mView.saveCollectedDataSuccess();
+                                    mView.saveEditedDataSuccess("修改成功");
                                 }
                             }
                         });
         addSubscriber(subscriber);
     }
-
 }

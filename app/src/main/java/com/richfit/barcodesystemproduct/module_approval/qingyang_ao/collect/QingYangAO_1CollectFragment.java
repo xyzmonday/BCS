@@ -33,6 +33,10 @@ public class QingYangAO_1CollectFragment extends QingYangAOCollectFragment {
             showMessage("请先在抬头界面获取单据数据");
             return;
         }
+        if(TextUtils.isEmpty(mRefData.recordNum)) {
+            showMessage("请先在抬头界面获取单据数据");
+            return;
+        }
         if (TextUtils.isEmpty(mRefData.refType)) {
             showMessage("请先在抬头界面获取单据数据");
             return;
@@ -99,13 +103,17 @@ public class QingYangAO_1CollectFragment extends QingYangAOCollectFragment {
         menu = new BottomMenuEntity();
         menu.menuName = "其他";
         menu.menuImageRes = R.mipmap.icon_take_photo4;
-        menu.takePhotoType = 5;
+        menu.takePhotoType = 4;
         menus.add(menu);
         return menus;
     }
 
     @Override
     protected void toTakePhoto(String menuName, int takePhotoType) {
+        if (!etMaterialNum.isEnabled()) {
+            showMessage("请先获取单据数据");
+            return;
+        }
         Intent intent = new Intent(mActivity, TakephotoActivity.class);
         Bundle bundle = new Bundle();
         //入库的子菜单的名称

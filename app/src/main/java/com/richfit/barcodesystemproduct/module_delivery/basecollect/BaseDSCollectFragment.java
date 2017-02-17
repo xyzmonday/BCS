@@ -111,12 +111,7 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
             final String materialNum = list[2];
             final String batchFlag = list[11];
             if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
-                mPresenter.getInventoryInfo(getInventoryQueryType(), getLineData(mSelectedRefLineNum).workId,
-                        mInvDatas.get(spInv.getSelectedItemPosition()).invId,
-                        "", "", "",
-                        getString(etMaterialNum),
-                        etMaterialNum.getTag().toString(),
-                        "", batchFlag, getInvType());
+               getTransferSingle(spLocation.getSelectedItemPosition());
             } else if (!cbSingle.isChecked()) {
                 //非单品模式下，先清除控件
                 loadMaterialInfo(materialNum, batchFlag);
@@ -154,7 +149,7 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
         /*监测批次修改，如果修改了批次那么需要重新刷新库存信息和用户已经输入的信息.
          这里需要注意的是，如果库存地点没有初始化完毕，修改批次不刷新UI。*/
         RxTextView.textChanges(etBatchFlag)
-                .filter(str -> !TextUtils.isEmpty(getString(etMaterialNum)))
+                .filter(str -> !TextUtils.isEmpty(str))
                 .debounce(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
                 .subscribe(batch -> resetCommonUIPartly());
 
@@ -177,7 +172,7 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
                         position.intValue() <= mInventoryDatas.size() - 1))
                 .subscribe(position -> {
                     tvInvQuantity.setText(mInventoryDatas.get(position).invQuantity);
-                    getTransferSingle(getString(etBatchFlag), mInventoryDatas.get(position).location);
+                    getTransferSingle(position);
                 });
 
        /*单品(注意单品仅仅控制实收数量，累计数量是由行信息里面控制)*/
@@ -380,6 +375,9 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
     @Override
     public void showInventory(List<InventoryEntity> list) {
         mInventoryDatas.clear();
+        InventoryEntity tmp = new InventoryEntity();
+        tmp.location = "请选择";
+        mInventoryDatas.add(tmp);
         mInventoryDatas.addAll(list);
         if (mLocationAdapter == null) {
             mLocationAdapter = new LocationAdapter(mActivity, R.layout.item_simple_sp, mInventoryDatas);
@@ -398,8 +396,14 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
     /**
      * 获取单条缓存
      */
-    protected void getTransferSingle(String batchFlag, String location) {
-
+    protected void getTransferSingle(int position) {
+        final String invQuantity = mInventoryDatas.get(position).invQuantity;
+        final String location = mInventoryDatas.get(position).location;
+        final String batchFlag = getString(etBatchFlag);
+        if (position <= 0) {
+            resetLocation();
+            return;
+        }
         if (spRefLine.getSelectedItemPosition() == 0) {
             showMessage("请先选择单据行");
             return;
@@ -419,8 +423,8 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
             showMessage("请先输入上架仓位");
             return;
         }
+        tvInvQuantity.setText(invQuantity);
         final RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
-
         final String refCodeId = mRefData.refCodeId;
         final String refType = mRefData.refType;
         final String bizType = mRefData.bizType;
@@ -428,6 +432,13 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
 
         mPresenter.getTransferInfoSingle(refCodeId, refType, bizType, refLineId,
                 batchFlag, location, Global.USER_ID);
+    }
+
+    private void resetLocation() {
+        spLocation.setSelection(0,true);
+        tvInvQuantity.setText("");
+        tvLocQuantity.setText("");
+        tvTotalQuantity.setText("");
     }
 
     /**
@@ -640,14 +651,14 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
             //是否与父节点的发出批次一致
             if (mIsOpenBatchManager && !TextUtils.isEmpty(lineData.batchFlag)) {
                 if (!lineData.batchFlag.equalsIgnoreCase(getString(etBatchFlag))) {
-                    showMessage("输入发出批次有误");
+                    showMessage("输入批次有误");
                     return false;
                 }
             }
 
             if (mIsOpenBatchManager && !TextUtils.isEmpty(mCachedBatchFlag)) {
                 if (!mCachedBatchFlag.equalsIgnoreCase(getString(etBatchFlag))) {
-                    showMessage("输入发出批次有误");
+                    showMessage("输入批次有误");
                     return false;
                 }
             }
@@ -756,7 +767,7 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
         switch (retryAction) {
             //获取单条缓存失败
             case Global.RETRY_LOAD_SINGLE_CACHE_ACTION:
-                getTransferSingle(getString(etBatchFlag), mInventoryDatas.get(spLocation.getSelectedItemPosition()).location);
+                getTransferSingle(spLocation.getSelectedItemPosition());
                 break;
         }
         super.retry(retryAction);

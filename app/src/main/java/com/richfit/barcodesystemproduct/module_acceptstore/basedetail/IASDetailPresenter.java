@@ -5,6 +5,7 @@ import com.richfit.common_lib.IInterface.IPresenter;
 import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.ReferenceEntity;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -39,12 +40,13 @@ public interface IASDetailPresenter extends IPresenter<IASDetailView> {
     /**
      * 修改子节点
      *
+     * @param locations:对于没有父子节点的明细需要传入已经上架的仓位
      * @param refData：单据数据
      * @param node：需要修改的子节点
      * @param ：subFunName子功能编码
      */
-    void editNode(ReferenceEntity refData, RefDetailEntity node, String companyCode, String bizType,
-                  String refType, String subFunName);
+    void editNode(ArrayList<String> locations, ReferenceEntity refData, RefDetailEntity node, String companyCode,
+                  String bizType, String refType, String subFunName,int position);
 
     /**
      * 上传入库明细到条码系统
@@ -54,7 +56,7 @@ public interface IASDetailPresenter extends IPresenter<IASDetailView> {
      * @param voucherDate:过账日期
      */
     void submitData2BarcodeSystem(String transId, String bizType, String refType, String userId, String voucherDate,
-                                  Map<String, Object> flagMap, Map<String, Object> extraHeaderMap, int submitFlag);
+                                  Map<String, Object> flagMap, Map<String, Object> extraHeaderMap);
 
     /**
      * 提交数据到sap
@@ -65,7 +67,7 @@ public interface IASDetailPresenter extends IPresenter<IASDetailView> {
      * @param userId：用户id
      */
     void submitData2SAP(String transId, String bizType, String refType, String userId, String voucherDate,
-                        Map<String, Object> flagMap, Map<String, Object> extraHeaderMap, int submitFlag);
+                        Map<String, Object> flagMap, Map<String, Object> extraHeaderMap);
 
     /**
      * sap上下架处理
@@ -81,6 +83,7 @@ public interface IASDetailPresenter extends IPresenter<IASDetailView> {
      */
     void sapUpAndDownLocation(String transId, String bizType, String refType, String userId, String voucherDate,
                               Map<String, Object> flagMap, Map<String, Object> extraHeaderMap, int submitFlag);
+
     /**
      * 数据提交到sap后，从数据明细界面跳转到抬头界面
      *

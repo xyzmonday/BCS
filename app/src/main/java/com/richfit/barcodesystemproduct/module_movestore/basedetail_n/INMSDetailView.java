@@ -67,4 +67,6 @@ public interface INMSDetailView extends BaseView {
      */
     void submitSAPFail(String[] messages);
 
+    void showInspectionNum(String message);
+
 }

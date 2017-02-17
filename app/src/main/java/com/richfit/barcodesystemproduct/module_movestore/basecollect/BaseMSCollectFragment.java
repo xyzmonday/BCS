@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -75,6 +76,14 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
     CheckBox cbSingle;
     @BindView(R.id.tv_total_quantity)
     TextView tvTotalQuantity;
+    @BindView(R.id.et_rec_loc)
+    protected EditText etRecLoc;
+    @BindView(R.id.et_rec_batch_flag)
+    protected EditText etRecBatchFlag;
+    @BindView(R.id.ll_rec_location)
+    protected LinearLayout llRecLocation;
+    @BindView(R.id.ll_rec_batch)
+    protected LinearLayout llRecBatch;
 
     /*单据行选项*/
     private List<String> mRefLines;
@@ -92,11 +101,51 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
     /*缓存的仓位级别的额外字段*/
     private Map<String, Object> mExtraLocationMap;
 
+    /**
+     * 处理扫描
+     *
+     * @param type
+     * @param list
+     */
+    @Override
+    public void handleBarCodeScanResult(String type, String[] list) {
+        if (list != null && list.length >= 12) {
+            if (!etMaterialNum.isEnabled()) {
+                showMessage("请先在抬头界面获取相关数据");
+                return;
+            }
+            final String materialNum = list[2];
+            final String batchFlag = list[11];
+            if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
+                //如果已经选中单品，那么说明已经扫描过一次。必须保证每一次的物料都一样
+                getTransferSingle(spSendLoc.getSelectedItemPosition());
+            } else if (!cbSingle.isChecked()) {
+                clearAllUI();
+                loadMaterialInfo(materialNum, batchFlag);
+            }
+        } else if (list != null && list.length == 1 & !cbSingle.isChecked()) {
+            final String location = list[0];
+            if (etRecLoc.isFocused()) {
+                etRecLoc.setText(location);
+                return;
+            }
+            //扫描发出仓位
+            if (spSendLoc.getAdapter() != null) {
+                final int size = mInventoryDatas.size();
+                for (int i = 0; i < size; i++) {
+                    if (mInventoryDatas.get(i).location.equalsIgnoreCase(location)) {
+                        spSendLoc.setSelection(i);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     protected int getContentId() {
         return R.layout.fragment_base_ms_collect;
     }
-
 
     @Override
     public void initVariable(Bundle savedInstanceState) {
@@ -126,7 +175,7 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
         /*监测批次修改，如果修改了批次那么需要重新刷新库存信息和用户已经输入的信息.
          这里需要注意的是，如果库存地点没有初始化完毕，修改批次不刷新UI。*/
         RxTextView.textChanges(etSendBatchFlag)
-                .filter(str -> !TextUtils.isEmpty(getString(etMaterialNum)))
+                .filter(str -> !TextUtils.isEmpty(str))
                 .debounce(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe(batch -> resetCommonUIPartly());
 
@@ -147,10 +196,7 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
                 .itemSelections(spSendLoc)
                 .filter(position -> (mInventoryDatas != null && mInventoryDatas.size() > 0 &&
                         position.intValue() < mInventoryDatas.size()))
-                .subscribe(position -> {
-                    tvInvQuantity.setText(mInventoryDatas.get(position).invQuantity);
-                    getTransferSingle(getString(etSendBatchFlag), mInventoryDatas.get(position).location);
-                });
+                .subscribe(position -> getTransferSingle(position));
 
        /*单品(注意单品仅仅控制实收数量，累计数量是由行信息里面控制)*/
         cbSingle.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -189,12 +235,10 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
             showMessage("请先在抬头界面获取单据数据");
             return;
         }
-
         if (isEmpty(mRefData.bizType)) {
             showMessage("未获取到业务类型");
             return;
         }
-
         if (isEmpty(mRefData.moveType)) {
             showMessage("未获取到移动类型");
             return;
@@ -318,11 +362,6 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
         }
         final RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
         final InvEntity invEntity = mInvDatas.get(position);
-
-        if (mIsOpenBatchManager && TextUtils.isEmpty(getString(etSendBatchFlag))) {
-            showMessage("请输入发出批次");
-            return;
-        }
         mPresenter.getInventoryInfo(getInventoryQueryType(), lineData.workId, invEntity.invId,
                 lineData.workCode, invEntity.invCode, "", getString(etMaterialNum),
                 lineData.materialId, "", getString(etSendBatchFlag), getInvType());
@@ -357,6 +396,9 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
     @Override
     public void showInventory(List<InventoryEntity> list) {
         mInventoryDatas.clear();
+        InventoryEntity tmp = new InventoryEntity();
+        tmp.location = "请选择";
+        mInventoryDatas.add(tmp);
         mInventoryDatas.addAll(list);
         if (mLocationAdapter == null) {
             mLocationAdapter = new LocationAdapter(mActivity, R.layout.item_simple_sp, mInventoryDatas);
@@ -375,29 +417,43 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
     /**
      * 获取单条缓存
      */
-    protected void getTransferSingle(String batchFlag, String location) {
+    protected void getTransferSingle(int position) {
+        final String invQuantity = mInventoryDatas.get(position).invQuantity;
+        final String location = mInventoryDatas.get(position).location;
+        final String batchFlag = getString(etSendBatchFlag);
+
+        if (position <= 0) {
+            resetSendLocation();
+            return;
+        }
 
         if (spRefLine.getSelectedItemPosition() == 0) {
             showMessage("请先选择单据行");
+            resetSendLocation();
             return;
         }
         //检验是否选择了库存地点
         if (spSendInv.getSelectedItemPosition() == 0) {
             showMessage("请先选择库存地点");
+            resetSendLocation();
             return;
         }
 
         if (mIsOpenBatchManager)
             if (TextUtils.isEmpty(batchFlag)) {
                 showMessage("请先输入批次");
+                resetSendLocation();
                 return;
             }
         if (TextUtils.isEmpty(location)) {
             showMessage("请先输入发出仓位");
+            resetSendLocation();
             return;
         }
-        final RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
 
+        tvInvQuantity.setText(invQuantity);
+
+        final RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
         final String refCodeId = mRefData.refCodeId;
         final String refType = mRefData.refType;
         final String bizType = mRefData.bizType;
@@ -407,9 +463,16 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
                 batchFlag, location, Global.USER_ID);
     }
 
+    private void resetSendLocation() {
+        spSendLoc.setSelection(0, true);
+        tvInvQuantity.setText("");
+        tvLocQuantity.setText("");
+        tvTotalQuantity.setText("");
+    }
+
     /**
      * 加载该仓位的仓位数量（注意如果可以请求仓位历史数据时，那么说明不需要考虑在物料是否是质检。）
-     * 是否上架的标志位必须在refresUI方法中应确定好,这里必须检查批次是否一致。
+     * 是否上架的标志位必须在refreshUI方法中应确定好,这里必须检查批次是否一致。
      *
      * @param batchFlag
      * @param location
@@ -556,12 +619,10 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
      * @param quantity:本次出库录入数量
      */
     private boolean refreshQuantity(final String quantity) {
-
         if (Float.valueOf(quantity) < 0.0f) {
             showMessage("移库数量不合理");
             return false;
         }
-
         float totalQuantityV = 0.0f;
         //累计数量
         totalQuantityV += UiUtil.convertToFloat(getString(tvTotalQuantity), 0.0f);
@@ -718,8 +779,7 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
         switch (retryAction) {
             //获取单条缓存失败
             case Global.RETRY_LOAD_SINGLE_CACHE_ACTION:
-                getTransferSingle(getString(etSendBatchFlag),
-                        mInventoryDatas.get(spSendLoc.getSelectedItemPosition()).location);
+                getTransferSingle(spSendLoc.getSelectedItemPosition());
                 break;
         }
         super.retry(retryAction);

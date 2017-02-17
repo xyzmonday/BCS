@@ -32,21 +32,19 @@ import javax.inject.Inject;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.FlowableEmitter;
-import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
  * Created by monday on 2016/11/15.
  */
 
-public class BaseASDetailPresenterImp extends BasePresenter<IASDetailView>
+public class ASDetailPresenterImp extends BasePresenter<IASDetailView>
         implements IASDetailPresenter {
 
     protected IASDetailView mView;
 
     @Inject
-    public BaseASDetailPresenterImp(@ContextLife("Activity") Context context) {
+    public ASDetailPresenterImp(@ContextLife("Activity") Context context) {
         super(context);
     }
 
@@ -127,7 +125,8 @@ public class BaseASDetailPresenterImp extends BasePresenter<IASDetailView>
     }
 
     @Override
-    public void editNode(ReferenceEntity refData, RefDetailEntity node, String companyCode, String bizType, String refType, String subFunName) {
+    public void editNode(ArrayList<String> locations, ReferenceEntity refData, RefDetailEntity node, String companyCode,
+                         String bizType, String refType, String subFunName,int position) {
         if (refData != null) {
             TreeNode treeNode = node.getParent();
             if (treeNode != null && RefDetailEntity.class.isInstance(treeNode)) {
@@ -140,7 +139,7 @@ public class BaseASDetailPresenterImp extends BasePresenter<IASDetailView>
                     Intent intent = new Intent(mContext, EditActivity.class);
                     Bundle bundle = new Bundle();
                     //获取该行下所有已经上架的仓位
-                    final ArrayList<String> locations = new ArrayList<>();
+                    final ArrayList<String> locationsOfParentNode = new ArrayList<>();
                     if (parentNode != null) {
                         List<TreeNode> childTreeNodes = parentNode.getChildren();
                         for (TreeNode childTreeNode : childTreeNodes) {
@@ -149,7 +148,7 @@ public class BaseASDetailPresenterImp extends BasePresenter<IASDetailView>
                                 if (childNode.getViewType() == Global.CHILD_NODE_HEADER_TYPE || node == childNode)
                                     //排除自己
                                     continue;
-                                locations.add(childNode.location);
+                                locationsOfParentNode.add(childNode.location);
                             }
                         }
                     }
@@ -165,7 +164,7 @@ public class BaseASDetailPresenterImp extends BasePresenter<IASDetailView>
                     bundle.putString(Global.EXTRA_TITLE_KEY, subFunName + "-明细修改");
 
                     //该父节点所有的已经入库的仓位
-                    bundle.putStringArrayList(Global.EXTRA_LOCATION_LIST_KEY, locations);
+                    bundle.putStringArrayList(Global.EXTRA_LOCATION_LIST_KEY, locationsOfParentNode);
 
                     //库存地点
                     bundle.putString(Global.EXTRA_INV_ID_KEY, node.invId);
@@ -194,7 +193,8 @@ public class BaseASDetailPresenterImp extends BasePresenter<IASDetailView>
     }
 
     @Override
-    public void submitData2BarcodeSystem(String transId, String bizType, String refType, String userId, String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap, int submitFlag) {
+    public void submitData2BarcodeSystem(String transId, String bizType, String refType, String userId,
+                                         String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
         mView = getView();
         RxSubscriber<String> subscriber = mRepository.uploadCollectionData("", transId, bizType, refType, -1, voucherDate, "", "")
                 .retryWhen(new RetryWhenNetworkException(3, 3000))
@@ -239,7 +239,8 @@ public class BaseASDetailPresenterImp extends BasePresenter<IASDetailView>
     }
 
     @Override
-    public void submitData2SAP(String transId, String bizType, String refType, String userId, String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap, int submitFlag) {
+    public void submitData2SAP(String transId, String bizType, String refType, String userId,
+                               String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
         mView = getView();
         RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate, flagMap, extraHeaderMap)
                 .retryWhen(new RetryWhenNetworkException(3, 3000))
@@ -307,7 +308,7 @@ public class BaseASDetailPresenterImp extends BasePresenter<IASDetailView>
      * @param cache：缓存单据数据
      * @return
      */
-    private ArrayList<RefDetailEntity> createNodesByCache(ReferenceEntity refData, ReferenceEntity cache) {
+    protected ArrayList<RefDetailEntity> createNodesByCache(ReferenceEntity refData, ReferenceEntity cache) {
         ArrayList<RefDetailEntity> nodes = new ArrayList<>();
         //第一步，将原始单据中的行明细赋值新的父节点中
         List<RefDetailEntity> list = refData.billDetailList;
@@ -369,7 +370,7 @@ public class BaseASDetailPresenterImp extends BasePresenter<IASDetailView>
     /**
      * 通过行id获取到该行
      */
-    private RefDetailEntity getLineDataByLineId(String lineId, ReferenceEntity refData) {
+    protected RefDetailEntity getLineDataByLineId(String lineId, ReferenceEntity refData) {
         if (TextUtils.isEmpty(lineId))
             return null;
         List<RefDetailEntity> detail = refData.billDetailList;
@@ -388,17 +389,14 @@ public class BaseASDetailPresenterImp extends BasePresenter<IASDetailView>
      * @return
      */
     protected Flowable<ArrayList<RefDetailEntity>> sortNodes(final ArrayList<RefDetailEntity> nodes) {
-        return Flowable.create(new FlowableOnSubscribe<ArrayList<RefDetailEntity>>() {
-            @Override
-            public void subscribe(FlowableEmitter<ArrayList<RefDetailEntity>> emitter) throws Exception {
-                try {
-                    ArrayList<RefDetailEntity> allNodes = RecycleTreeViewHelper.getSortedNodes(nodes, 1);
-                    emitter.onNext(allNodes);
-                    emitter.onComplete();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    emitter.onError(new Throwable(e.getMessage()));
-                }
+        return Flowable.create(emitter -> {
+            try {
+                ArrayList<RefDetailEntity> allNodes = RecycleTreeViewHelper.getSortedNodes(nodes, 1);
+                emitter.onNext(allNodes);
+                emitter.onComplete();
+            } catch (Exception e) {
+                e.printStackTrace();
+                emitter.onError(new Throwable(e.getMessage()));
             }
         }, BackpressureStrategy.BUFFER);
     }

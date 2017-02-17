@@ -2,8 +2,10 @@ package com.richfit.barcodesystemproduct.module_movestore.baseheader_n;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxAdapterView;
 import com.richfit.barcodesystemproduct.R;
@@ -38,6 +40,8 @@ public abstract class BaseNMSHeaderFragment extends BaseFragment<NMSHeaderPresen
     //发出工厂
     @BindView(R.id.ll_send_work)
     protected LinearLayout llSendWork;
+    @BindView(R.id.tv_send_work_name)
+    protected TextView tvSendWorkName;
     @BindView(R.id.sp_send_work)
     protected Spinner spSendWork;
 
@@ -57,8 +61,8 @@ public abstract class BaseNMSHeaderFragment extends BaseFragment<NMSHeaderPresen
     @BindView(R.id.sp_rec_inv)
     protected Spinner spRecInv;
 
-    @BindView(R.id.et_guozhang_date)
-    RichEditText etTransferDate;
+    @BindView(R.id.et_transfer_date)
+    protected RichEditText etTransferDate;
 
     /*发出工厂*/
     protected WorkAdapter mSendWorkAdapter;
@@ -106,6 +110,7 @@ public abstract class BaseNMSHeaderFragment extends BaseFragment<NMSHeaderPresen
         /*选择日期*/
         etTransferDate.setOnRichEditTouchListener((view, text) ->
                 DateChooseHelper.chooseDateForEditText(mActivity, etTransferDate, Global.GLOBAL_DATE_PATTERN_TYPE1));
+
         //发出工厂
         RxAdapterView.itemSelections(spSendWork)
                 .filter(position -> position.intValue() > 0)
@@ -120,26 +125,26 @@ public abstract class BaseNMSHeaderFragment extends BaseFragment<NMSHeaderPresen
                 });
         //接收工厂
         RxAdapterView.itemSelections(spRecWork)
-//                .filter(aInteger -> {
-//                    int sendPosition = spSendWork.getSelectedItemPosition();
-//                    int recPosition = aInteger.intValue();
-//                    if (recPosition <= 0) {
-//                        return false;
-//                    }
-//                    if (sendPosition > 0 && recPosition > 0 && sendPosition == recPosition) {
-//                        showMessage("发出工厂不能与接收工厂一致,请重新选择");
-//                        spRecWork.setSelection(0);
-//                        return false;
-//                    }
-//                    return true;
-//                })
+                .filter(aInteger -> {
+                    int sendPosition = spSendWork.getSelectedItemPosition();
+                    int recPosition = aInteger.intValue();
+                    if (recPosition <= 0) {
+                        return false;
+                    }
+                    if (sendPosition > 0 && recPosition > 0 && sendPosition == recPosition) {
+                        showMessage("发出工厂不能与接收工厂一致,请重新选择");
+                        spRecWork.setSelection(0);
+                        return false;
+                    }
+                    return true;
+                })
                 .filter(position -> position.intValue() > 0)
                 .map(aInteger -> mRecWorks.get(aInteger.intValue()).workId)
                 .filter(workId -> !TextUtils.isEmpty(workId))
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(workId -> mPresenter.getRecInvsByWorkId(workId,getOrgFlag()));
 
-        mPresenter.deleteCollectionData("", mBizType, Global.USER_ID, mCompanyCode);
+
     }
 
     @Override
@@ -179,14 +184,16 @@ public abstract class BaseNMSHeaderFragment extends BaseFragment<NMSHeaderPresen
             mSendWorkAdapter.notifyDataSetChanged();
         }
 
-        mRecWorks.clear();
-        mRecWorks.addAll(works);
-        //绑定适配器
-        if (mRecWorkAdpater == null) {
-            mRecWorkAdpater = new WorkAdapter(mActivity, R.layout.item_simple_sp, mRecWorks);
-            spRecWork.setAdapter(mRecWorkAdpater);
-        } else {
-            mRecWorkAdpater.notifyDataSetChanged();
+        if(llRecWork.getVisibility() != View.GONE) {
+            mRecWorks.clear();
+            mRecWorks.addAll(works);
+            //绑定适配器
+            if (mRecWorkAdpater == null) {
+                mRecWorkAdpater = new WorkAdapter(mActivity, R.layout.item_simple_sp, mRecWorks);
+                spRecWork.setAdapter(mRecWorkAdpater);
+            } else {
+                mRecWorkAdpater.notifyDataSetChanged();
+            }
         }
     }
 

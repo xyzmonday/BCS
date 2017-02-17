@@ -35,8 +35,13 @@ public abstract class RxSubscriber<T> extends ResourceSubscriber<T> {
     @Override
     protected void onStart() {
         super.onStart();
-        if (mWeakContext.get() != null)
-            LoadingLayoutHelper.showDialogForLoading(mWeakContext.get(), msg);
+        final Context context = mWeakContext.get();
+        if (context != null)
+            LoadingLayoutHelper.showDialogForLoading(context, msg);
+//
+//        if(context != null) {
+//            StyledDialog.buildLoading(context,msg).show();
+//        }
     }
 
     @Override
@@ -47,6 +52,7 @@ public abstract class RxSubscriber<T> extends ResourceSubscriber<T> {
     @Override
     public void onError(Throwable throwable) {
         LoadingLayoutHelper.cancelDialogForLoading();
+//        StyledDialog.dismissLoading();
         //网络异常
         if (throwable instanceof ConnectException ||
                 throwable instanceof SocketTimeoutException ||
@@ -69,6 +75,7 @@ public abstract class RxSubscriber<T> extends ResourceSubscriber<T> {
     @Override
     public void onComplete() {
         LoadingLayoutHelper.cancelDialogForLoading();
+//        StyledDialog.dismissLoading();
         _onComplete();
     }
 

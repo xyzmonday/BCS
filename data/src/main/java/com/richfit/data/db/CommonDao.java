@@ -808,18 +808,18 @@ public class CommonDao extends BaseDao {
         Cursor cursor = null;
         if (fragmentType < 0) {
             if (TextUtils.isEmpty(refType)) {
-                cursor = db.rawQuery("select * from T_FRAGMENT_CONFIGS where biz_type = ? and fragment_type = -1",
+                cursor = db.rawQuery("select * from T_FRAGMENT_CONFIGS where biz_type = ? and fragment_type = -1 order by fragment_type",
                         new String[]{bizType});
             } else {
-                cursor = db.rawQuery("select * from T_FRAGMENT_CONFIGS where biz_type = ? and ref_type = ?and fragment_type = -1",
+                cursor = db.rawQuery("select * from T_FRAGMENT_CONFIGS where biz_type = ? and ref_type = ? and fragment_type = -1 order by fragment_type",
                         new String[]{bizType, refType});
             }
         } else {
             if (TextUtils.isEmpty(refType)) {
-                cursor = db.rawQuery("select * from T_FRAGMENT_CONFIGS where biz_type = ? and fragment_type >= 0",
+                cursor = db.rawQuery("select * from T_FRAGMENT_CONFIGS where biz_type = ? and fragment_type >= 0 order by fragment_type ",
                         new String[]{bizType});
             } else {
-                cursor = db.rawQuery("select * from T_FRAGMENT_CONFIGS where biz_type = ? and ref_type = ?  and fragment_type >= 0",
+                cursor = db.rawQuery("select * from T_FRAGMENT_CONFIGS where biz_type = ? and ref_type = ? and fragment_type >= 0 order by fragment_type ",
                         new String[]{bizType, refType});
             }
         }

@@ -25,7 +25,6 @@ import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.detail.i
 import com.richfit.common_lib.animationrv.Animation.animators.FadeInDownAnimator;
 import com.richfit.common_lib.dialog.ShowErrorMessageDialog;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.AutoSwipeRefreshLayout;
 import com.richfit.domain.bean.RefDetailEntity;
@@ -144,7 +143,7 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
     public void onRefresh() {
         String transferFlag = (String) getData(mBizType + mRefType, "0");
         if ("1".equals(transferFlag)) {
-            showMessage("本次采集已经过账,请先进行数据上传操作");
+            setRefreshing(false,"本次采集已经过账,请先进行数据上传操作");
             return;
         }
         //单据抬头id
@@ -212,7 +211,7 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
         RecyclerView.Adapter adapter = mRecycleView.getAdapter();
         if (adapter != null && ASNDetailAdapter.class.isInstance(adapter)) {
             ASNDetailAdapter asnDetailAdapter = (ASNDetailAdapter) adapter;
-            ArrayList<String> Locations = asnDetailAdapter.getSendLocations(node.materialNum, node.invId, position);
+            ArrayList<String> Locations = asnDetailAdapter.getLocations(position,0);
             mPresenter.editNode(Locations, null, node, mCompanyCode, mBizType, mRefType, "其他入库-无参考");
         }
     }

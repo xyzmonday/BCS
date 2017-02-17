@@ -76,7 +76,8 @@ public class ASCollectPresenterImp extends BasePresenter<IASCollectView>
             return;
         }
 
-        ResourceSubscriber<String> subscriber = mRepository.getLocationInfo(queryType, workId, invId, location)
+        ResourceSubscriber<String> subscriber =
+                mRepository.getLocationInfo(queryType, workId, invId, location)
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new ResourceSubscriber<String>() {
                     @Override

@@ -8,7 +8,6 @@ import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.FileUtil;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.common_lib.utils.L;
 import com.richfit.domain.bean.ImageEntity;
 
 import java.io.File;
@@ -18,8 +17,6 @@ import javax.inject.Inject;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.FlowableEmitter;
-import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.subscribers.ResourceSubscriber;
 
 
@@ -41,9 +38,6 @@ public class ShowAndTakePhotoPresenterImp extends BasePresenter<ShowAndTakePhoto
     public void readImagesFromLocal(final String refNum, final String refLineNum, final String refLineId,
                                     final int takePhotoType, final String imageDir,
                                     String bizType, String refType, final boolean isLocal) {
-
-        L.d("读取照片 = " + bizType + "; refType = " + refType);
-
         mView = getView();
         RxSubscriber<ArrayList<ImageEntity>> subscriber = readImages(imageDir, bizType, refType, takePhotoType)
                 .doOnNext(images -> mRepository.saveTakedImages(images, refNum, refLineId, takePhotoType,
@@ -141,37 +135,34 @@ public class ShowAndTakePhotoPresenterImp extends BasePresenter<ShowAndTakePhoto
      */
     private Flowable<ArrayList<ImageEntity>> readImages(final String cacheImageDir, final String bizType,
                                                         final String refType, final int takePhotoType) {
-        return Flowable.create(new FlowableOnSubscribe<ArrayList<ImageEntity>>() {
-            @Override
-            public void subscribe(FlowableEmitter<ArrayList<ImageEntity>> emitter) throws Exception {
-                try {
-                    File cacheDir = new File(cacheImageDir);
-                    if (cacheDir == null) {
-                        emitter.onError(new Throwable("抱歉未获取到照片"));
-                    }
-                    ArrayList<ImageEntity> images = new ArrayList<>();
-                    File[] files = cacheDir.listFiles((file, s) -> s.endsWith(Global.IMAGE_DEFAULT_FORMAT));
-                    if (files == null || files.length == 0) {
-                        emitter.onNext(images);
-                        emitter.onComplete();
-                        return;
-                    }
-                    for (File file : files) {
-                        ImageEntity image = new ImageEntity();
-                        image.lastModifiedTime = file.lastModified();
-                        image.isSelected = false;
-                        image.bizType = bizType;
-                        image.refType = refType;
-                        image.takePhotoType = takePhotoType;
-                        image.imageName = file.getName();
-                        images.add(image);
-                    }
+        return Flowable.create(emitter -> {
+            try {
+                File cacheDir = new File(cacheImageDir);
+                if (cacheDir == null) {
+                    emitter.onError(new Throwable("抱歉未获取到照片"));
+                }
+                ArrayList<ImageEntity> images = new ArrayList<>();
+                File[] files = cacheDir.listFiles((file, s) -> s.endsWith(Global.IMAGE_DEFAULT_FORMAT));
+                if (files == null || files.length == 0) {
                     emitter.onNext(images);
                     emitter.onComplete();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    emitter.onError(e);
+                    return;
                 }
+                for (File file : files) {
+                    ImageEntity image = new ImageEntity();
+                    image.lastModifiedTime = file.lastModified();
+                    image.isSelected = false;
+                    image.bizType = bizType;
+                    image.refType = refType;
+                    image.takePhotoType = takePhotoType;
+                    image.imageName = file.getName();
+                    images.add(image);
+                }
+                emitter.onNext(images);
+                emitter.onComplete();
+            } catch (Exception e) {
+                e.printStackTrace();
+                emitter.onError(e);
             }
         }, BackpressureStrategy.BUFFER);
     }

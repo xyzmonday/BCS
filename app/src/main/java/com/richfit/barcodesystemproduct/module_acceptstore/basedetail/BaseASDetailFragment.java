@@ -60,7 +60,7 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
     @BindView(R.id.work)
     protected TextView tvWork;
     @BindView(R.id.root_id)
-    LinearLayout mExtraContainer;
+    protected LinearLayout mExtraContainer;
     protected String mTransNum;
     protected String mTransId;
     //第二过账成功后返回的验收单号
@@ -131,7 +131,7 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
     public void onRefresh() {
         String transferFlag = (String) getData(mBizType + mRefType, "0");
         if ("1".equals(transferFlag)) {
-            showMessage("本次采集已经过账,请先进行数据上传操作");
+            setRefreshing(false,"本次采集已经过账,请先进行数据上传操作");
             return;
         }
         //单据抬头id
@@ -182,8 +182,8 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
             showMessage("已经过账,不允许修改");
             return;
         }
-        mPresenter.editNode(mRefData, node, mCompanyCode, mBizType,
-                mRefType, getSubFunName());
+        mPresenter.editNode(null,mRefData, node, mCompanyCode, mBizType,
+                mRefType, getSubFunName(),-1);
     }
 
     @Override
@@ -278,7 +278,7 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
         FLAGMAP.clear();
         FLAGMAP.put("transToSapFlag", tranToSapFlag);
         mPresenter.submitData2BarcodeSystem(mTransId, mBizType, mRefType, Global.USER_ID,
-                mRefData.voucherDate, FLAGMAP, createExtraHeaderMap(), getSubmitType());
+                mRefData.voucherDate, FLAGMAP, createExtraHeaderMap());
     }
 
     @Override
@@ -290,21 +290,16 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
      * 2.数据上传
      */
     protected void submit2SAP(String tranToSapFlag) {
-        //如果没有进行第一步的过账，那么不允许数据上传
         String state = (String) getData(mBizType + mRefType, "0");
         if ("0".equals(state)) {
             showMessage("请先过账");
-            return;
-        }
-        if (2 == getSubmitType() && !TextUtils.isEmpty(mInspectionNum)) {
-            showMessage("您已经进行过数据上传");
             return;
         }
         FLAGMAP.clear();
         FLAGMAP.put("transToSapFlag", tranToSapFlag);
         mInspectionNum = "";
         mPresenter.submitData2SAP(mTransId, mRefData.bizType, mRefType, Global.USER_ID,
-                mRefData.voucherDate, FLAGMAP, createExtraHeaderMap(), getSubmitType());
+                mRefData.voucherDate, FLAGMAP, createExtraHeaderMap());
     }
 
     @Override
@@ -323,7 +318,4 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
 
     /*子类返回修改模块的名称*/
     protected abstract String getSubFunName();
-
-    protected abstract int getSubmitType();
-
 }

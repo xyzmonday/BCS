@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.richfit.common_lib.R;
+import com.richfit.common_lib.utils.L;
 
 
 /**
@@ -61,7 +62,6 @@ public class RichEditText extends AppCompatEditText implements TextWatcher {
         this.mListener = listener;
     }
 
-
     /**
      * 注意onTouchListener的onTouch事件先于onTouchEvent方法执行
      *
@@ -70,7 +70,6 @@ public class RichEditText extends AppCompatEditText implements TextWatcher {
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
                 final int x = (int) event.getX();

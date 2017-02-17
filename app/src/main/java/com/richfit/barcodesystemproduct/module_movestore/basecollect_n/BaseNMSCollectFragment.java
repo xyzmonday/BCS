@@ -17,7 +17,9 @@ import com.richfit.barcodesystemproduct.adapter.InvAdapter;
 import com.richfit.barcodesystemproduct.adapter.LocationAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.common_lib.rxutils.TransformerHelper;
+import com.richfit.common_lib.utils.CommonUtil;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.RichEditText;
@@ -60,16 +62,16 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
     TextView tvMaterialUnit;
     @BindView(R.id.et_send_batch_flag)
     protected EditText etSendBatchFlag;
-    @BindView(R.id.send_batch_flag_name)
-    protected TextView sendBatchFlagName;
-    @BindView(R.id.send_inv_name)
-    protected TextView sendInvName;
+    @BindView(R.id.tv_send_batch_flag_name)
+    protected TextView tvSendBatchFlagName;
+    @BindView(R.id.tv_send_inv_name)
+    protected TextView tvSendInvName;
     @BindView(R.id.sp_send_inv)
     Spinner spSendInv;
-    @BindView(R.id.send_loc_name)
-    protected TextView sendLocName;
+    @BindView(R.id.tv_send_loc_name)
+    protected TextView tvSendLocName;
     @BindView(R.id.sp_send_loc)
-    Spinner spSendLoc;
+    protected Spinner spSendLoc;
     @BindView(R.id.tv_inv_quantity)
     TextView tvInvQuantity;
     @BindView(R.id.tv_location_quantity)
@@ -94,9 +96,9 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
 
     /*发出库位*/
     private InvAdapter mSendInvAdapter;
-    private List<InvEntity> mSendInvs;
+    protected List<InvEntity> mSendInvs;
     /*发出仓位*/
-    private List<InventoryEntity> mInventoryDatas;
+    protected List<InventoryEntity> mInventoryDatas;
     private LocationAdapter mSendLocAdapter;
 
     /*缓存的历史仓位数量*/
@@ -130,10 +132,7 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
             if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
                 //如果已经选中单品，那么说明已经扫描过一次。必须保证每一次的物料都一样
                 saveCollectedData();
-            } else if (!cbSingle.isChecked()) {
-                clearAllUI();
-                loadMaterialInfo(materialNum, batchFlag);
-            } else if (cbSingle.isChecked() && !materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
+            } else {
                 clearAllUI();
                 loadMaterialInfo(materialNum, batchFlag);
             }
@@ -173,9 +172,14 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
         });
 
         /*监测批次修改，如果修改了批次那么需要重新刷新库存信息和用户已经输入的信息*/
+        /**
+         * debounce(400, TimeUnit.MILLISECONDS) 当没有数据传入达到400ms之后,才去发送数据
+         * throttleFirst(400, TimeUnit.MILLISECONDS) 在每一个400ms内,如果有数据传入就发送.且每个400ms内只发送一次或零次数据.
+         * 但是这是使用debonce，resetCommonUIPartly将延迟执行到发出库位显示默认位置之后，导致抬头界面的默认发出库位选择失效
+         */
         RxTextView.textChanges(etSendBatchFlag)
-                .filter(str -> !TextUtils.isEmpty(getString(etMaterialNum)) && mIsOpenBatchManager)
-                .debounce(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
+                .filter(str -> !TextUtils.isEmpty(str))
+//                .throttleFirst(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe(batch -> resetCommonUIPartly());
 
 
@@ -190,30 +194,20 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
 
        /*库存地点。选择库存地点获取库存*/
         RxAdapterView.itemSelections(spSendInv)
-                .filter(position -> position.intValue() > 0)
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(position -> {
-                    //1. 获取库存
-                    loadInventoryInfo(mRefData.workId, mSendInvs.get(position).invId,
-                            mRefData.workCode, mSendInvs.get(position).invCode, "",
-                            getString(etSendBatchFlag));
+                    //1. 加载库存
+                    loadInventoryInfo(position);
                     //2. 需要确定发出仓位和接收仓位是不是隶属一个ERP仓库号
-                    checkWareHouseNum(isOpenWM, mRefData.workId, mSendInvs.get(position).invCode,
-                            mRefData.recWorkId, mRefData.recInvCode);
+                    checkWareHouseNum(position);
                 });
 
         /*选择发货仓位，查询历史仓位数量以及历史接收仓位*/
         RxAdapterView
                 .itemSelections(spSendLoc)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(position -> {
-                    if (position.intValue() <= 0) {
-                        tvInvQuantity.setText("");
-                        return;
-                    }
-                    loadLocationQuantity(mInventoryDatas.get(position).location,
-                            getString(etSendBatchFlag), mInventoryDatas.get(position).invQuantity);
-                });
-
+                .filter(position -> (mInventoryDatas != null && mInventoryDatas.size() > 0 &&
+                        position.intValue() < mInventoryDatas.size()))
+                .subscribe(position -> loadLocationQuantity(position));
 
        /*单品(注意单品仅仅控制实收数量，累计数量是由行信息里面控制)*/
         cbSingle.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -283,45 +277,6 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
         mSubFunEntity.locationConfigs = null;
     }
 
-    /**
-     * 加载发出库位成功
-     *
-     * @param invs
-     */
-    @Override
-    public void showSendInvs(List<InvEntity> invs) {
-        mSendInvs.clear();
-        mSendInvs.addAll(invs);
-        if (mSendInvAdapter == null) {
-            mSendInvAdapter = new InvAdapter(mActivity, R.layout.item_simple_sp, mSendInvs);
-            spSendInv.setAdapter(mSendInvAdapter);
-        } else {
-            mSendInvAdapter.notifyDataSetChanged();
-        }
-        //默认选择抬头选择的发出库位
-        setSelection();
-    }
-
-    private void setSelection() {
-        //如果已经初始化，那么默认选中抬头界面选择的发出库位。
-        //每一次进来都做该操作的原因是，_onPause方法中我们清楚了所有控件
-        if (!TextUtils.isEmpty(mRefData.invCode)) {
-            int position = -1;
-            for (InvEntity entity : mSendInvs) {
-                position++;
-                if (mRefData.invCode.equalsIgnoreCase(entity.invCode)) {
-                    break;
-                }
-            }
-            spSendInv.setSelection(position, true);
-        }
-    }
-
-    @Override
-    public void loadSendInvsFail(String message) {
-        showMessage(message);
-    }
-
     private void loadMaterialInfo(String materialNum, String batchFlag) {
         if (TextUtils.isEmpty(materialNum)) {
             showMessage("物料编码为空,请重新输入");
@@ -359,36 +314,67 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
     }
 
     /**
-     * 获取库存信息
+     * 加载发出库位成功
+     *
+     * @param invs
      */
-    private void loadInventoryInfo(final String workId, final String invId,
-                                   final String workCode, final String invCode,
-                                   final String storageNum, final String batchFlag) {
-
-        //检查批次，库存地点等字段
-        if (mIsOpenBatchManager)
-            if (TextUtils.isEmpty(batchFlag)) {
-                showMessage("请先输入批次");
-                spSendInv.setSelection(0);
-                return;
+    @Override
+    public void showSendInvs(List<InvEntity> invs) {
+        mSendInvs.clear();
+        mSendInvs.addAll(invs);
+        if (mSendInvAdapter == null) {
+            mSendInvAdapter = new InvAdapter(mActivity, R.layout.item_simple_sp, mSendInvs);
+            spSendInv.setAdapter(mSendInvAdapter);
+        } else {
+            mSendInvAdapter.notifyDataSetChanged();
+        }
+        if (!TextUtils.isEmpty(mRefData.invCode)) {
+            int position = -1;
+            for (InvEntity entity : mSendInvs) {
+                position++;
+                if (mRefData.invCode.equalsIgnoreCase(entity.invCode)) {
+                    break;
+                }
             }
-        if (TextUtils.isEmpty(workId)) {
-            showMessage("请先输入工厂");
-            spSendInv.setSelection(0);
+            spSendInv.setSelection(position);
+        }
+    }
+
+    @Override
+    public void loadSendInvsFail(String message) {
+        showMessage(message);
+    }
+
+    /**
+     * 获取库存信息。注意无参考使用的抬头的工厂信息
+     */
+    private void loadInventoryInfo(int position) {
+        if (position <= 0) {
             return;
         }
-        if (TextUtils.isEmpty(invId) || spSendInv.getSelectedItemPosition() == 0) {
-            showMessage("请选择库存地点");
+        tvInvQuantity.setText("");
+        tvLocQuantity.setText("");
+        if (mSendLocAdapter != null) {
+            mInventoryDatas.clear();
+            mSendLocAdapter.notifyDataSetChanged();
+        }
+        if (TextUtils.isEmpty(mRefData.workId)) {
+            showMessage("请先输入工厂");
             spSendInv.setSelection(0);
             return;
         }
 
         if (etMaterialNum.getTag() == null) {
             showMessage("请先获取物料信息");
+            spSendInv.setSelection(0);
             return;
         }
-        mPresenter.getInventoryInfo(getInventoryType(), workId, invId, workCode, invCode, storageNum, getString(etMaterialNum),
-                etMaterialNum.getTag().toString(), "", batchFlag, getInvType());
+
+        final InvEntity invEntity = mSendInvs.get(position);
+        mPresenter.getInventoryInfo(getInventoryQueryType(), mRefData.workId, invEntity.invId,
+                mRefData.workCode, invEntity.invCode, "", getString(etMaterialNum),
+                CommonUtil.Obj2String(etMaterialNum.getTag()), "",
+                getString(etSendBatchFlag), getInvType());
     }
 
     /**
@@ -397,9 +383,9 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
     @Override
     public void showInventory(List<InventoryEntity> list) {
         mInventoryDatas.clear();
-        InventoryEntity temp = new InventoryEntity();
-        temp.location = "请选择";
-        mInventoryDatas.add(temp);
+        InventoryEntity tmp = new InventoryEntity();
+        tmp.location = "请选择";
+        mInventoryDatas.add(tmp);
         mInventoryDatas.addAll(list);
         if (mSendLocAdapter == null) {
             mSendLocAdapter = new LocationAdapter(mActivity, R.layout.item_simple_sp, mInventoryDatas);
@@ -407,7 +393,6 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
         } else {
             mSendLocAdapter.notifyDataSetChanged();
         }
-        spSendLoc.setSelection(0);
     }
 
     @Override
@@ -418,26 +403,35 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
     /**
      * 用户选择发出仓位，匹配该仓位上的仓位数量
      */
-    private void loadLocationQuantity(String location, String batchFlag, String invQuantity) {
-        tvInvQuantity.setText(invQuantity);
+    private void loadLocationQuantity(int position) {
+        if (position <= 0) {
+            resetSendLocation();
+            return;
+        }
+        final String location = mInventoryDatas.get(position).location;
+        final String invQuantity = mInventoryDatas.get(position).invQuantity;
+        final String batchFlag = getString(etSendBatchFlag);
+
         if (mIsOpenBatchManager && TextUtils.isEmpty(batchFlag)) {
             showMessage("请输入发出批次");
+            resetSendLocation();
             return;
         }
         if (TextUtils.isEmpty(location)) {
             showMessage("请输入发出仓位");
+            resetSendLocation();
             return;
         }
 
         if (mHistoryDetailList == null) {
             showMessage("请先获取物料信息");
+            resetSendLocation();
             return;
         }
-
+        tvInvQuantity.setText(invQuantity);
         String locQuantity = "0";
         String recLocation = "";
         String recBatchFlag = getString(etRecBatchFlag);
-
         for (RefDetailEntity detail : mHistoryDetailList) {
             List<LocationInfoEntity> locationList = detail.locationList;
             if (locationList != null && locationList.size() > 0) {
@@ -467,23 +461,35 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
             etRecBatchFlag.setText(recBatchFlag);
     }
 
-    /**
-     * 检查仓库号是否一致
-     */
+    private void resetSendLocation() {
+        spSendLoc.setSelection(0, true);
+        tvInvQuantity.setText("");
+        tvLocQuantity.setText("");
+    }
 
-    private void checkWareHouseNum(final boolean isOpenWM, final String sendWorkId, final String sendInvCode,
-                                   final String recWorkId, final String recInvCode) {
+    /**
+     * 如果打开了WM那么需要检查仓库号是否一致。
+     * 对于工厂内的转储，没有接收工厂，那么接收工厂Id默认为发出工厂
+     */
+    protected void checkWareHouseNum(int position) {
+        if (position <= 0) {
+            return;
+        }
+        final String workId = mRefData.workId;
+        final String recWorkId = mRefData.recWorkId;
+        final String invCode = mSendInvs.get(position).invCode;
+        final String recInvCode = mRefData.recInvCode;
         if (isOpenWM) {
             //没有打开WM，不需要检查ERP仓库号是否一致
             isWareHouseSame = true;
             return;
         }
-        if (TextUtils.isEmpty(sendWorkId)) {
+        if (TextUtils.isEmpty(workId)) {
             showMessage("发出工厂为空");
             return;
         }
-        if (TextUtils.isEmpty(sendInvCode)) {
-            showMessage("发出工厂为空");
+        if (TextUtils.isEmpty(invCode)) {
+            showMessage("发出库位为空");
             return;
         }
 
@@ -493,10 +499,10 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
         }
 
         if (TextUtils.isEmpty(recInvCode)) {
-            showMessage("接收工厂为空");
+            showMessage("接收库位为空");
             return;
         }
-        mPresenter.checkWareHouseNum(isOpenWM, sendWorkId, sendInvCode, recWorkId, recInvCode, getOrgFlag());
+        mPresenter.checkWareHouseNum(isOpenWM, workId, invCode, recWorkId, recInvCode, getOrgFlag());
     }
 
     @Override
@@ -541,27 +547,12 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
      */
     @Override
     public boolean checkCollectedDataBeforeSave() {
-        if (TextUtils.isEmpty(mRefData.recWorkId)) {
-            showMessage("请先选择接收工厂");
-            return false;
-        }
         if (TextUtils.isEmpty(mRefData.recInvId)) {
             showMessage("请先选择发出库位");
             return false;
         }
-
-        if (TextUtils.isEmpty(getString(etRecLoc))) {
-            showMessage("请先输入接收仓位");
-            return false;
-        }
-
         if (TextUtils.isEmpty(getString(etMaterialNum))) {
             showMessage("物料编码为空");
-            return false;
-        }
-        //检查发出批次
-        if (mIsOpenBatchManager && TextUtils.isEmpty(getString(etSendBatchFlag))) {
-            showMessage("发出批次为空");
             return false;
         }
         if (TextUtils.isEmpty(getString(tvInvQuantity))) {
@@ -572,29 +563,19 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
             showMessage("仓位数量为空");
             return false;
         }
-
-        //发出仓位
-        if (spSendLoc.getSelectedItemPosition() == 0) {
-            showMessage("请先输入发出仓位");
-            return false;
-        }
-
         //实发数量
         if (!refreshQuantity(getString(etQuantity))) {
             return false;
         }
-
         //检查额外字段是否合格
         if (!checkExtraData(mSubFunEntity.collectionConfigs)) {
             showMessage("请检查输入数据");
             return false;
         }
-
         if (!checkExtraData(mSubFunEntity.locationConfigs)) {
             showMessage("请检查输入数据");
             return false;
         }
-
         return true;
     }
 
@@ -735,7 +716,7 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
      */
     protected abstract String getInvType();
 
-    protected abstract String getInventoryType();
+    protected abstract String getInventoryQueryType();
 
     protected abstract String getSpecialFlag();
 

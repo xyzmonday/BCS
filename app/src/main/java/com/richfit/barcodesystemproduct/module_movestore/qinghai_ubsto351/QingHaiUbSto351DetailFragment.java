@@ -3,7 +3,6 @@ package com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto351;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 
-import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.QingHaiUbSto351DetailAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.barcodesystemproduct.module_movestore.basedetail.BaseMSDetailFragment;
@@ -24,6 +23,7 @@ public class QingHaiUbSto351DetailFragment extends BaseMSDetailFragment<QingHaiU
     public void initInjector() {
         mFragmentComponent.inject(this);
     }
+
 
     @Override
     public void showNodes(List<RefDetailEntity> allNodes) {
@@ -104,11 +104,6 @@ public class QingHaiUbSto351DetailFragment extends BaseMSDetailFragment<QingHaiU
         menus.get(0).transToSapFlag = "01";
         menus.get(1).transToSapFlag = "05";
         return menus.subList(0,2);
-    }
-
-    @Override
-    protected int getSubmitType() {
-        return getInteger(R.integer.detailSubmitDataType0);
     }
 
     @Override

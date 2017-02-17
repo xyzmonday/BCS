@@ -308,7 +308,6 @@ public abstract class MultiItemTypeTreeAdapter<T extends TreeNode> extends Recyc
         final TreeNode parentNode = node.getParent();
         if (parentNode != null) {
             int parentPos = mVisibleNodes.indexOf(parentNode);
-
             //移除子节点的抬头节点
             if (parentNode.getChildren().size() == 2 &&
                     parentNode.getChildren().get(0).getViewType() == Global.CHILD_NODE_HEADER_TYPE) {
@@ -320,7 +319,6 @@ public abstract class MultiItemTypeTreeAdapter<T extends TreeNode> extends Recyc
                 mVisibleNodes.remove(childNode);
                 notifyItemRemoved(indexOf);
             }
-
             //移除需要删除的节点
             mAllNodes.remove(node);
             mVisibleNodes.remove(node);

@@ -174,13 +174,14 @@ public class NMSDetailPresenterImp extends BasePresenter<INMSDetailView>
     }
 
     @Override
-    public void submitData2BarcodeSystem(String transId, String bizType, String refType, String voucherDate) {
+    public void submitData2BarcodeSystem(String transId, String bizType, String refType, String userId, String voucherDate,
+                                         Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
         mView = getView();
         RxSubscriber<String> subscriber =
                 mRepository.uploadCollectionData("", transId, bizType, refType, -1, voucherDate, "", "")
                         .retryWhen(new RetryWhenNetworkException(3, 3000))
-                        .doOnError(e-> SPrefUtil.saveData(bizType,"0"))
-                        .doOnComplete(()-> SPrefUtil.saveData(bizType,"1"))
+                        .doOnError(e -> SPrefUtil.saveData(bizType, "0"))
+                        .doOnComplete(() -> SPrefUtil.saveData(bizType, "1"))
                         .compose(TransformerHelper.io2main())
                         .subscribeWith(new RxSubscriber<String>(mContext) {
                             @Override
@@ -227,7 +228,7 @@ public class NMSDetailPresenterImp extends BasePresenter<INMSDetailView>
         mView = getView();
         RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, Global.USER_ID, voucherDate, flagMap, extraHeaderMap)
                 .retryWhen(new RetryWhenNetworkException(3, 3000))
-                .doOnComplete(()-> SPrefUtil.saveData(bizType,"0"))
+                .doOnComplete(() -> SPrefUtil.saveData(bizType, "0"))
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext) {
                     @Override
@@ -301,12 +302,12 @@ public class NMSDetailPresenterImp extends BasePresenter<INMSDetailView>
                     data.invCode = target.invCode;
                     //子节点的数据
                     data.transId = loc.transId;
+                    data.transLineId = loc.transLineId;
                     data.location = loc.location;
                     data.batchFlag = loc.batchFlag;
                     data.quantity = loc.quantity;
                     data.recLocation = loc.recLocation;
                     data.recBatchFlag = loc.recBatchFlag;
-                    //Location_Id?
                     data.locationId = loc.id;
 
                     //额外字段信息

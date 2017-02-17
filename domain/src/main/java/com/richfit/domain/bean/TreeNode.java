@@ -12,7 +12,8 @@ public abstract class TreeNode {
     //实现树形结构的字段以及方法
     private int treeId;
     /*根节点的父节点pTreeId=0*/
-    private int pTreeId = 0;    private String name;
+    private int pTreeId = 0;
+    private String name;
     /*树的层级*/
     private int level;
     /*是否是展开*/

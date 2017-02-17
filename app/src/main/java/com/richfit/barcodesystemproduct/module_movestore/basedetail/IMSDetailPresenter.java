@@ -53,7 +53,7 @@ public interface IMSDetailPresenter extends IPresenter<IMSDetailView> {
      * @param voucherDate:过账日期
      */
     void submitData2BarcodeSystem(String transId, String bizType, String refType, String userId, String voucherDate,
-                                  Map<String, Object> flagMap, Map<String, Object> extraHeaderMap, int submitFlag);
+                                  Map<String, Object> flagMap, Map<String, Object> extraHeaderMap);
 
     /**
      * 提交数据到sap
@@ -64,7 +64,7 @@ public interface IMSDetailPresenter extends IPresenter<IMSDetailView> {
      * @param userId：用户id
      */
     void submitData2SAP(String transId, String bizType, String refType, String userId, String voucherDate,
-                        Map<String, Object> flagMap, Map<String, Object> extraHeaderMap, int submitFlag);
+                        Map<String, Object> flagMap, Map<String, Object> extraHeaderMap);
 
     /**
      * sap上下架处理

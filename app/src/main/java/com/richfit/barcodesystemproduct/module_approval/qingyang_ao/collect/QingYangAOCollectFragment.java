@@ -498,7 +498,7 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
         menu = new BottomMenuEntity();
         menu.menuName = "其他";
         menu.menuImageRes = R.mipmap.icon_take_photo4;
-        menu.takePhotoType = 5;
+        menu.takePhotoType = 4;
         menus.add(menu);
         return menus;
     }
