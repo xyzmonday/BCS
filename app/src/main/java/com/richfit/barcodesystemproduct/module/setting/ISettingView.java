@@ -26,7 +26,7 @@ public interface ISettingView extends BaseView {
 
     //下载基础数据
     void onStartLoadBasicData(int maxProgress);
-    void loadBasicDataProgress(int progress);
+    void loadBasicDataProgress(float progress);
     void loadBasicDataFail(String message);
     void loadBasicDataSuccess();
 

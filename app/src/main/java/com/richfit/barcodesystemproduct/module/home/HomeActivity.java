@@ -1,7 +1,6 @@
 package com.richfit.barcodesystemproduct.module.home;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -77,11 +76,6 @@ public class HomeActivity extends BaseActivity<HomePresenterImp> implements Home
     @Override
     public void initInjector() {
         mActivityComponent.inject(this);
-    }
-
-    public static void newInstance(Context context) {
-        Intent intent = new Intent(context, HomeActivity.class);
-        context.startActivity(intent);
     }
 
     @Override

@@ -14,7 +14,6 @@ import com.richfit.barcodesystemproduct.module_movestore.baseedit.imp.MSEditPres
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.CommonUtil;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.domain.bean.InventoryEntity;
 import com.richfit.domain.bean.LocationInfoEntity;
@@ -181,9 +180,9 @@ public abstract class BaseMSEditFragment extends BaseFragment<MSEditPresenterImp
             showMessage("发出库位");
             return;
         }
-        L.e("执行了加载库存");
+        final RefDetailEntity lineData = mRefData.billDetailList.get(mPosition);
         mPresenter.getInventoryInfo(getInventoryQueryType(), workId, invId, workCode, invCode,
-                "", getString(tvMaterialNum), materialId, location, batchFlag, getInvType());
+                "", getString(tvMaterialNum), materialId, location, batchFlag, lineData.specialInvFlag, mRefData.supplierNum, getInvType());
     }
 
     @Override
@@ -336,17 +335,12 @@ public abstract class BaseMSEditFragment extends BaseFragment<MSEditPresenterImp
     }
 
     @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
-    }
-
-    @Override
     public void retry(String retryAction) {
         switch (retryAction) {
             case Global.RETRY_LOAD_INVENTORY_ACTION:
                 final RefDetailEntity lineData = mRefData.billDetailList.get(mPosition);
                 loadInventoryInfo(lineData.workId, tvInv.getTag().toString(),
-                        lineData.workCode,getString(tvInv),
+                        lineData.workCode, getString(tvInv),
                         lineData.materialId, "", getString(tvBatchFlag));
                 break;
         }

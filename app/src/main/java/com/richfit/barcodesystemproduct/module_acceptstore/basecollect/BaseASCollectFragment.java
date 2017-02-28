@@ -129,14 +129,11 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
             if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
                 //如果已经选中单品，那么说明已经扫描过一次。必须保证每一次的物料都一样
                 getTransferSingle(batchFlag, getString(etLocation));
-            } else if (!cbSingle.isChecked()) {
-                //在非单品的情况下，直接先清空控件
-                loadMaterialInfo(materialNum, batchFlag);
-            } else if (cbSingle.isChecked() && !materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
+            } else {
                 //在单品模式下，扫描不同的物料
                 loadMaterialInfo(materialNum, batchFlag);
             }
-
+        //处理仓位
         } else if (list != null && list.length == 1 & !cbSingle.isChecked()) {
             final String location = list[0];
             etLocation.setText(location);
@@ -686,11 +683,6 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
     @Override
     public void _onPause() {
         clearAllUI();
-    }
-
-    @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
     }
 
     @Override

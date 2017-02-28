@@ -79,6 +79,25 @@
             android:padding="5dp">
 
             <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/special_inv_flag" />
+
+
+            <Spinner
+                android:id="@+id/sp_special_inv_flag"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/spinner_min_height"
+                android:layout_weight="2" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
                 android:id="@+id/tv_send_batch_flag_name"
                 style="@style/LeftTextViewItemStyle"
                 android:text="@string/send_batch_flag" />

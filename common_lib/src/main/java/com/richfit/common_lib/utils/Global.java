@@ -125,7 +125,7 @@ public class Global {
 
     /*子节点的起始id*/
     public static int CHILD_NODE_MAX_ID = 100000;
-    public static int MAX_PATCH_LENGTH = 1000;
+    public static int MAX_PATCH_LENGTH = 200;
 
     //服务器返回的时间
     public static final String SYNC_DATE_KEY = "syncDate";

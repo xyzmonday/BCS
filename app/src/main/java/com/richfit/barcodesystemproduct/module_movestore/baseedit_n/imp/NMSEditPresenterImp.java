@@ -82,12 +82,13 @@ public class NMSEditPresenterImp extends BasePresenter<INMSEditView>
 
     @Override
     public void getInventoryInfo(String queryType, String workId, String invId, String workCode,
-                                 String invCode, String storageNum, String materialNum, String materialId, String location, String batchFlag, String invType) {
+                                 String invCode, String storageNum, String materialNum, String materialId, String location, String batchFlag,
+                                 String specialInvFlag, String specialInvNum, String invType) {
         mView = getView();
 
         RxSubscriber<List<InventoryEntity>> subscriber =
                 mRepository.getInventoryInfo(queryType, workId, invId, workCode, invCode, storageNum,
-                        materialNum, materialId, "", "", batchFlag, location, invType)
+                        materialNum, materialId, "", "", batchFlag, location, specialInvFlag, specialInvNum, invType)
                         .compose(TransformerHelper.io2main())
                         .subscribeWith(new RxSubscriber<List<InventoryEntity>>(mContext) {
                             @Override

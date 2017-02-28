@@ -60,7 +60,7 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
     @BindView(R.id.tv_work)
     TextView tvWork;
     @BindView(R.id.act_quantity_name)
-    TextView actQuantityName;
+    protected TextView actQuantityName;
     @BindView(R.id.tv_act_quantity)
     TextView tvActQuantity;
     @BindView(R.id.et_batch_flag)
@@ -74,7 +74,7 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
     @BindView(R.id.tv_location_quantity)
     TextView tvLocQuantity;
     @BindView(R.id.quantity_name)
-    TextView quantityName;
+    protected TextView quantityName;
     @BindView(R.id.et_quantity)
     EditText etQuantity;
     @BindView(R.id.cb_single)
@@ -307,6 +307,9 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
         //应收数量
         tvActQuantity.setText(lineData.actQuantity);
 
+        //特殊库存标识
+        tvSpecialInvFlag.setText(lineData.specialInvFlag);
+
         //批次
         if (TextUtils.isEmpty(getString(etBatchFlag))) {
             etBatchFlag.setText(mIsOpenBatchManager ? lineData.batchFlag : "");
@@ -355,16 +358,16 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
         if(position <= 0) {
             return;
         }
-        final RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
-        final InvEntity invEntity = mInvDatas.get(position);
 
         if (mIsOpenBatchManager && TextUtils.isEmpty(getString(etBatchFlag))) {
             showMessage("请输入批次");
             return;
         }
+        final RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
+        final InvEntity invEntity = mInvDatas.get(position);
         mPresenter.getInventoryInfo(getInventoryQueryType(),lineData.workId,
                 invEntity.invId, lineData.workCode, invEntity.invCode, "", getString(etMaterialNum),
-                lineData.materialId, "", getString(etBatchFlag), getInvType());
+                lineData.materialId, "", getString(etBatchFlag),lineData.specialInvFlag,mRefData.supplierNum, getInvType());
     }
 
     /**
@@ -723,6 +726,8 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
             result.location = mInventoryDatas.get(spLocation.getSelectedItemPosition()).location;
             result.batchFlag = getString(etBatchFlag);
             result.quantity = getString(etQuantity);
+            result.specialInvFlag = getString(tvSpecialInvFlag);
+            result.specialInvNum = mRefData.supplierNum;
             result.modifyFlag = "N";
 
             result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
@@ -755,11 +760,6 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
     @Override
     public void _onPause() {
         clearAllUI();
-    }
-
-    @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
     }
 
     @Override

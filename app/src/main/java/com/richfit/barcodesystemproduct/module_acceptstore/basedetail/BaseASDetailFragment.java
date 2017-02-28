@@ -59,6 +59,10 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
     protected TextView tvSpecialInvFag;
     @BindView(R.id.work)
     protected TextView tvWork;
+    /*应收，应退数量*/
+    @BindView(R.id.actQuantity)
+    protected TextView tvActQuantity;
+
     @BindView(R.id.root_id)
     protected LinearLayout mExtraContainer;
     protected String mTransNum;
@@ -309,11 +313,6 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
 
     protected void sapUpAndDownLocation(String tranToSapFlag) {
 
-    }
-
-    @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
     }
 
     /*子类返回修改模块的名称*/

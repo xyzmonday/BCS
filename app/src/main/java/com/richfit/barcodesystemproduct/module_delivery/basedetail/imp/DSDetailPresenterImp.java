@@ -44,7 +44,7 @@ import io.reactivex.subscribers.ResourceSubscriber;
 public class DSDetailPresenterImp extends BasePresenter<IDSDetailView>
         implements IDSDetailPresenter {
 
-    IDSDetailView mView;
+    protected IDSDetailView mView;
 
     @Inject
     public DSDetailPresenterImp(@ContextLife("Activity") Context context) {
@@ -205,13 +205,16 @@ public class DSDetailPresenterImp extends BasePresenter<IDSDetailView>
         }
     }
 
+
     @Override
-    public void submitData2BarcodeSystem(String transId, String bizType, String refType, String voucherDate) {
+    public void
+    submitData2BarcodeSystem(String transId, String bizType, String refType, String userId, String voucherDate,
+                             Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
         mView = getView();
         mRepository.uploadCollectionData("", transId, bizType, refType, -1, voucherDate, "", "")
                 .retryWhen(new RetryWhenNetworkException(3, 3000))
-                .doOnError(e-> SPrefUtil.saveData(bizType + refType,"0"))
-                .doOnComplete(()->SPrefUtil.saveData(bizType + refType,"1"))
+                .doOnError(e -> SPrefUtil.saveData(bizType + refType, "0"))
+                .doOnComplete(() -> SPrefUtil.saveData(bizType + refType, "1"))
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext, "正在过账数据...") {
                     @Override
@@ -257,7 +260,7 @@ public class DSDetailPresenterImp extends BasePresenter<IDSDetailView>
         mView = getView();
         RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, Global.USER_ID, voucherDate, flagMap, extraHeaderMap)
                 .retryWhen(new RetryWhenNetworkException(3, 3000))
-                .doOnComplete(()->SPrefUtil.saveData(bizType + refType,"0"))
+                .doOnComplete(() -> SPrefUtil.saveData(bizType + refType, "0"))
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext, "正在上传数据...") {
                     @Override

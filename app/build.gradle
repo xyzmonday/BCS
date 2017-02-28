@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'com.tencent.tinker.patch'
-
+apply plugin: 'com.antfortune.freeline'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])

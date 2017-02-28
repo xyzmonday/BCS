@@ -27,7 +27,7 @@ public class ButtonCircleProgressBar extends ProgressBar {
     private static final int DEFAULT_HEIGHT_UNREACHED_PROGRESS_BAR = 2;
 
     /**
-     *  The status of this view currently;
+     * The status of this view currently;
      */
     private Status mStatus = Status.End;
 
@@ -72,11 +72,11 @@ public class ButtonCircleProgressBar extends ProgressBar {
 
 
     public ButtonCircleProgressBar(Context context) {
-        this(context,null);
+        this(context, null);
     }
 
     public ButtonCircleProgressBar(Context context, AttributeSet attrs) {
-        this(context, attrs,0);
+        this(context, attrs, 0);
     }
 
     public ButtonCircleProgressBar(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -87,11 +87,11 @@ public class ButtonCircleProgressBar extends ProgressBar {
 
         mReachedBarColor = attributes
                 .getColor(
-                        R.styleable.ButtonCircleProgressBar_progress_reached_color,
+                        R.styleable.ButtonCircleProgressBar_progress_reached_color_alter,
                         Color.BLUE);
         mUnReachedBarColor = attributes
                 .getColor(
-                        R.styleable.ButtonCircleProgressBar_progress_unreached_color,
+                        R.styleable.ButtonCircleProgressBar_progress_unreached_color_alter,
                         DEFAULT_COLOR_UNREACHED_COLOR);
         mReachedProgressBarHeight = (int) attributes
                 .getDimension(
@@ -108,7 +108,6 @@ public class ButtonCircleProgressBar extends ProgressBar {
         attributes.recycle();
 
 
-
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
@@ -117,12 +116,12 @@ public class ButtonCircleProgressBar extends ProgressBar {
         mPath = new Path();//need path to draw triangle
 
         triangleLength = mRadius;
-        float leftX = (float) ((2*mRadius-Math.sqrt(3.0)/2*triangleLength)/2);
-        float realX = (float) (leftX+leftX*0.2);
-        mPath.moveTo(realX,mRadius-(triangleLength/2));
-        mPath.lineTo(realX,mRadius+(triangleLength/2));
-        mPath.lineTo((float) (realX+Math.sqrt(3.0)/2*triangleLength),mRadius);
-        mPath.lineTo(realX,mRadius-(triangleLength/2));
+        float leftX = (float) ((2 * mRadius - Math.sqrt(3.0) / 2 * triangleLength) / 2);
+        float realX = (float) (leftX + leftX * 0.2);
+        mPath.moveTo(realX, mRadius - (triangleLength / 2));
+        mPath.lineTo(realX, mRadius + (triangleLength / 2));
+        mPath.lineTo((float) (realX + Math.sqrt(3.0) / 2 * triangleLength), mRadius);
+        mPath.lineTo(realX, mRadius - (triangleLength / 2));
     }
 
 
@@ -140,8 +139,7 @@ public class ButtonCircleProgressBar extends ProgressBar {
      *
      * @param dpVal
      */
-    protected int dp2px(int dpVal)
-    {
+    protected int dp2px(int dpVal) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 dpVal, getResources().getDisplayMetrics());
     }
@@ -152,8 +150,7 @@ public class ButtonCircleProgressBar extends ProgressBar {
      * @param spVal
      * @return
      */
-    protected int sp2px(int spVal)
-    {
+    protected int sp2px(int spVal) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
                 spVal, getResources().getDisplayMetrics());
 
@@ -204,20 +201,20 @@ public class ButtonCircleProgressBar extends ProgressBar {
                 sweepAngle, false, mPaint);
 
 
-        if (mStatus==Status.End){
+        if (mStatus == Status.End) {
             mPaint.setStyle(Paint.Style.FILL);
-            canvas.drawPath(mPath,mPaint);
-        }else{
+            canvas.drawPath(mPath, mPaint);
+        } else {
             mPaint.setStyle(Paint.Style.STROKE);
             mPaint.setStrokeWidth(dp2px(5));
-            canvas.drawLine(mRadius*2/3,mRadius*2/3,mRadius*2/3,2*mRadius*2/3,mPaint);
-            canvas.drawLine(2*mRadius-(mRadius*2/3),mRadius*2/3,2*mRadius-(mRadius*2/3),2*mRadius*2/3,mPaint);
+            canvas.drawLine(mRadius * 2 / 3, mRadius * 2 / 3, mRadius * 2 / 3, 2 * mRadius * 2 / 3, mPaint);
+            canvas.drawLine(2 * mRadius - (mRadius * 2 / 3), mRadius * 2 / 3, 2 * mRadius - (mRadius * 2 / 3), 2 * mRadius * 2 / 3, mPaint);
         }
         canvas.restore();
     }
 
 
-    public enum Status{
+    public enum Status {
         End,
         Starting
     }

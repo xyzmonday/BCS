@@ -67,27 +67,28 @@ public class MSCollectPresenterImp extends BasePresenter<IMSCollectView>
 
     @Override
     public void getInventoryInfo(String queryType, String workId, String invId, String workCode, String invCode, String storageNum,
-                                 String materialNum, String materialId, String location, String batchFlag, String invType) {
+                                 String materialNum, String materialId, String location, String batchFlag,
+                                 String specialInvFlag, String specialInvNum, String invType) {
         mView = getView();
         RxSubscriber<List<InventoryEntity>> subscriber = null;
         if ("04".equals(queryType)) {
             subscriber = mRepository.getStorageNum(workId, workCode, invId, invCode)
                     .filter(num -> !TextUtils.isEmpty(num))
                     .flatMap(num -> mRepository.getInventoryInfo(queryType, workId, invId,
-                            workCode, invCode, num, materialNum, materialId, "", "", batchFlag, location, invType))
+                            workCode, invCode, num, materialNum, materialId, "", "", batchFlag, location, specialInvFlag, specialInvNum, invType))
                     .compose(TransformerHelper.io2main())
                     .subscribeWith(new InventorySubscriber(mContext, "正在获取库存"));
 
         } else {
             subscriber = mRepository.getInventoryInfo(queryType, workId, invId,
-                    workCode, invCode, storageNum, materialNum, materialId, "", "", batchFlag, location, invType)
+                    workCode, invCode, storageNum, materialNum, materialId, "", "", batchFlag, location,specialInvFlag,specialInvNum, invType)
                     .compose(TransformerHelper.io2main())
                     .subscribeWith(new InventorySubscriber(mContext, "正在获取库存"));
         }
         addSubscriber(subscriber);
     }
 
-    class InventorySubscriber extends RxSubscriber<List<InventoryEntity>>{
+    class InventorySubscriber extends RxSubscriber<List<InventoryEntity>> {
 
         public InventorySubscriber(Context context, String msg) {
             super(context, msg);

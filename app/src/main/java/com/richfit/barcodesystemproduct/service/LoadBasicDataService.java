@@ -58,10 +58,13 @@ public class LoadBasicDataService extends Service implements ILoadBasicDataServi
         task.queryType = "ZZ2";
         requestParam.add(task);
 
+        //获取扩展字段的字典
         task = new LoadBasicDataWrapper();
         task.isByPage = false;
         task.queryType = "SD";
         requestParam.add(task);
+
+
 
         mPresenter.loadAndSaveBasicData(requestParam);
         return super.onStartCommand(intent, flags, startId);

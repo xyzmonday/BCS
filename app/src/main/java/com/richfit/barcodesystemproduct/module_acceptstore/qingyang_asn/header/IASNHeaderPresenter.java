@@ -19,7 +19,7 @@ public interface IASNHeaderPresenter extends IPresenter<IASNHeaderView> {
      *
      * @param workCode:工厂编码
      */
-    void getSupplierList(String workCode,int flag);
+    void getSupplierList(String workCode,String keyWord,int defaultItemNum,int flag);
 
     /**
      * 获取移动类型列表

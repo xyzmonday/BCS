@@ -12,6 +12,7 @@ import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.LocationAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.common_lib.rxutils.TransformerHelper;
+import com.richfit.common_lib.utils.CommonUtil;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.domain.bean.InventoryEntity;
@@ -177,9 +178,9 @@ public abstract class BaseNMSEditFragment<P extends INMSEditPresenter> extends B
     public void loadTransferSingleInfoComplete() {
         //获取库存信息
         mPresenter.getInventoryInfo(getInventoryQueryType(), mRefData.workId,
-                tvSendInv.getTag().toString(), mRefData.workCode, getString(tvSendInv),
+                CommonUtil.Obj2String(tvSendInv.getTag()), mRefData.workCode, getString(tvSendInv),
                 "", getString(tvMaterialNum), tvMaterialNum.getTag().toString(),
-                "", getString(tvSendBatchFlag), getInvType());
+                "", getString(tvSendBatchFlag), "", "", getInvType());
     }
 
     @Override
@@ -326,7 +327,7 @@ public abstract class BaseNMSEditFragment<P extends INMSEditPresenter> extends B
             return false;
         }
 
-        if(spSendLoc.getSelectedItemPosition() == 0) {
+        if (spSendLoc.getSelectedItemPosition() == 0) {
             showMessage("请先选择发出仓位");
             return false;
         }
@@ -386,10 +387,10 @@ public abstract class BaseNMSEditFragment<P extends INMSEditPresenter> extends B
             result.userId = Global.USER_ID;
             result.workId = mRefData.workId;
             result.locationId = mLocationId;
-            result.invId = tvSendInv.getTag().toString();
+            result.invId = CommonUtil.Obj2String(tvSendInv.getTag());
             result.recWorkId = mRefData.recWorkId;
             result.recInvId = mRefData.recInvId;
-            result.materialId = tvMaterialNum.getTag().toString();
+            result.materialId = result.invId = CommonUtil.Obj2String(tvMaterialNum.getTag());
             result.batchFlag = getString(tvSendBatchFlag);
             result.location = mInventoryDatas.get(spSendLoc.getSelectedItemPosition()).location;
             result.recLocation = getString(etRecLoc);
@@ -418,11 +419,6 @@ public abstract class BaseNMSEditFragment<P extends INMSEditPresenter> extends B
     }
 
     @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
-    }
-
-    @Override
     public void retry(String retryAction) {
         switch (retryAction) {
             case Global.RETRY_LOAD_SINGLE_CACHE_ACTION:
@@ -442,6 +438,7 @@ public abstract class BaseNMSEditFragment<P extends INMSEditPresenter> extends B
      * 0:表示代管库存,1:表示正常库存
      */
     protected abstract String getInvType();
+
     protected abstract String getInventoryQueryType();
 }
 

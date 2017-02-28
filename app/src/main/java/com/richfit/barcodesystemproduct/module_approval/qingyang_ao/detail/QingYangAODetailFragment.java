@@ -268,11 +268,6 @@ public class QingYangAODetailFragment extends BaseFragment<ApprovalOtherDetailPr
     }
 
     @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
-    }
-
-    @Override
     public void retry(String retryAction) {
         switch (retryAction) {
             case Global.RETRY_SAVE_COLLECTION_DATA_ACTION:

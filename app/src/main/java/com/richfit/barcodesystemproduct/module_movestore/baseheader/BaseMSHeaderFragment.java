@@ -256,11 +256,6 @@ public abstract class BaseMSHeaderFragment extends BaseFragment<MSHeaderPresente
     }
 
     @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
-    }
-
-    @Override
     public void retry(String retryAction) {
         switch (retryAction) {
             case Global.RETRY_LOAD_REFERENCE_ACTION:

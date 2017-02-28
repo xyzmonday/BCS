@@ -151,7 +151,7 @@
                 android:id="@+id/et_quantity"
                 style="@style/RightEditTextItemStyle"
                 android:gravity="center_horizontal"
-                android:inputType="number" />
+                android:inputType="numberDecimal" />
 
         </LinearLayout>
 

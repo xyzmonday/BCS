@@ -35,7 +35,7 @@ public class LoadingDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
         getDialog().getWindow().setBackgroundDrawable(AppCompat.getDrawable(getContext(),android.R.color.transparent));
-        View view = inflater.inflate(R.layout.layout_loading_dialog, container,false);
+        View view = inflater.inflate(R.layout.dialog_loading, container,false);
         mTvLoadingMsg = (TextView) view.findViewById(R.id.tv_msg);
         return view;
     }

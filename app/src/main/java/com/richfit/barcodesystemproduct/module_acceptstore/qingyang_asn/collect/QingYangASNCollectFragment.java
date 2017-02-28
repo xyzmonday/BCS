@@ -383,7 +383,7 @@ public class QingYangASNCollectFragment extends BaseFragment<ASNCollectPresenter
                 result.batchFlag = getString(etBatchFlag);
                 result.location = isLocation ? getString(etLocation) : "barcode";
                 result.quantity = getString(etQuantity);
-                result.specialFlag = getString(tvSpecialInvFlag);
+                result.specialInvFlag = getString(tvSpecialInvFlag);
                 result.supplierId = mRefData.supplierId;
                 result.invType = getString(R.string.invTypeNorm);
                 result.modifyFlag = "N";
@@ -419,8 +419,4 @@ public class QingYangASNCollectFragment extends BaseFragment<ASNCollectPresenter
         showMessage("保存数据失败;" + message);
     }
 
-    @Override
-    public void networkConnectError(String retryAction) {
-
-    }
 }

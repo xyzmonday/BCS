@@ -81,12 +81,6 @@ public class QingYangNMS301CollectFragment extends BaseNMSCollectFragment<QingYa
         return getString(R.string.inventoryQueryTypePrecise);
     }
 
-
-    @Override
-    protected String getSpecialFlag() {
-        return "N";
-    }
-
     @Override
     protected boolean getWMOpenFlag() {
         return false;

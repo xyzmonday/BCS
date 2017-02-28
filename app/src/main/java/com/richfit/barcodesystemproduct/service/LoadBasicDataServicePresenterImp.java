@@ -7,22 +7,15 @@ import com.richfit.barcodesystemproduct.di.ContextLife;
 import com.richfit.common_lib.rxutils.RetryWhenNetworkException;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.common_lib.utils.L;
 import com.richfit.domain.bean.LoadBasicDataWrapper;
 import com.richfit.domain.bean.LoadDataTask;
 
-import org.reactivestreams.Publisher;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Function;
 import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
@@ -48,7 +41,10 @@ public class LoadBasicDataServicePresenterImp extends BasePresenter<ILoadBasicDa
     }
 
     /**
-     * 下载基础数据的入口
+     * 下载基础数据的入口。
+     *  注意这里由于系统必须去下载两种类型的ZZ的基础数据，
+     *  然而二级单位的ZZ基础数据又比较特别(仅仅针对某些地区公司存在)，
+     *  所以需要拦击错误，不管有没有都必须执行完所有的任务。
      *
      * @param requestParam
      */
@@ -58,29 +54,27 @@ public class LoadBasicDataServicePresenterImp extends BasePresenter<ILoadBasicDa
         ResourceSubscriber<Integer> subscriber = Flowable.fromIterable(requestParam)
                 .concatMap(param -> mRepository.preparePageLoad(param))
                 .concatMap(param -> Flowable.fromIterable(addTask(param.queryType, param.totalCount, param.isByPage)))
-                .concatMap(task -> mRepository.loadBasicData(task))
-                .onErrorResumeNext(new Function<Throwable, Publisher<? extends List<Map<String, Object>>>>() {
-                    @Override
-                    public Publisher<? extends List<Map<String, Object>>> apply(Throwable throwable) throws Exception {
-                        final List<Map<String,Object>> list = new ArrayList<>();
-                        final Map<String, Object> tmp = new HashMap<>();
-                        tmp.put("queryType","error");
-                        list.add(tmp);
-                        return Flowable.just(list);
-                    }
-                })
-                .map(sourceMap -> mRepository.saveBasicData(sourceMap))
+                .concatMapDelayError(task -> mRepository.loadBasicData(task))
+//                .onErrorResumeNext(throwable -> {
+//                    final List<Map<String,Object>> list = new ArrayList<>();
+//                    final Map<String, Object> tmp = new HashMap<>();
+//                    tmp.put("queryType","error");
+//                    list.add(tmp);
+//                    return Flowable.just(list);
+//                })
+                .flatMap(sourceMap -> mRepository.saveBasicData(sourceMap))
+//                .onErrorResumeNext(throwable -> {
+//                    return Flowable.just(-1);
+//                })
                 .retryWhen(new RetryWhenNetworkException(3, 2000))
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new ResourceSubscriber<Integer>() {
                     @Override
                     public void onNext(Integer integer) {
-                        L.d("percent = " + integer + "; thread name = " + Thread.currentThread().getName());
                     }
 
                     @Override
                     public void onError(Throwable t) {
-                        L.d("error = " + t.getMessage());
                         if (mView != null) {
                             mRxManager.post(Global.LOAD_BASIC_DATA_COMPLETE, true);
                             mView.loadBasicDataComplete();
@@ -90,7 +84,6 @@ public class LoadBasicDataServicePresenterImp extends BasePresenter<ILoadBasicDa
 
                     @Override
                     public void onComplete() {
-                        L.e("基础数据下载结束");
                         if (mView != null) {
                             mRxManager.post(Global.LOAD_BASIC_DATA_COMPLETE, true);
                             mView.loadBasicDataComplete();

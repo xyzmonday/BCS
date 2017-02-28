@@ -80,13 +80,14 @@ public class LACollectPresenterImp extends BasePresenter<ILACollectView>
     public void getInventoryInfo(String queryType, String workId, String invId, String workCode,
                                  String invCode, String storageNum, String materialNum,String materialId,
                                  String materialGroup, String materialDesc,
-                                 String batchFlag, String location, String invType) {
+                                 String batchFlag, String location,
+                                 String specialInvFlag,String specialInvNum,String invType) {
         mView = getView();
 
         RxSubscriber<List<InventoryEntity>> subscriber =
                 mRepository.getInventoryInfo(queryType, workId, invId, workCode, invCode, storageNum,
                         materialNum,materialId, materialGroup,
-                        materialDesc, batchFlag, location, invType)
+                        materialDesc, batchFlag, location,specialInvFlag,specialInvNum, invType)
                         .compose(TransformerHelper.io2main())
                         .subscribeWith(new RxSubscriber<List<InventoryEntity>>(mContext, "正在获取库存信息...") {
                             @Override
@@ -130,12 +131,14 @@ public class LACollectPresenterImp extends BasePresenter<ILACollectView>
     public void uploadCollectionDataSingle(ResultEntity result) {
         mView = getView();
         ResourceSubscriber<String> subscriber =
-                mRepository.uploadCollectionDataSingle(result)
+                mRepository.transferCollectionData(result)
                         .compose(TransformerHelper.io2main())
                         .subscribeWith(new RxSubscriber<String>(mContext) {
                             @Override
                             public void _onNext(String s) {
-
+                                if (mView != null) {
+                                    mView.saveCollectedDataSuccess(s);
+                                }
                             }
 
                             @Override
@@ -161,9 +164,7 @@ public class LACollectPresenterImp extends BasePresenter<ILACollectView>
 
                             @Override
                             public void _onComplete() {
-                                if (mView != null) {
-                                    mView.saveCollectedDataSuccess();
-                                }
+
                             }
                         });
         addSubscriber(subscriber);

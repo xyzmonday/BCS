@@ -31,8 +31,8 @@ public class ResultEntity {
     //    手持上图片的完整路径+名称
     public String imagePath;
     //    当前登陆用户的userId
-    // 特殊库存标识 N:普通 E:订单 W:寄售 D:带储代销
-    public String specialFlag;
+    // 特殊库存标识 N:普通 E:订单 W:寄售 D:带储代销 K:供应商寄售
+    public String specialInvFlag;
     public String createdBy;
     //    创建日期（照片拍照保存的时间 Date格式）
     public String imageDate;
@@ -65,7 +65,6 @@ public class ResultEntity {
     //     仓位
     public String location;
     public String locationId;
-    public String recLocatin;
     //     批次
     public String batchFlag;
     //     用户录入的数量
@@ -90,5 +89,22 @@ public class ResultEntity {
     public Map<String, Object> mapExLine;// 行扩展字段
     public Map<String, Object> mapExLocation;// 仓位扩展字段
 
-
+    public String manufacturer;//制造商
+    public String randomQuantity;// 抽检
+    public String rustQuantity;// 锈蚀
+    public String damagedQuantity;// 损坏
+    public String badQuantity;// 变质
+    public String otherQuantity;// 其他
+    public String qualifiedQuantity;//质检数量
+    public String zPackage;// 包装情况 1.完好/2.散箱/3.包/4.件/5.无包装/6.其他
+    public String qmNum;// 质检单号
+    public String certificate;// 合格证
+    public String nstructions;// 说明书
+    public String qmCertificate;// 质检证书
+    public String claimNum;// 索赔单号
+    public String specialInvNum;
+    //成本中心
+    public String costCenter;
+    //项目编号
+    public String projectNum;
 }

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.richfit.barcodesystemproduct.R;
@@ -39,6 +40,12 @@ public abstract class BaseDSHeaderFragment extends BaseFragment<DSHeaderPresente
     RichEditText etTransferDate;
     @BindView(R.id.tv_creator)
     TextView tvCreator;
+    @BindView(R.id.ll_supplier)
+    protected LinearLayout llSuppier;
+    @BindView(R.id.tv_supplier)
+    TextView tvSupplier;
+    @BindView(R.id.ll_creator)
+    protected LinearLayout llCreator;
 
     @Override
     protected int getContentId() {
@@ -141,6 +148,8 @@ public abstract class BaseDSHeaderFragment extends BaseFragment<DSHeaderPresente
             tvRefNum.setText(mRefData.recordNum);
             //创建人
             tvCreator.setText(mRefData.recordCreator);
+            //供应商
+            tvSupplier.setText(mRefData.supplierNum);
             //过账日期
             if (!TextUtils.isEmpty(mRefData.voucherDate))
                 etTransferDate.setText(mRefData.voucherDate);
@@ -218,13 +227,13 @@ public abstract class BaseDSHeaderFragment extends BaseFragment<DSHeaderPresente
 
     @Override
     public void clearAllUI() {
-        clearCommonUI(tvRefNum, tvCreator);
+        clearCommonUI(tvRefNum,tvSupplier, tvCreator);
         clearExtraUI(mSubFunEntity.headerConfigs);
     }
 
     @Override
     public void clearAllUIAfterSubmitSuccess() {
-        clearCommonUI(etRefNum, tvRefNum, tvCreator);
+        clearCommonUI(etRefNum, tvRefNum,tvSupplier, tvCreator);
         clearExtraUI(mSubFunEntity.headerConfigs);
         mRefData = null;
     }
@@ -239,11 +248,6 @@ public abstract class BaseDSHeaderFragment extends BaseFragment<DSHeaderPresente
             Map<String, Object> extraHeaderMap = saveExtraUIData(mSubFunEntity.headerConfigs);
             mRefData.mapExt = UiUtil.copyMap(extraHeaderMap, mRefData.mapExt);
         }
-    }
-
-    @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
     }
 
     @Override

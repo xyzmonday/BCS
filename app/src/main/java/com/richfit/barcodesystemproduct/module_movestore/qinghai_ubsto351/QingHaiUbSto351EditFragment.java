@@ -17,7 +17,7 @@ public class QingHaiUbSto351EditFragment extends BaseMSEditFragment {
 
     @Override
     protected String getInvType() {
-        return getString(R.string.inv);
+        return getString(R.string.invTypeNorm);
     }
 
     @Override

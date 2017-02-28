@@ -97,7 +97,7 @@
 
             <TextView
                 style="@style/LeftTextViewItemStyle"
-                android:text="@string/target_location" />
+                android:text="@string/send_location" />
 
             <com.richfit.common_lib.widget.RichEditText
                 android:id="@+id/et_send_location"

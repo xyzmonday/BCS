@@ -177,8 +177,10 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
             showMessage("库存地点");
             return;
         }
-
-        mPresenter.getInventoryInfo(getInventoryQueryType(), workId, invId, "", "", "", getString(tvMaterialNum), materialId, location, batchFlag, getInvType());
+        final RefDetailEntity lineData = mRefData.billDetailList.get(mPosition);
+        mPresenter.getInventoryInfo(getInventoryQueryType(), workId, invId, "", "", "",
+                getString(tvMaterialNum), materialId, location, batchFlag,lineData.specialInvFlag,
+                mRefData.supplierNum,getInvType());
     }
 
     @Override
@@ -306,7 +308,6 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
             result.batchFlag = getString(tvBatchFlag);
             result.quantity = getString(etQuantity);
             result.modifyFlag = "Y";
-
             result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
             result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
             result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
@@ -327,11 +328,6 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
     @Override
     public void saveCollectedDataFail(String message) {
         showMessage(message);
-    }
-
-    @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
     }
 
     @Override

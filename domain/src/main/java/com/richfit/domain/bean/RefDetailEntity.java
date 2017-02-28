@@ -59,6 +59,8 @@ public class RefDetailEntity extends TreeNode {
     public String workId;
     public String workCode;
     public String workName;
+    /*物料是否是必检物资*/
+    public String qmFlag;
     /*库存地点*/
     public String invId;
     public String invCode;
@@ -90,6 +92,21 @@ public class RefDetailEntity extends TreeNode {
 
     /*接收批次*/
     public String recBatchFlag;
+
+    public String manufacturer;//制造商
+    public String randomQuantity;// 抽检
+    public String rustQuantity;// 锈蚀
+    public String damagedQuantity;// 损坏
+    public String badQuantity;// 变质
+    public String otherQuantity;// 其他
+    public String qualifiedQuantity;//质检数量
+    public String zPackage;// 包装情况 1.完好/2.散箱/3.包/4.件/5.无包装/6.其他
+    public String qmNum;// 质检单号
+    public String certificate;// 合格证
+    public String nstructions;// 说明书
+    public String qmCertificate;// 质检证书
+    public String claimNum;// 索赔单号
+
 
     /*仓位信息*/
     public List<LocationInfoEntity> locationList;

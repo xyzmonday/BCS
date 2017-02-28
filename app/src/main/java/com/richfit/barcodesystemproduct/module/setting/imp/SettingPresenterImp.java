@@ -11,7 +11,6 @@ import com.richfit.common_lib.rxutils.RetryWhenNetworkException;
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.common_lib.utils.L;
 import com.richfit.domain.bean.LoadBasicDataWrapper;
 import com.richfit.domain.bean.LoadDataTask;
 import com.richfit.domain.bean.UpdateEntity;
@@ -58,6 +57,16 @@ public class SettingPresenterImp extends BasePresenter<ISettingView>
         mTaskId = 0;
     }
 
+    /**
+     * 下载基础数据。
+     *  具体的控制逻辑是:用户传递过来需要下载的基础数据的类型，
+     *  调用preparePageLoad方法请求到分页数据的基本信息(如果不需要分页那么系统自动返回合适的下载信息)，
+     *  根据返回的信息生成下载任务(如果分页下载的数据为0,那么下载任务为0)，
+     *  下载完成后，保存到本地数据库
+     *
+     *
+     * @param requestParam
+     */
     @Override
     public void loadAndSaveBasicData(ArrayList<LoadBasicDataWrapper> requestParam) {
         mView = getView();
@@ -66,10 +75,8 @@ public class SettingPresenterImp extends BasePresenter<ISettingView>
                 .concatMap(param -> mRepository.preparePageLoad(param))
                 .concatMap(param -> Flowable.fromIterable(addTask(param.queryType, param.totalCount, param.isByPage)))
                 .concatMap(task -> mRepository.loadBasicData(task))
-                .map(sourceMap -> mRepository.saveBasicData(sourceMap))
+                .flatMap(sourceMap -> mRepository.saveBasicData(sourceMap))
                 .retryWhen(new RetryWhenNetworkException(3, 2000))
-//                .subscribeOn(Schedulers.trampoline())
-//                .observeOn(AndroidSchedulers.mainThread())
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new ResourceSubscriber<Integer>() {
 
@@ -83,10 +90,10 @@ public class SettingPresenterImp extends BasePresenter<ISettingView>
 
                     @Override
                     public void onNext(Integer integer) {
-                        L.e("percent = " + integer + "; mTaskId = " + mTaskId);
-                        if (mView != null && mTaskId != 0) {
-//                            float percent = (integer.intValue() * 100.0F) / (mTaskId * 1.0F);
-                            mView.loadBasicDataProgress(integer.intValue());
+//                        L.e("percent = " + integer + "; mTaskId = " + mTaskId);
+                        if (mView != null && mTaskId != 0 ) {
+                            float percent = (integer.intValue() * 100.0F) / (mTaskId * 1.0F);
+                            mView.loadBasicDataProgress(percent);
                         }
                     }
 
@@ -212,7 +219,7 @@ public class SettingPresenterImp extends BasePresenter<ISettingView>
     }
 
     /**
-     * 生成下载任务。按照分页下载，每一页数据下载就是一个任务
+     * 生成下载任务。按照分页下载，每一页数据下载就是一个任务。
      *
      * @param queryType
      * @param totalCount
@@ -223,7 +230,7 @@ public class SettingPresenterImp extends BasePresenter<ISettingView>
         if (!isByPage) {
             tasks.addLast(new LoadDataTask(++mTaskId, queryType, null, 0, 0, false, true));
         }
-
+        //如果该基础数据没有获取到基础数据的条数，那么不进行下载
         if (totalCount == 0)
             return tasks;
         int count = totalCount / Global.MAX_PATCH_LENGTH;

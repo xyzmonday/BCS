@@ -6,17 +6,19 @@
     android:orientation="horizontal">
 
     <ImageView
-        android:layout_width="40dp"
+        android:layout_width="20dp"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:src="@mipmap/icon_warning" />
+        android:scaleType="fitCenter"
+        android:layout_marginRight="10dp"
+        android:src="@mipmap/icon_error" />
 
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
+        android:gravity="center_vertical"
         android:text="错误日志列表:"
         android:textSize="20sp"
-        android:textColor="@color/colorAccent" />
+        android:textColor="@color/pink_400" />
 </LinearLayout>

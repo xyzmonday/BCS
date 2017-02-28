@@ -218,12 +218,6 @@ public abstract class BaseApprovalHeaderFragment extends BaseFragment<ApprovalHe
         }
     }
 
-    @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
-    }
-
-
     /**
      * 网络错误重试
      *

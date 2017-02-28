@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.richfit.common_lib.widget.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:orientation="horizontal">
+
+    <!--背景层-->
+    <LinearLayout
+        android:layout_width="120dp"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <View style="@style/ItemSeperatorLayout" />
+
+        <TextView
+            android:id="@+id/item_delete"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@color/colorAccent"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:padding="3dp"
+            android:text="@string/delete"
+            android:textSize="15sp" />
+
+        <View style="@style/ItemSeperatorLayout" />
+
+        <TextView
+            android:id="@+id/item_edit"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@color/deep_orange_200"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:padding="3dp"
+            android:text="@string/edit"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <include
+        android:id="@id/root_id"
+        layout="@layout/item_qinghai_ao_detail_header" />
+</com.richfit.common_lib.widget.SwipeLayout>

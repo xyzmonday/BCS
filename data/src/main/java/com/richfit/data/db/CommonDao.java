@@ -12,6 +12,7 @@ import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.domain.bean.BizFragmentConfig;
+import com.richfit.domain.bean.CostCenterEntity;
 import com.richfit.domain.bean.InvEntity;
 import com.richfit.domain.bean.RowConfig;
 import com.richfit.domain.bean.SupplierEntity;
@@ -297,7 +298,6 @@ public class CommonDao extends BaseDao {
         final String queryType = (String) basicParamMap.get("queryType");
 
         if ("error".equals(queryType)) {
-            L.e("基础数据下载出错");
             return -1;
         }
 
@@ -520,8 +520,8 @@ public class CommonDao extends BaseDao {
                         stmt.bindString(2, item.get(Global.parentId_Key).toString());
                         stmt.bindString(3, item.get(Global.code_Key).toString());
                         stmt.bindString(4, item.get(Global.name_Key).toString());
-                        stmt.bindString(5, item.get(Global.sapCreationDate_Key).toString());
-                        stmt.bindString(6, item.get(Global.sapUpdateDate_Key).toString());
+//                        stmt.bindString(5, item.get(Global.sapCreationDate_Key).toString());
+//                        stmt.bindString(6, item.get(Global.sapUpdateDate_Key).toString());
                         stmt.execute();
                         stmt.clearBindings();
                     }
@@ -701,7 +701,7 @@ public class CommonDao extends BaseDao {
      * @param workCode：工厂编码
      * @return
      */
-    public ArrayList<SupplierEntity> getSupplierList(String workCode, int flag) {
+    public ArrayList<SupplierEntity> getSupplierList(String workCode, String keyWord, int defaultItemNum, int flag) {
         ArrayList<SupplierEntity> list = new ArrayList<>();
         if (TextUtils.isEmpty(workCode))
             return list;
@@ -714,8 +714,14 @@ public class CommonDao extends BaseDao {
                 .append(tableName)
                 .append("  P,BASE_SUPPLIER B ")
                 .append(" where P.parent_id = B.org_id ")
-                .append(" and P.org_level = 2 and P.org_code = ?");
-
+                .append(" and P.org_level = 2 and P.org_code = ? ");
+        if (!TextUtils.isEmpty(keyWord)) {
+            sb.append("like ").append("'%").append(keyWord).append("%'");
+        } else if (defaultItemNum > 0) {
+            sb.append(" limit 0, ")
+                    .append(defaultItemNum);
+        }
+        L.e("查询供应商列表的sql = " + sb.toString());
         Cursor cursor = db.rawQuery(sb.toString(), new String[]{workCode});
         while (cursor.moveToNext()) {
             SupplierEntity supplierEntity = new SupplierEntity();
@@ -725,6 +731,38 @@ public class CommonDao extends BaseDao {
             list.add(supplierEntity);
         }
 
+        db.close();
+        return list;
+    }
+
+    public ArrayList<CostCenterEntity> getCostCenterList(String workCode, String keyWord, int defaultItemNum, int flag) {
+        ArrayList<CostCenterEntity> list = new ArrayList<>();
+        if (TextUtils.isEmpty(workCode))
+            return list;
+
+        SQLiteDatabase db = getReadableDB();
+
+        StringBuffer sb = new StringBuffer();
+        final String tableName = flag == 0 ? PAuthOrgKey : PAuthOrg2Key;
+        sb.append("select B.org_id , B.cost_center,B.cost_center_desc from ")
+                .append(tableName)
+                .append("  P,BASE_COST_CENTER B ")
+                .append(" where P.parent_id = B.org_id ")
+                .append(" and P.org_level = 2 and P.org_code = ? ");
+        if (!TextUtils.isEmpty(keyWord)) {
+            sb.append("like ").append("'%").append(keyWord).append("%'");
+        } else if (defaultItemNum > 0) {
+            sb.append(" limit 0, ")
+                    .append(defaultItemNum);
+        }
+        Cursor cursor = db.rawQuery(sb.toString(), new String[]{workCode});
+        while (cursor.moveToNext()) {
+            CostCenterEntity entity = new CostCenterEntity();
+            entity.id = cursor.getString(0);
+            entity.costCenterCode = cursor.getString(1);
+            entity.costCenterDesc = cursor.getString(2);
+            list.add(entity);
+        }
         db.close();
         return list;
     }

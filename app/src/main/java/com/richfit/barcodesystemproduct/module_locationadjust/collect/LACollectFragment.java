@@ -158,7 +158,8 @@ public class LACollectFragment extends BaseFragment<LACollectPresenterImp, Objec
     }
 
     /**
-     * 获取库存信息，注意
+     * 获取库存信息
+     *
      * @param location
      */
     protected void loadInventoryInfo(String location) {
@@ -174,14 +175,14 @@ public class LACollectFragment extends BaseFragment<LACollectPresenterImp, Objec
         }
         //获取某一仓位的库存，必须检查仓位是否存在
         final String queryType = getString(R.string.inventoryQueryTypeSAPLocation);
-        if ("04".equals(queryType)) {
-            showMessage("仓位为空");
-            return;
-        }
+//        if ("04".equals(queryType)) {
+//            showMessage("仓位为空");
+//            return;
+//        }
 
         mPresenter.getInventoryInfo(queryType, mRefData.workId, mRefData.invId, mRefData.workCode,
                 mRefData.invCode, mRefData.storageNum, getString(etMaterialNum), tag.toString(),
-                "", "", getString(etBatchFlag), location, getString(R.string.invTypeNorm));
+                "", "", getString(etBatchFlag), location, "", "", getString(R.string.invTypeNorm));
     }
 
     @Override
@@ -195,14 +196,14 @@ public class LACollectFragment extends BaseFragment<LACollectPresenterImp, Objec
     }
 
     @Override
-    public void saveCollectedDataSuccess() {
-        showMessage("保存成功");
+    public void saveCollectedDataSuccess(String message) {
+        showSuccessDialog(message);
         clearAllUI();
     }
 
     @Override
     public void saveCollectedDataFail(String message) {
-        showMessage(message);
+        showErrorDialog(message);
     }
 
     private void clearAllUI() {
@@ -253,13 +254,15 @@ public class LACollectFragment extends BaseFragment<LACollectPresenterImp, Objec
             return false;
         }
 
-        if (TextUtils.isEmpty(getString(etSendLocation))) {
-            showMessage("请输入目标仓位");
+        final String location = getString(etSendLocation);
+        if (TextUtils.isEmpty(location) || location.length() > 10) {
+            showMessage("目标仓位不合理");
             return false;
         }
 
-        if (TextUtils.isEmpty(getString(etRecLocation))) {
-            showMessage("请输入目标仓位");
+        final String recLocation = getString(etRecLocation);
+        if (TextUtils.isEmpty(recLocation) || recLocation.length() > 10) {
+            showMessage("目标仓位不合理");
             return false;
         }
 
@@ -288,7 +291,7 @@ public class LACollectFragment extends BaseFragment<LACollectPresenterImp, Objec
             result.invId = mRefData.invId;
             result.materialId = CommonUtil.Obj2String(etMaterialNum.getTag());
             result.location = CommonUtil.toUpperCase(getString(etSendLocation));
-            result.recLocatin = CommonUtil.toUpperCase(getString(etRecLocation));
+            result.recLocation = CommonUtil.toUpperCase(getString(etRecLocation));
             result.quantity = getString(etRecQuantity);
             result.userId = Global.USER_ID;
             result.invType = "01";
@@ -310,11 +313,6 @@ public class LACollectFragment extends BaseFragment<LACollectPresenterImp, Objec
             return false;
         }
         return true;
-    }
-
-    @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
     }
 
     @Override

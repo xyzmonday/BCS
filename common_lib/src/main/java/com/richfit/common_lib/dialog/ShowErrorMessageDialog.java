@@ -48,7 +48,7 @@ public class ShowErrorMessageDialog extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_dialog_show_visa, container, false);
+        View view = inflater.inflate(R.layout.dialog_show_error, container, false);
         mRvmessages = (RecyclerView) view.findViewById(R.id.time_line_recycler);
         //启用窗体的扩展特性。
         getDialog().requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);

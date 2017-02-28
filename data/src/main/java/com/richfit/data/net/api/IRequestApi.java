@@ -74,6 +74,9 @@ public interface IRequestApi {
     @GET("transferCollectionData")
     Flowable<Response<List<ErrorMessageEntity>>> transferCollectionData(@Query("requestParam") String requestParam);
 
+    @GET("transferCollectionData")
+    Flowable<Response<List<ErrorMessageEntity>>> transferCollectionData2(@Query("requestParam") String requestParam);
+
     @GET("getReferenceInfo")
     Flowable<Response<List<RefNumEntity>>> getReserveNumList(@Query("requestParam") String requestParam);
 

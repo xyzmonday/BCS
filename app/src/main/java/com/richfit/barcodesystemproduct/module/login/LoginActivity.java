@@ -60,8 +60,6 @@ public class LoginActivity extends BaseActivity<LoginPresenterImp> implements Lo
                         etUsername.showDropDown();
                     }
                 });
-
-
     }
 
     @Override

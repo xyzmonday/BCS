@@ -15,7 +15,7 @@ public interface ILACollectPresenter extends IPresenter<ILACollectView> {
                           String workCode, String invCode, String storageNum,
                           String materialNum, String materialId, String materialGroup,
                           String materialDesc, String batchFlag,
-                          String location, String invType);
+                          String location,String specialInvFlag,String specialInvNum, String invType);
 
     /**
      * 保存本次采集的数据
@@ -23,4 +23,7 @@ public interface ILACollectPresenter extends IPresenter<ILACollectView> {
      * @param result:用户采集的数据(json格式)
      */
     void uploadCollectionDataSingle(ResultEntity result);
+
+
+
 }

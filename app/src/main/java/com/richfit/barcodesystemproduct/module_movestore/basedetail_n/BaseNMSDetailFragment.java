@@ -298,11 +298,6 @@ public abstract class BaseNMSDetailFragment<P extends INMSDetailPresenter> exten
     }
 
     @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
-    }
-
-    @Override
     public void retry(String retryAction) {
         switch (retryAction) {
             case Global.RETRY_TRANSFER_DATA_ACTION:

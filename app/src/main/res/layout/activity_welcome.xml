@@ -6,37 +6,45 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <LinearLayout
+    <View
+        android:id="@+id/reveal_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="5dp"
+        android:visibility="invisible" />
 
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:orientation="horizontal">
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:weightSum="1">
 
-        <com.richfit.common_lib.widget.FButton
+        <Button
             android:id="@+id/btn_online_mode"
-            android:layout_width="0dp"
+            android:layout_width="80dp"
             android:layout_height="80dp"
+            android:layout_gravity="center_vertical"
             android:layout_margin="30dp"
-            android:layout_weight="1"
+            android:background="@drawable/circle_shape"
             android:minHeight="@dimen/fbutton_min_height"
             android:minWidth="@dimen/fbutton_min_width"
             android:text="@string/richfit_barcodesystem_online_model"
             android:textColor="@color/black"
-            app:buttonColor="@color/light_blue_a200"
-            app:shadowEnabled="true" />
+            android:layout_weight="0.02" />
 
-        <com.richfit.common_lib.widget.FButton
+        <Button
             android:id="@+id/btn_offline_mode"
-            android:layout_width="0dp"
+            android:layout_width="80dp"
             android:layout_height="80dp"
+            android:layout_gravity="center_vertical"
             android:layout_margin="30dp"
-            android:layout_weight="1"
+            android:background="@drawable/circle_shape"
             android:minHeight="@dimen/fbutton_min_height"
             android:minWidth="@dimen/fbutton_min_width"
             android:text="@string/richfit_barcodesystem_offline_model"
-            android:textColor="@color/black"
-            app:buttonColor="@color/orange_500"
-            app:shadowEnabled="true" />
+            android:textColor="@color/black" />
+
     </LinearLayout>
 </RelativeLayout>

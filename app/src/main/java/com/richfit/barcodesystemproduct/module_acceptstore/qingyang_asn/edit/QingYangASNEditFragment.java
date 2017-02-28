@@ -293,11 +293,6 @@ public class QingYangASNEditFragment extends BaseFragment<ASNEditPresenterImp, O
     }
 
     @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
-    }
-
-    @Override
     public void retry(String retryAction) {
         switch (retryAction) {
             case Global.RETRY_LOAD_SINGLE_CACHE_ACTION:

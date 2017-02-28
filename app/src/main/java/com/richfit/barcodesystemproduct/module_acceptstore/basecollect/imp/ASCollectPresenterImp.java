@@ -194,6 +194,4 @@ public class ASCollectPresenterImp extends BasePresenter<IASCollectView>
                         });
         addSubscriber(subscriber);
     }
-
-
 }

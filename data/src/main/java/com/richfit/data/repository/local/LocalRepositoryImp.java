@@ -7,6 +7,7 @@ import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.data.db.ApprovalDao;
 import com.richfit.data.db.CommonDao;
 import com.richfit.domain.bean.BizFragmentConfig;
+import com.richfit.domain.bean.CostCenterEntity;
 import com.richfit.domain.bean.ImageEntity;
 import com.richfit.domain.bean.InvEntity;
 import com.richfit.domain.bean.InventoryEntity;
@@ -178,8 +179,21 @@ public class LocalRepositoryImp implements ILocalRepository {
     }
 
     @Override
-    public int saveBasicData(List<Map<String, Object>> maps) {
-        return mCommonDao.insertBaseData(maps);
+    public Flowable<Integer> saveBasicData(List<Map<String, Object>> maps) {
+        return Flowable.create(emitter -> {
+            try {
+                int flag = mCommonDao.insertBaseData(maps);
+                if (flag < 0) {
+                    emitter.onError(new Throwable("下载基础数据到本地失败"));
+                } else {
+                    emitter.onNext(flag);
+                    emitter.onComplete();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                emitter.onError(e);
+            }
+        }, BackpressureStrategy.LATEST);
     }
 
     @Override
@@ -188,12 +202,12 @@ public class LocalRepositoryImp implements ILocalRepository {
     }
 
     @Override
-    public Flowable<ArrayList<InvEntity>> getInvsByWorkId(String workId,int flag) {
+    public Flowable<ArrayList<InvEntity>> getInvsByWorkId(String workId, int flag) {
 
         return Flowable.create(new SimpleSubscriber<ArrayList<InvEntity>>() {
             @Override
             ArrayList<InvEntity> execute() throws Throwable {
-                return mCommonDao.getInvByWorkId(workId,flag);
+                return mCommonDao.getInvByWorkId(workId, flag);
             }
         }, BackpressureStrategy.LATEST);
     }
@@ -210,26 +224,51 @@ public class LocalRepositoryImp implements ILocalRepository {
 
     @Override
     public Flowable<Boolean> checkWareHouseNum(String sendWorkId, String sendInvCode, String recWorkId,
-                                               String recInvCode,int flag) {
+                                               String recInvCode, int flag) {
         return Flowable.create(new FlowableOnSubscribe<Boolean>() {
             @Override
             public void subscribe(FlowableEmitter<Boolean> emitter) throws Exception {
-                if(mCommonDao.checkWareHouseNum(sendWorkId,sendInvCode,recWorkId,recInvCode,flag)) {
+                if (mCommonDao.checkWareHouseNum(sendWorkId, sendInvCode, recWorkId, recInvCode, flag)) {
                     emitter.onNext(true);
                     emitter.onComplete();
-                }else {
+                } else {
                     emitter.onError(new Throwable("您选择的发出库位与接收库位不隶属于同一个ERP系统仓库号"));
                 }
             }
-        },BackpressureStrategy.LATEST);
+        }, BackpressureStrategy.LATEST);
     }
 
     @Override
-    public Flowable<ArrayList<SupplierEntity>> getSupplierList(String workCode,int flag) {
-        return Flowable.create(new SimpleSubscriber<ArrayList<SupplierEntity>>() {
-            @Override
-            ArrayList<SupplierEntity> execute() throws Throwable {
-                return mCommonDao.getSupplierList(workCode,flag);
+    public Flowable<ArrayList<SupplierEntity>> getSupplierList(String workCode, String keyWord, int defaultItemNum, int flag) {
+        return Flowable.create(emitter -> {
+            try {
+                final ArrayList<SupplierEntity> list = mCommonDao.getSupplierList(workCode, keyWord, defaultItemNum, flag);
+                if (list == null || list.size() == 0) {
+                    emitter.onError(new Throwable("未获取到供应商数据,请检查工厂或者是否已经下载了供应基础数据。如果您还未下载，请到设置界面下载该基础数据"));
+                } else {
+                    emitter.onNext(list);
+                    emitter.onComplete();
+                }
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        }, BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Flowable<ArrayList<CostCenterEntity>> getCostCenterList(String workCode, String keyWord, int defaultItemNum,int flag) {
+        return Flowable.create(emitter -> {
+            try {
+                final ArrayList<CostCenterEntity> list = mCommonDao.getCostCenterList(workCode, keyWord, defaultItemNum,flag);
+                if (list == null || list.size() == 0) {
+                    emitter.onError(new Throwable("未获取到供应商数据,请检查工厂或者是否已经下载了供应基础数据。" +
+                            "如果您还未下载，请到设置界面下载该基础数据"));
+                } else {
+                    emitter.onNext(list);
+                    emitter.onComplete();
+                }
+            } catch (Exception e) {
+                emitter.onError(e);
             }
         }, BackpressureStrategy.LATEST);
     }
@@ -322,7 +361,7 @@ public class LocalRepositoryImp implements ILocalRepository {
         return Flowable.create(new FlowableOnSubscribe<String>() {
             @Override
             public void subscribe(FlowableEmitter<String> e) throws Exception {
-                String storageNum =  mCommonDao.getStorageNum(workId, workCode, invId, invCode);
+                String storageNum = mCommonDao.getStorageNum(workId, workCode, invId, invCode);
                 e.onNext(storageNum);
                 e.onComplete();
             }

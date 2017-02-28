@@ -312,18 +312,9 @@ public abstract class BaseMSDetailFragment<P extends IMSDetailPresenter> extends
 
     }
 
-
-
-
     @Override
     public void upAndDownLocationFail(String[] messages) {
 
-    }
-
-
-    @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
     }
 
     protected abstract String getSubFunName();

@@ -116,11 +116,6 @@ public class QingHaiNMS311CollectFragment extends BaseNMSCollectFragment<QingHai
     }
 
     @Override
-    protected String getSpecialFlag() {
-        return "N";
-    }
-
-    @Override
     protected boolean getWMOpenFlag() {
         return false;
     }

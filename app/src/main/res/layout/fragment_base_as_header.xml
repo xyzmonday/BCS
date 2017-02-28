@@ -68,6 +68,7 @@
         android:visibility="gone">
 
         <TextView
+            android:id="@+id/tv_send_work_name"
             style="@style/LeftTextViewItemStyle"
             android:text="@string/send_work" />
 
@@ -95,5 +96,23 @@
             android:focusableInTouchMode="false" />
     </LinearLayout>
 
+
+    <LinearLayout
+        android:id="@+id/ll_creator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/creator" />
+
+        <TextView
+            android:id="@+id/tv_creator"
+            style="@style/RightTextViewItemStyle" />
+
+    </LinearLayout>
 
 </LinearLayout>

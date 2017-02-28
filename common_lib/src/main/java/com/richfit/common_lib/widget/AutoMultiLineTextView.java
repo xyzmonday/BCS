@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.richfit.common_lib.R;
 
-public class AutoMultiLineTextView extends TextView {
+public class AutoMultiLineTextView extends android.support.v7.widget.AppCompatTextView {
     private static final String TAG = "yff";
     private static final String namespace = "http://schemas.android.com/apk/res/android";
     private String text;

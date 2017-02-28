@@ -144,6 +144,7 @@ public abstract class BaseNMSHeaderFragment extends BaseFragment<NMSHeaderPresen
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(workId -> mPresenter.getRecInvsByWorkId(workId,getOrgFlag()));
 
+        mPresenter.deleteCollectionData("",mBizType,Global.USER_ID,mCompanyCode);
 
     }
 
@@ -151,7 +152,6 @@ public abstract class BaseNMSHeaderFragment extends BaseFragment<NMSHeaderPresen
     public void initData() {
         SPrefUtil.saveData(mBizType, "0");
         etTransferDate.setText(UiUtil.getCurrentDate(Global.GLOBAL_DATE_PATTERN_TYPE1));
-
     }
 
     @Override
@@ -287,10 +287,6 @@ public abstract class BaseNMSHeaderFragment extends BaseFragment<NMSHeaderPresen
         clearExtraUI(mSubFunEntity.headerConfigs);
     }
 
-    @Override
-    public void networkConnectError(String retryAction) {
-
-    }
 
     protected abstract String getMoveType();
 

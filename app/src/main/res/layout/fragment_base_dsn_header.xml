@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/root_id"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/work" />
+
+        <Spinner
+            android:id="@+id/sp_work"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/spinner_min_height"
+            android:layout_weight="2" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_cost_center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/cost_center" />
+
+        <AutoCompleteTextView
+            android:id="@+id/et_cost_center"
+            style="@style/RightEditTextItemStyle" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_project_num"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/project_num" />
+
+        <AutoCompleteTextView
+            android:id="@+id/et_project_num"
+            style="@style/RightEditTextItemStyle" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/transfer_date" />
+
+        <com.richfit.common_lib.widget.RichEditText
+            android:id="@+id/et_transfer_date"
+            style="@style/RightRichEditTextItemStyle" />
+    </LinearLayout>
+</LinearLayout>

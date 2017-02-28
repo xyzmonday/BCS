@@ -22,7 +22,8 @@ public interface IMSEditPresenter extends IPresenter<IMSEditView>{
     void getInventoryInfo(String queryType, String workId, String invId,
                           String workCode, String invCode, String storageNum,
                           String materialNum,String materialId,
-                          String location, String batchFlag, String invType);
+                          String location, String batchFlag,String specialInvFlag,
+                          String specialInvNum,String invType);
 
     /**
      * 获取单条缓存

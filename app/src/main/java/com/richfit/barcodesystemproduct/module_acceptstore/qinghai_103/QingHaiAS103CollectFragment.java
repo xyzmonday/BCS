@@ -11,7 +11,22 @@ import com.richfit.barcodesystemproduct.module_acceptstore.basecollect.imp.ASCol
  * Created by monday on 2017/2/17.
  */
 
-public class QingHaiAS103CollectFragment extends BaseASCollectFragment<ASCollectPresenterImp>{
+public class QingHaiAS103CollectFragment extends BaseASCollectFragment<ASCollectPresenterImp> {
+
+    @Override
+    public void handleBarCodeScanResult(String type, String[] list) {
+        if (list != null && list.length >= 12) {
+            final String materialNum = list[2];
+            final String batchFlag = list[11];
+            if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
+                //如果已经选中单品，那么说明已经扫描过一次。必须保证每一次的物料都一样
+                saveCollectedData();
+            } else {
+                //在单品模式下，扫描不同的物料
+                loadMaterialInfo(materialNum, batchFlag);
+            }
+        }
+    }
 
     @Override
     public void initInjector() {

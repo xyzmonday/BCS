@@ -1,7 +1,6 @@
 package com.richfit.barcodesystemproduct.module_delivery.basedetail;
 
 import android.app.Dialog;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,18 +17,18 @@ import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.BottomMenuAdapter;
 import com.richfit.barcodesystemproduct.adapter.DSYDetailAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
-import com.richfit.barcodesystemproduct.module.main.MainActivity;
-import com.richfit.barcodesystemproduct.module_delivery.basedetail.imp.DSDetailPresenterImp;
 import com.richfit.common_lib.animationrv.Animation.animators.FadeInDownAnimator;
-import com.richfit.common_lib.dialog.ShowErrorMessageDialog;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.AutoSwipeRefreshLayout;
+import com.richfit.domain.bean.BottomMenuEntity;
 import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.RowConfig;
 import com.richfit.domain.bean.TreeNode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -40,8 +39,10 @@ import static com.richfit.common_lib.utils.SPrefUtil.getData;
  * Created by monday on 2016/11/20.
  */
 
-public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresenterImp, RefDetailEntity>
+public abstract class BaseDSDetailFragment<P extends IDSDetailPresenter> extends BaseFragment<P, RefDetailEntity>
         implements IDSDetailView, SwipeRefreshLayout.OnRefreshListener {
+
+    private static final HashMap<String, Object> FLAGMAP = new HashMap<>();
 
     @BindView(R.id.actQuantity)
     protected TextView actQuantityName;
@@ -55,6 +56,9 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
     LinearLayout mExtraContainer;
     protected String mTransNum;
     protected String mTransId;
+    //第二过账成功后返回的验收单号
+    protected String mInspectionNum;
+    protected List<BottomMenuEntity> mBottomMenus;
 
     @Override
     protected int getContentId() {
@@ -132,7 +136,7 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
     public void onRefresh() {
         String transferFlag = (String) getData(mBizType + mRefType, "0");
         if ("1".equals(transferFlag)) {
-            setRefreshing(false,"本次采集已经过账,请先进行数据上传操作");
+            setRefreshing(false, "本次采集已经过账,请先进行数据上传操作");
             return;
         }
         //单据抬头id
@@ -258,8 +262,9 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
     public void showOperationMenuOnDetail(final String companyCode) {
         View rootView = LayoutInflater.from(mActivity).inflate(R.layout.menu_bottom, null);
         GridView menu = (GridView) rootView.findViewById(R.id.gridview);
-        BottomMenuAdapter adapter = new BottomMenuAdapter(mActivity, R.layout.item_bottom_menu,
-                provideDefaultBottomMenu());
+        mBottomMenus = provideDefaultBottomMenu();
+        BottomMenuAdapter adapter = new BottomMenuAdapter(mActivity, R.layout.item_bottom_menu, mBottomMenus);
+
         menu.setAdapter(adapter);
 
         final Dialog dialog = new Dialog(mActivity, R.style.MaterialDialogSheet);
@@ -268,17 +273,18 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
         dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         dialog.getWindow().setGravity(Gravity.BOTTOM);
         dialog.show();
-
         menu.setOnItemClickListener((adapterView, view, position, id) -> {
             switch (position) {
                 case 0:
                     //1.过账
-                    submit2BarcodeSystem();
+                    submit2BarcodeSystem(mBottomMenus.get(position).transToSapFlag);
                     break;
                 case 1:
-                    //2.数据上传
-                    submit2SAP();
-                    dialog.dismiss();
+                    submit2SAP(mBottomMenus.get(position).transToSapFlag);
+                    break;
+                case 3:
+                    //转储
+                    sapUpAndDownLocation(mBottomMenus.get(position).transToSapFlag);
                     break;
             }
             dialog.dismiss();
@@ -288,13 +294,17 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
     /**
      * 1.过账
      */
-    private void submit2BarcodeSystem() {
-        String transferFlag = (String) getData(mBizType + mRefType, "0");
-        if ("1".equals(transferFlag)) {
-            showMessage("本次采集已经过账,请先进行数据上传操作");
+    protected void submit2BarcodeSystem(String tranToSapFlag) {
+        String state = (String) SPrefUtil.getData(mBizType + mRefType, "0");
+        if (!"0".equals(state)) {
+            showMessage("已经过账成功,请进行数据上传");
             return;
         }
-        mPresenter.submitData2BarcodeSystem(mTransId, mRefData.bizType, mRefType, mRefData.voucherDate);
+        mTransNum = "";
+        FLAGMAP.clear();
+        FLAGMAP.put("transToSapFlag", tranToSapFlag);
+        mPresenter.submitData2BarcodeSystem(mTransId, mBizType, mRefType, Global.USER_ID,
+                mRefData.voucherDate, FLAGMAP, createExtraHeaderMap());
     }
 
     @Override
@@ -302,62 +312,33 @@ public abstract class BaseDSDetailFragment extends BaseFragment<DSDetailPresente
         mTransNum = visa;
     }
 
-    @Override
-    public void submitBarcodeSystemSuccess() {
-        showSuccessDialog("过账成功" + mTransNum);
-    }
-
-    @Override
-    public void submitBarcodeSystemFail(String message) {
-        showMessage(message);
-        mTransNum = "";
-    }
-
     /**
      * 2.数据上传
      */
-    private void submit2SAP() {
-        if (TextUtils.isEmpty(mTransNum)) {
+    protected void submit2SAP(String tranToSapFlag) {
+        //如果没有进行第一步的过账，那么不允许数据上传
+        String state = (String) getData(mBizType + mRefType, "0");
+        if ("0".equals(state)) {
             showMessage("请先过账");
             return;
         }
+        FLAGMAP.clear();
+        FLAGMAP.put("transToSapFlag", tranToSapFlag);
+        mInspectionNum = "";
         mPresenter.submitData2SAP(mTransId, mRefData.bizType, mRefType, Global.USER_ID,
-                mRefData.voucherDate, null, createExtraHeaderMap());
+                mRefData.voucherDate, FLAGMAP, createExtraHeaderMap());
+    }
+
+    @Override
+    public void showInspectionNum(String inspectionNum) {
+        mInspectionNum = inspectionNum;
     }
 
     /**
-     * 如果不是标准的出库，需要重写该方法。
+     * 3. 如果submitFlag:2那么分三步进行转储处理
      */
-    @Override
-    public void submitSAPSuccess() {
-        setRefreshing(false, "数据上传成功");
-        mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
-    }
+    private void sapUpAndDownLocation(String tranToSapFlag) {
 
-    @Override
-    public void submitSAPFail(String[] messages) {
-        MainActivity activity = (MainActivity) mActivity;
-        FragmentManager fm = activity.getSupportFragmentManager();
-        ShowErrorMessageDialog dialog = ShowErrorMessageDialog.newInstance(messages);
-        dialog.show(fm, "nms_show_error_messages");
-    }
-
-    @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
-    }
-
-    @Override
-    public void retry(String retryAction) {
-        switch (retryAction) {
-            case Global.RETRY_TRANSFER_DATA_ACTION:
-                submit2BarcodeSystem();
-                break;
-            case Global.RETRY_UPLOAD_DATA_ACTION:
-                submit2SAP();
-                break;
-        }
-        super.retry(retryAction);
     }
 
     /*子类返回修改模块的名称*/

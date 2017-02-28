@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -19,7 +20,6 @@ import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.CommonUtil;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.RichEditText;
@@ -88,6 +88,8 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
     protected LinearLayout llRecLocation;
     @BindView(R.id.ll_rec_batch)
     protected LinearLayout llRecBatch;
+    @BindView(R.id.sp_special_inv_flag)
+    Spinner spSpecialInvFlag;
 
     /*ERP仓库号是否一致，对于ERP仓库号一致的物料，必须输入接收仓位，否者不能输入。但是前提
     * 是必须先知道是否打开了WM。如果没有打开那么不需要查询*/
@@ -108,6 +110,7 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
     Map<String, Object> mExtraLocationMap;
     /*缓存的行级别的额外字段*/
     Map<String, Object> mExtraLineMap;
+
 
     @Override
     protected int getContentId() {
@@ -160,6 +163,7 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
         mSendInvs = new ArrayList<>();
         mInventoryDatas = new ArrayList<>();
         isOpenWM = getWMOpenFlag();
+
     }
 
     @Override
@@ -221,6 +225,7 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
         //读取额外字段配置信息
         mPresenter.readExtraConfigs(mCompanyCode, mBizType, mRefType,
                 Global.COLLECT_CONFIG_TYPE, Global.LOCATION_CONFIG_TYPE);
+
     }
 
     @Override
@@ -254,7 +259,11 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
             return;
         }
         etMaterialNum.setEnabled(true);
-
+        if (spSpecialInvFlag.getAdapter() == null) {
+            List<String> list = getStringArray(R.array.special_inv_flags);
+            ArrayAdapter adapter = new ArrayAdapter<>(mActivity, R.layout.item_simple_sp, list);
+            spSpecialInvFlag.setAdapter(adapter);
+        }
     }
 
     /**
@@ -374,7 +383,7 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
         mPresenter.getInventoryInfo(getInventoryQueryType(), mRefData.workId, invEntity.invId,
                 mRefData.workCode, invEntity.invCode, "", getString(etMaterialNum),
                 CommonUtil.Obj2String(etMaterialNum.getTag()), "",
-                getString(etSendBatchFlag), getInvType());
+                getString(etSendBatchFlag), "", "", getInvType());
     }
 
     /**
@@ -547,6 +556,10 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
      */
     @Override
     public boolean checkCollectedDataBeforeSave() {
+        if(!etMaterialNum.isEnabled()) {
+            showMessage("请先获取物料信息");
+            return false;
+        }
         if (TextUtils.isEmpty(mRefData.recInvId)) {
             showMessage("请先选择发出库位");
             return false;
@@ -614,7 +627,7 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
             result.quantity = getString(etQuantity);
             result.invType = getInvType();
             result.modifyFlag = "N";
-            result.specialFlag = getSpecialFlag();
+            result.specialInvFlag = CommonUtil.Obj2String(spSpecialInvFlag.getSelectedItem());
             result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
             result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
             result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
@@ -687,11 +700,6 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
     }
 
     @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
-    }
-
-    @Override
     public void _onPause() {
         clearAllUI();
     }
@@ -717,8 +725,6 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
     protected abstract String getInvType();
 
     protected abstract String getInventoryQueryType();
-
-    protected abstract String getSpecialFlag();
 
     /**
      * 子类实现是否打开WM管理。如果打开了WM，那么需要检查发出库位和接收库位

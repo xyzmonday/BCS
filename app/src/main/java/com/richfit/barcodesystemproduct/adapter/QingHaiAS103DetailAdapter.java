@@ -36,7 +36,7 @@ public class QingHaiAS103DetailAdapter extends CommonTreeAdapter<RefDetailEntity
                 .setText(R.id.actQuantity, item.actQuantity)
                 .setText(R.id.totalQuantity, item.totalQuantity)
                 .setText(R.id.work, item.workCode)
-                .setTag(R.id.inv, item.invCode);
+                .setText(R.id.inv, item.invCode);
     }
 
     @Override

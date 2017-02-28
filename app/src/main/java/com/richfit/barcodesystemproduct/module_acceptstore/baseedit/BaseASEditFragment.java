@@ -228,11 +228,6 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
     }
 
     @Override
-    public void networkConnectError(String retryAction) {
-       showNetConnectErrorDialog(retryAction);
-    }
-
-    @Override
     public void retry(String retryAction) {
         switch (retryAction) {
             case Global.RETRY_EDIT_DATA_ACTION:

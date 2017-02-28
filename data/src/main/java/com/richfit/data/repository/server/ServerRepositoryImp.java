@@ -419,6 +419,12 @@ public class ServerRepositoryImp implements IServerRepository {
     }
 
     @Override
+    public Flowable<String> transferCollectionData(ResultEntity result) {
+        return mRequestApi.transferCollectionData2(JsonUtil.object2Json(result))
+                .compose(TransformerHelper.ListTransformer);
+    }
+
+    @Override
     public Flowable<String> transferCollectionData(String transId, String bizType,String refType, String userId,
                                                    String voucherDate,Map<String,Object> flagMap, Map<String, Object> extraHeaderMap) {
         mRequestParam.clear();
@@ -476,7 +482,9 @@ public class ServerRepositoryImp implements IServerRepository {
     @Override
     public Flowable<List<InventoryEntity>> getInventoryInfo(String queryType, String workId, String invId,
                                                             String workCode,String invCode,String storageNum,
-                                                            String materialNum, String materialId, String materialGroup, String materialDesc, String batchFlag, String location, String invType) {
+                                                            String materialNum, String materialId, String materialGroup,
+                                                            String materialDesc, String batchFlag, String location,
+                                                            String specialInvFlag,String specialInvNum,String invType) {
         mRequestParam.clear();
         mRequestParam.put("queryType", queryType);
         mRequestParam.put("workId", workId);
@@ -491,6 +499,8 @@ public class ServerRepositoryImp implements IServerRepository {
         mRequestParam.put("batchFlag", CommonUtil.toUpperCase(batchFlag));
         mRequestParam.put("location", CommonUtil.toUpperCase(location));
         mRequestParam.put("invType", invType);
+        mRequestParam.put("specialInvFlag",specialInvFlag);
+        mRequestParam.put("specialInvNum",specialInvNum);
         return mRequestApi.getInventoryInfo(JsonUtil.map2Json(mRequestParam))
                 .compose(TransformerHelper.handleResponse());
     }

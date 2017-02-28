@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.domain.bean.BizFragmentConfig;
+import com.richfit.domain.bean.CostCenterEntity;
 import com.richfit.domain.bean.ImageEntity;
 import com.richfit.domain.bean.InvEntity;
 import com.richfit.domain.bean.InventoryEntity;
@@ -100,9 +101,10 @@ public class Repository implements ILocalRepository, IServerRepository {
      */
     @Override
     public Flowable<List<Map<String, Object>>> loadBasicData(final LoadDataTask task) {
-        //添加本次下载的日期。能不能不保存日期
+
         final String queryType = task.queryType;
         final String currentDate = UiUtil.getCurrentDate(Global.GLOBAL_DATE_PATTERN_TYPE4);
+        //针对增量更新的基础数据，使用上一次请求的日期
         final String queryDate = "CW".equals(queryType) ? getLoadBasicDataTaskDate(queryType) : currentDate;
         //保存查询日期
         task.queryDate = queryDate;
@@ -112,13 +114,14 @@ public class Repository implements ILocalRepository, IServerRepository {
         tmp.put("isFirstPage", task.isFirstPage);
         tmp.put("taskId", task.id);
         return mServerRepository.loadBasicData(task)
+                .filter(list -> list != null && list.size() > 0)
                 .zipWith(Flowable.just(tmp), (maps, map) -> {
-                    maps.add(0,map);
+                    maps.add(0, map);
                     return maps;
                 })
                 .onBackpressureBuffer()
                 .doOnNext(map -> {
-                    if ("CW".equals(queryType))
+                    if (!"CW".equals(queryType))
                         return;
                     saveLoadBasicDataTaskDate(queryType, currentDate);
                 });
@@ -196,9 +199,14 @@ public class Repository implements ILocalRepository, IServerRepository {
     }
 
     @Override
+    public Flowable<String> transferCollectionData(ResultEntity result) {
+        return mServerRepository.transferCollectionData(result);
+    }
+
+    @Override
     public Flowable<String> transferCollectionData(String transId, String bizType, String refType, String userId, String voucherDate,
-                                                   Map<String, Object> flagMap,Map<String, Object> extraHeaderMap) {
-        return mServerRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate, flagMap,extraHeaderMap);
+                                                   Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
+        return mServerRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate, flagMap, extraHeaderMap);
     }
 
     @Override
@@ -219,11 +227,11 @@ public class Repository implements ILocalRepository, IServerRepository {
     @Override
     public Flowable<List<InventoryEntity>> getInventoryInfo(String queryType, String workId, String invId,
                                                             String workCode, String invCode, String storageNum,
-                                                            String materialNum,String materialId, String materialGroup,
+                                                            String materialNum, String materialId, String materialGroup,
                                                             String materialDesc, String batchFlag,
-                                                            String location, String invType) {
-        return mServerRepository.getInventoryInfo(queryType, workId, invId, workCode, invCode, storageNum,materialNum, materialId, materialGroup,
-                materialDesc, batchFlag, location, invType);
+                                                            String location, String specialInvFlag, String specialInvNum, String invType) {
+        return mServerRepository.getInventoryInfo(queryType, workId, invId, workCode, invCode, storageNum, materialNum, materialId, materialGroup,
+                materialDesc, batchFlag, location, specialInvFlag, specialInvNum, invType);
     }
 
     @Override
@@ -356,13 +364,13 @@ public class Repository implements ILocalRepository, IServerRepository {
      * @param maps:基础数据源
      */
     @Override
-    public int saveBasicData(List<Map<String, Object>> maps) {
+    public Flowable<Integer> saveBasicData(List<Map<String, Object>> maps) {
         return mLocalRepository.saveBasicData(maps);
     }
 
     @Override
-    public Flowable<ArrayList<InvEntity>> getInvsByWorkId(String workId,int flag) {
-        return mLocalRepository.getInvsByWorkId(workId,flag);
+    public Flowable<ArrayList<InvEntity>> getInvsByWorkId(String workId, int flag) {
+        return mLocalRepository.getInvsByWorkId(workId, flag);
     }
 
     @Override
@@ -372,13 +380,18 @@ public class Repository implements ILocalRepository, IServerRepository {
 
     @Override
     public Flowable<Boolean> checkWareHouseNum(String sendWorkId, String sendInvCode, String recWorkId,
-                                               String recInvCode,int flag) {
-        return mLocalRepository.checkWareHouseNum(sendWorkId, sendInvCode, recWorkId, recInvCode,flag);
+                                               String recInvCode, int flag) {
+        return mLocalRepository.checkWareHouseNum(sendWorkId, sendInvCode, recWorkId, recInvCode, flag);
     }
 
     @Override
-    public Flowable<ArrayList<SupplierEntity>> getSupplierList(String workCode,int flag) {
-        return mLocalRepository.getSupplierList(workCode,flag);
+    public Flowable<ArrayList<SupplierEntity>> getSupplierList(String workCode, String keyWord, int defaultItemNum, int flag) {
+        return mLocalRepository.getSupplierList(workCode, keyWord, defaultItemNum, flag);
+    }
+
+    @Override
+    public Flowable<ArrayList<CostCenterEntity>> getCostCenterList(String workCode, String keyWord, int defaultItemNum,int flag) {
+        return mLocalRepository.getCostCenterList(workCode,keyWord,defaultItemNum,flag);
     }
 
     @Override
@@ -419,7 +432,7 @@ public class Repository implements ILocalRepository, IServerRepository {
 
     @Override
     public Flowable<String> getStorageNum(String workId, String workCode, String invId, String invCode) {
-        return mLocalRepository.getStorageNum(workId,workCode,invId,invCode);
+        return mLocalRepository.getStorageNum(workId, workCode, invId, invCode);
     }
 
 

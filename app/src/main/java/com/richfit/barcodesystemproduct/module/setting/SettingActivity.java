@@ -2,6 +2,7 @@ package com.richfit.barcodesystemproduct.module.setting;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -14,11 +15,12 @@ import android.widget.TextView;
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.base.BaseActivity;
 import com.richfit.barcodesystemproduct.module.setting.imp.SettingPresenterImp;
+import com.richfit.common_lib.dialog.ProgressDialogFragment;
 import com.richfit.common_lib.rxutils.RxCilck;
 import com.richfit.common_lib.utils.FileUtil;
+import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.ButtonCircleProgressBar;
-import com.richfit.common_lib.widget.LoadingProgressDialog;
 import com.richfit.domain.bean.LoadBasicDataWrapper;
 import com.richfit.domain.bean.UpdateEntity;
 
@@ -36,11 +38,13 @@ import zlc.season.rxdownload2.entity.DownloadStatus;
 public class SettingActivity extends BaseActivity<SettingPresenterImp>
         implements ISettingView {
 
-    public static final int LOAD_STATUS_START = 0;
-    public static final int LOAD_STATUS_LADING = 1;
-    public static final int LOAD_STATUS_PAUSE = 2;
-    public static final int LOAD_STATUS_RESUME = 3;
-    public static final int LOAD_STATUS_END = 4;
+    private static final String PROGRESS_DIALOG_TAG = "progress_dialog";
+
+    private static final int LOAD_STATUS_START = 0;
+    private static final int LOAD_STATUS_LADING = 1;
+    private static final int LOAD_STATUS_PAUSE = 2;
+    private static final int LOAD_STATUS_RESUME = 3;
+    private static final int LOAD_STATUS_END = 4;
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -63,7 +67,7 @@ public class SettingActivity extends BaseActivity<SettingPresenterImp>
 
     private UpdateEntity mUpdateInfo;
     private int mCurrentLoadStatus = LOAD_STATUS_START;
-    private LoadingProgressDialog mLoadingProgressDialog;
+    private ProgressDialogFragment mProgressDialog;
     private String mMessage;
 
     @Override
@@ -127,6 +131,21 @@ public class SettingActivity extends BaseActivity<SettingPresenterImp>
             requestParams.add(task);
             mMessage += "供应商";
         }
+
+        if(sbCostCenter.isOpened()) {
+            task.isByPage = true;
+            task.queryType = "CZ";
+            requestParams.add(task);
+            mMessage += "成本中心";
+        }
+
+        if(sbWarehouse.isOpened()) {
+            task.isByPage = false;
+            task.queryType = "LZ";
+            requestParams.add(task);
+            mMessage += "成本中心";
+        }
+
         if (TextUtils.isEmpty(mMessage)) {
             showMessage("请您先选择要下载的数据");
             return;
@@ -234,23 +253,27 @@ public class SettingActivity extends BaseActivity<SettingPresenterImp>
 
     @Override
     public void onStartLoadBasicData(int maxProgress) {
-
-        if (mLoadingProgressDialog == null) {
-            mLoadingProgressDialog = new LoadingProgressDialog(this, R.style.CustomLoadingDialog);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        mProgressDialog = (ProgressDialogFragment) fragmentManager.findFragmentByTag(PROGRESS_DIALOG_TAG);
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialogFragment();
         }
-        mLoadingProgressDialog.show();
+        mProgressDialog.setMaxProgress(maxProgress);
+        if (!mProgressDialog.isAdded())
+            mProgressDialog.show(fragmentManager, PROGRESS_DIALOG_TAG);
     }
 
     @Override
-    public void loadBasicDataProgress(int progress) {
-        mLoadingProgressDialog.setProgress(progress);
+    public void loadBasicDataProgress(float progress) {
+        L.e("下载进度 = " + progress);
+        mProgressDialog.setProgress(progress);
     }
 
     @Override
     public void loadBasicDataFail(String message) {
         showMessage(message);
-        if (mLoadingProgressDialog != null && mLoadingProgressDialog.isShowing()) {
-            mLoadingProgressDialog.dismiss();
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
         }
     }
 
@@ -260,8 +283,8 @@ public class SettingActivity extends BaseActivity<SettingPresenterImp>
                 .setTitleText("下载成功")
                 .setContentText(mMessage + "基础数据下载成功,请进行其他的操作")
                 .show();
-        if (mLoadingProgressDialog != null && mLoadingProgressDialog.isShowing()) {
-            mLoadingProgressDialog.dismiss();
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
         }
     }
 }

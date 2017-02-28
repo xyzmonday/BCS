@@ -71,7 +71,7 @@ public abstract class BaseActivity<T extends IPresenter> extends AppCompatActivi
                 .appComponent(SampleApplicationLike.getAppComponent())
                 .build();
         super.onCreate(savedInstanceState);
-
+        
         int layoutId = getContentId();
         if (layoutId > 0) {
             setContentView(getContentId());

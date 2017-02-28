@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 有参考物资入库明细适配器
+ * 有参考物资(有参考)标志出库
  * Created by monday on 2016/11/16.
  */
 

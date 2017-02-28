@@ -67,32 +67,29 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
     protected Spinner spInv;
     @BindView(R.id.et_batch_flag)
     EditText etBatchFlag;
-    //合同数量(单据数量)
+    /*合同数量(单据数量)*/
     @BindView(R.id.tv_order_quantity)
     protected TextView tvOrderQuantity;
-    //到货数量
+    /*到货数量*/
     @BindView(R.id.et_quantity)
     protected EditText etQuantity;
     @BindView(R.id.tv_balance_quantity)
-    protected TextView tvBalanceQuantity;//结算数量
+    /*结算数量*/
+    protected TextView tvBalanceQuantity;
 
-    //匹配的检验批行明细
+    /*/匹配的检验批行明细*/
     List<String> mRefLines;
     ArrayAdapter<String> mRefLineAdapter;
-    //当前正在操作的单据行号
+    /*当前正在操作的单据行号*/
     String mSelectedRefLineNum;
-    /**
-     * 缓存的到货数量
-     */
+    /*缓存的到货数量*/
     String mCacheQuantity;
-    /**
-     * 缓存的库存地点
-     */
+    /*缓存的库存地点*/
     String mCacheInvCode;
-
     /*额外字段的缓存信息*/
     Map<String, Object> mCachedExtraLineMap;
-    List<InvEntity> mInvDatas;//库存地点
+    /*库存地点*/
+    List<InvEntity> mInvDatas;
     InvAdapter mInvAdapter;
 
     @Override
@@ -399,6 +396,10 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
 
     @Override
     public boolean checkCollectedDataBeforeSave() {
+        if(!etMaterialNum.isEnabled()) {
+            showMessage("请先获取单据数据");
+            return false;
+        }
         //检查数据是否可以保存
         if (spRefLine.getSelectedItemPosition() == 0) {
             showMessage("请选选择单据行");
@@ -462,7 +463,7 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
                 case 3:
                 case 4:
                     //2.拍照
-                    toTakePhoto(menus.get(position).menuName,menus.get(position).takePhotoType);
+                    toTakePhoto(menus.get(position).menuName, menus.get(position).takePhotoType);
                     break;
             }
             dialog.dismiss();
@@ -584,11 +585,6 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
         bundle.putBoolean(Global.EXTRA_IS_LOCAL_KEY, false);
         intent.putExtras(bundle);
         mActivity.startActivity(intent);
-    }
-
-    @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
     }
 
     @Override

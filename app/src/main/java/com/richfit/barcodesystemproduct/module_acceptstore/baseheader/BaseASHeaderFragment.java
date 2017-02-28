@@ -46,7 +46,12 @@ public abstract class BaseASHeaderFragment extends BaseFragment<ASHeaderPresente
     protected LinearLayout llSupplier;
     @BindView(R.id.ll_send_work)
     protected LinearLayout llSendWork;
-
+    @BindView(R.id.tv_send_work_name)
+    protected TextView tvSendWorkName;
+    @BindView(R.id.ll_creator)
+    protected LinearLayout llCreator;
+    @BindView(R.id.tv_creator)
+    TextView tvCreator;
 
     @Override
     public void handleBarCodeScanResult(String type, String[] list) {
@@ -220,6 +225,7 @@ public abstract class BaseASHeaderFragment extends BaseFragment<ASHeaderPresente
             tvSupplier.setText(mRefData.supplierNum);
             //发出工厂
             tvSendWork.setText(mRefData.workCode);
+            tvCreator.setText(Global.LOGIN_ID);
             //绑定额外字段
             bindExtraUI(mSubFunEntity.headerConfigs, mRefData.mapExt);
         }
@@ -227,7 +233,7 @@ public abstract class BaseASHeaderFragment extends BaseFragment<ASHeaderPresente
 
     @Override
     public void clearAllUI() {
-        clearCommonUI(tvRefNum);
+        clearCommonUI(tvRefNum, tvSupplier, tvSendWork);
         clearExtraUI(mSubFunEntity.headerConfigs);
     }
 
@@ -247,11 +253,6 @@ public abstract class BaseASHeaderFragment extends BaseFragment<ASHeaderPresente
             Map<String, Object> extraHeaderMap = saveExtraUIData(mSubFunEntity.headerConfigs);
             mRefData.mapExt = UiUtil.copyMap(extraHeaderMap, mRefData.mapExt);
         }
-    }
-
-    @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
     }
 
     /**

@@ -165,6 +165,7 @@
     <string name="material_condition">物资编码条件</string>
     <string name="location_condition">仓位条件</string>
     <string name="biz_type">业务类型</string>
+    <string name="query_claim_num">查询或索赔单号</string>
     <string name="approval_method">验收方式</string>
     <string name="ref_quality">质检单号</string>
     <string name="receive_visa">收货凭证号</string>
@@ -187,6 +188,15 @@
     <string name="contractQuantity">合同数量</string>
     <string name="approval_type">验收类别</string>
     <string name="target_location">目标仓位</string>
+    <string name="order_quantity">单据数量</string>
+    <string name="manufacture_name">制造商名称</string>
+    <string name="sample_ratio">抽检比例</string>
+    <string name="perfect_quantity">完好数</string>
+    <string name="corrosion">锈蚀</string>
+    <string name="damage">损坏</string>
+    <string name="bad">变质</string>
+    <string name="quality_problem">其他质量问题</string>
+    <string name="qm_num">质检单号</string>
 
 
     //库存查询类型
@@ -204,5 +214,11 @@
     //组织机构
     <integer name="orgNorm">0</integer>
     <integer name="orgSecond">1</integer>
+
+    //特殊库存标识
+    <string-array name="special_inv_flags">
+        <item>N</item>
+        <item>K</item>
+    </string-array>
 
 </resources>

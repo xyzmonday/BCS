@@ -1,6 +1,8 @@
 package com.richfit.barcodesystemproduct.module.welcome;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
@@ -128,14 +130,17 @@ public class WelcomePresenterImp extends BasePresenter<WelcomeContract.View>
         switch (mode) {
             case Global.ONLINE_MODE:
                 mRepository.setLocal(false);
-                HomeActivity.newInstance(mContext);
                 break;
             case Global.OFFLINE_MODE:
                 mRepository.setLocal(true);
-//                LocalHomeActivity.newInstance(mContext);
                 break;
         }
-
+        Intent intent = new Intent(mContext, HomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        AppCompatActivity activity = (AppCompatActivity) mContext;
+        activity.startActivity(intent);
+        activity.overridePendingTransition(0, 0);
+        activity.finish();
     }
 
     private void updateExtraConfigTable(ArrayList<RowConfig> configs) {

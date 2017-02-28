@@ -97,12 +97,13 @@ public class QingYangASNHeaderFragment extends BaseFragment<ASNHeaderPresenterIm
         //选择工厂获取供应商
         RxAdapterView.itemSelections(spWork)
                 .filter(position -> position.intValue() > 0)
-                .subscribe(position -> mPresenter.getSupplierList(mWorks.get(position.intValue()).workCode,0));
+                .subscribe(position -> mPresenter.getSupplierList(mWorks.get(position.intValue()).workCode,
+                        getString(etSupplier),20,0));
 
         //供应商
         RxView.clicks(etSupplier)
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(aVoid -> initSupplierConfig(etSupplier));
+                .subscribe(aVoid -> showAutoCompleteConfig(etSupplier));
 
         //删除缓存
         mPresenter.deleteCollectionData("", mBizType, Global.USER_ID, mCompanyCode);
@@ -248,12 +249,4 @@ public class QingYangASNHeaderFragment extends BaseFragment<ASNHeaderPresenterIm
             return false;
         return true;
     }
-
-    @Override
-    public void networkConnectError(String retryAction) {
-
-    }
-
-
-
 }

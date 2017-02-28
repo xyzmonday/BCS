@@ -3,6 +3,7 @@ package com.richfit.barcodesystemproduct.base;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.ArrayRes;
 import android.support.annotation.CheckResult;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -44,6 +45,7 @@ import com.richfit.domain.bean.SubFuncEntity;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -458,6 +460,10 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
         }
     }
 
+    @Override
+    public void networkConnectError(String retryAction) {
+        showNetConnectErrorDialog(retryAction);
+    }
 
 
     /**
@@ -1025,7 +1031,7 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
     /**
      * 初始化供应商下拉列表的配置
      */
-    protected void initSupplierConfig(AutoCompleteTextView autoComplete) {
+    protected void showAutoCompleteConfig(AutoCompleteTextView autoComplete) {
         if (autoComplete.getAdapter() != null) {
             autoComplete.showDropDown();
         }
@@ -1093,6 +1099,9 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
 
     }
 
+    protected List<String> getStringArray(@ArrayRes int id) {
+        return Arrays.asList(getResources().getStringArray(id));
+    }
 
     @Override
     public boolean checkDataBeforeOperationOnHeader() {

@@ -40,6 +40,23 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/ll_supplier"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/supplier" />
+
+        <TextView
+            android:id="@+id/tv_supplier"
+            style="@style/RightTextViewItemStyle" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -63,6 +80,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:id="@+id/ll_creator"
         android:padding="@dimen/collect_row_padding">
 
         <TextView

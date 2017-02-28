@@ -364,7 +364,7 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
         final InvEntity invEntity = mInvDatas.get(position);
         mPresenter.getInventoryInfo(getInventoryQueryType(), lineData.workId, invEntity.invId,
                 lineData.workCode, invEntity.invCode, "", getString(etMaterialNum),
-                lineData.materialId, "", getString(etSendBatchFlag), getInvType());
+                lineData.materialId, "", getString(etSendBatchFlag),lineData.specialInvFlag,mRefData.supplierNum, getInvType());
     }
 
     @Override
@@ -740,7 +740,6 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
             result.batchFlag = getString(etSendBatchFlag).toUpperCase();
             result.quantity = getString(etQuantity);
             result.modifyFlag = "N";
-
             result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
             result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
             result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
@@ -767,11 +766,6 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
     @Override
     public void saveCollectedDataFail(String message) {
         showMessage("保存数据失败;" + message);
-    }
-
-    @Override
-    public void networkConnectError(String retryAction) {
-        showNetConnectErrorDialog(retryAction);
     }
 
     @Override

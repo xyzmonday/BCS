@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <declare-styleable name="GifMoviewView">
         <attr name="gif" format="reference" />
         <attr name="paused" format="boolean" />
     </declare-styleable>
+
     <declare-styleable name="CustomTheme">
         <attr name="gifMoviewViewStyle" format="reference" />
     </declare-styleable>
+
     <declare-styleable name="PullHeaderLayout">
         <attr name="phl_header_height" format="dimension" />
         <attr name="phl_header_expand_height" format="dimension" />
@@ -15,6 +18,7 @@
         <attr name="phl_content" format="reference" />
         <attr name="phl_action" format="reference" />
     </declare-styleable>
+
     <declare-styleable name="SwitchButton">
         <attr name="kswThumbDrawable" format="reference"/>
         <attr name="kswThumbColor" format="color|reference"/>
@@ -41,15 +45,33 @@
 
     <declare-styleable name="ButtonCircleProgressBar">
         <!--无进度时的颜色-->
-        <attr name="progress_unreached_color" format="color" />
+        <attr name="progress_unreached_color_alter" format="color" />
         <!--进度颜色-->
-        <attr name="progress_reached_color" format="color" />
+        <attr name="progress_reached_color_alter" format="color" />
         <!--进度条的高-->
         <attr name="progress_reached_bar_height" format="dimension" />
         <!--无进度时的边框高-->
         <attr name="progress_unreached_bar_height" format="dimension" />
         <!--圆的半径-->
         <attr name="radius" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="NumberCircleProgressBar">
+        <attr name="progress" format="integer" />
+        <attr name="max" format="integer" />
+        <attr name="progress_unreached_color" format="color" />
+        <attr name="progress_reached_color" format="color" />
+        <attr name="progress_text_size" format="dimension" />
+        <attr name="progress_text_color" format="color" />
+        <attr name="progress_circle_radius" format="dimension" />
+        <attr name="progress_text_visibility" format="enum">
+            <enum name="visible" value="0" />
+            <enum name="invisible" value="1" />
+        </attr>
+        <attr name="progress_fill_mode" format="enum">
+            <enum name="rotate" value="0" />
+            <enum name="rising_water" value="1" />
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="PwdTextView">
@@ -136,6 +158,11 @@
             <enum name="visible" value="0" />
             <enum name="invisible" value="1" />
         </attr>
+    </declare-styleable>
+
+
+    <declare-styleable name="Themes">
+        <attr name="numberProgressBarStyle" format="reference" />
     </declare-styleable>
 
 </resources>

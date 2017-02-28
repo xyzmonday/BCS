@@ -157,10 +157,6 @@ public class QingYangAOEditFragment extends BaseFragment<ApprovalOtherEditPresen
                 .subscribe(result -> mPresenter.uploadInspectionDataSingle(result));
     }
 
-    @Override
-    public void networkConnectError(String retryAction) {
-
-    }
 
     @Override
     public void saveCollectedDataSuccess() {

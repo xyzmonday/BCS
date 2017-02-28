@@ -63,32 +63,32 @@ public class ASNHeaderPresenterImp extends BasePresenter<IASNHeaderView>
     }
 
     @Override
-    public void getSupplierList(String workCode,int flag) {
+    public void getSupplierList(String workCode, String keyWord, int defaultItemNum, int flag) {
         mView = getView();
         ResourceSubscriber<ArrayList<SupplierEntity>> subscriber =
-                mRepository.getSupplierList(workCode,flag)
-                .filter(list -> list != null && list.size() > 0)
-                .compose(TransformerHelper.io2main())
-                .subscribeWith(new ResourceSubscriber<ArrayList<SupplierEntity>>() {
-                    @Override
-                    public void onNext(ArrayList<SupplierEntity> list) {
-                        if (mView != null) {
-                            mView.showSuppliers(list);
-                        }
-                    }
+                mRepository.getSupplierList(workCode, keyWord, defaultItemNum, flag)
+                        .filter(list -> list != null && list.size() > 0)
+                        .compose(TransformerHelper.io2main())
+                        .subscribeWith(new ResourceSubscriber<ArrayList<SupplierEntity>>() {
+                            @Override
+                            public void onNext(ArrayList<SupplierEntity> list) {
+                                if (mView != null) {
+                                    mView.showSuppliers(list);
+                                }
+                            }
 
-                    @Override
-                    public void onError(Throwable t) {
-                        if (mView != null) {
-                            mView.loadSuppliersFail(t.getMessage());
-                        }
-                    }
+                            @Override
+                            public void onError(Throwable t) {
+                                if (mView != null) {
+                                    mView.loadSuppliersFail(t.getMessage());
+                                }
+                            }
 
-                    @Override
-                    public void onComplete() {
+                            @Override
+                            public void onComplete() {
 
-                    }
-                });
+                            }
+                        });
         addSubscriber(subscriber);
     }
 

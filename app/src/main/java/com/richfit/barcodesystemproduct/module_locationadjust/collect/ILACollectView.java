@@ -16,7 +16,7 @@ public interface ILACollectView extends BaseView {
     void getInventorySuccess(InventoryEntity inventoryEntity);
     void getInventoryFail(String message);
 
-    void saveCollectedDataSuccess();
+    void saveCollectedDataSuccess(String message);
     void saveCollectedDataFail(String message);
 
 }

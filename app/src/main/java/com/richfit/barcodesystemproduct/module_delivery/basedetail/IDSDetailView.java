@@ -66,6 +66,7 @@ public interface IDSDetailView extends BaseView {
      * 数据提交到SAP成功
      */
     void submitSAPSuccess();
+    void showInspectionNum(String inspectionNum);
     /**
      * 数据提交到SAP失败
      */

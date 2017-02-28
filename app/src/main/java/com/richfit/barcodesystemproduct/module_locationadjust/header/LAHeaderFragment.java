@@ -192,10 +192,4 @@ public class LAHeaderFragment extends BaseFragment<LAHeaderPresenterImp, Object>
         spInv.setSelection(0);
         clearExtraUI(mSubFunEntity.headerConfigs);
     }
-
-    @Override
-    public void networkConnectError(String retryAction) {
-
-    }
-
 }

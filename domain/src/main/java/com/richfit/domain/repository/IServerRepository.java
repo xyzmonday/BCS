@@ -95,6 +95,8 @@ public interface IServerRepository extends IRepository {
                                           int inspectionType, String voucherDate,
                                           String remark, String userId);
 
+    Flowable<String> transferCollectionData(ResultEntity result);
+
     /**
      * 数据上传
      *
@@ -149,14 +151,16 @@ public interface IServerRepository extends IRepository {
      * @param materialDesc：物料描述
      * @param batchFlag:批次
      * @param location:仓位
-     * @param invType                                                           :库存类型 0 代管；1:正常
+     * @param invType:库存类型 0 代管；1:正常
+     * @param specialInvFlag:特殊库存标识 N K
+     * @param specialInvNum:抬头界面的供应商编号
      * @return
      */
     Flowable<List<InventoryEntity>> getInventoryInfo(String queryType, String workId, String invId,
                                                      String workCode, String invCode, String storageNum,
                                                      String materialNum, String materialId,
                                                      String materialGroup, String materialDesc, String batchFlag,
-                                                     String location, String invType);
+                                                     String location, String specialInvFlag, String specialInvNum, String invType);
 
     Flowable<String> getLocationInfo(String queryType, String workId, String invId, String location);
 

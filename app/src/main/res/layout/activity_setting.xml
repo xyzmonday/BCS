@@ -151,8 +151,8 @@
                     android:layout_marginRight="10dp"
                     android:padding="5dp"
                     android:visibility="invisible"
-                    app:progress_reached_color="@color/green_color_emerald"
-                    app:progress_unreached_color="@color/grey_50"
+                    app:progress_reached_color_alter="@color/green_color_emerald"
+                    app:progress_unreached_color_alter="@color/grey_50"
                     app:radius="15dp" />
 
             </LinearLayout>

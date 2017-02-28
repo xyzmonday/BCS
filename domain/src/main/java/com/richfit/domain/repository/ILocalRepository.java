@@ -3,6 +3,7 @@ package com.richfit.domain.repository;
 import android.support.annotation.NonNull;
 
 import com.richfit.domain.bean.BizFragmentConfig;
+import com.richfit.domain.bean.CostCenterEntity;
 import com.richfit.domain.bean.ImageEntity;
 import com.richfit.domain.bean.InvEntity;
 import com.richfit.domain.bean.RowConfig;
@@ -83,7 +84,7 @@ public interface ILocalRepository extends IRepository {
      *
      * @param maps：数据源
      */
-    int saveBasicData(List<Map<String, Object>> maps);
+    Flowable<Integer> saveBasicData(List<Map<String, Object>> maps);
 
 
     /**
@@ -97,12 +98,11 @@ public interface ILocalRepository extends IRepository {
     /**
      * 通过工厂id获取该工厂下的困地点列表
      */
-    Flowable<ArrayList<InvEntity>> getInvsByWorkId(String workId,int flag);
+    Flowable<ArrayList<InvEntity>> getInvsByWorkId(String workId, int flag);
 
     /**
-     * @param flag:0表示从P_Auth_Org获取Erp的组织机构信息;1:表示从
-     *            P_Auth_Org2获取二级单位的组织机构信息
-     * 获取工厂列表
+     * @param flag:0表示从P_Auth_Org获取Erp的组织机构信息;1:表示从 P_Auth_Org2获取二级单位的组织机构信息
+     *                                              获取工厂列表
      */
     Flowable<ArrayList<WorkEntity>> getWorks(int flag);
 
@@ -116,18 +116,25 @@ public interface ILocalRepository extends IRepository {
      * @return
      */
     Flowable<Boolean> checkWareHouseNum(final String sendWorkId, final String sendInvCode,
-                                        final String recWorkId, final String recInvCode,int flag);
+                                        final String recWorkId, final String recInvCode, int flag);
 
     /**
      * 获取供应商列表
      *
      * @param workCode：工厂编码
+     * @param keyWord:用户输入的搜索关键字
+     * @param defaultItemNum:初始化时没有关键字那么默认给出数据条数
+     * @param flag:0:表示以及组织机构;1:表示二级组织机构
      * @return
      */
-    Flowable<ArrayList<SupplierEntity>> getSupplierList(String workCode,int flag);
+    Flowable<ArrayList<SupplierEntity>> getSupplierList(String workCode, String keyWord, int defaultItemNum, int flag);
+
+
+    Flowable<ArrayList<CostCenterEntity>> getCostCenterList(String workCode, String keyWord, int defaultItemNum,int flag);
 
     /**
      * 保存所有业务的页面信息。
+     *
      * @param bizFragmentConfigs
      * @return
      */
@@ -135,11 +142,12 @@ public interface ILocalRepository extends IRepository {
 
     /**
      * 读取所有的业务页面信息，系统利用该信息，反射生成该页面
+     *
      * @param bizType
      * @param refType
      * @return
      */
-    Flowable<ArrayList<BizFragmentConfig>> readBizFragmentConfig(String bizType,String refType,int fragmentType);
+    Flowable<ArrayList<BizFragmentConfig>> readBizFragmentConfig(String bizType, String refType, int fragmentType);
 
     /**
      * 验收抬头界面删除该单据的所有缓存图片
@@ -185,7 +193,7 @@ public interface ILocalRepository extends IRepository {
      */
     void saveTakedImages(ArrayList<ImageEntity> images, String refNum,
                          String refLineId, int takePhotoType,
-                         String imageDir,boolean isLocal);
+                         String imageDir, boolean isLocal);
 
     /**
      * 读取该单号的所有的缓存图片
@@ -196,5 +204,5 @@ public interface ILocalRepository extends IRepository {
      */
     ArrayList<ImageEntity> readImagesByRefNum(String refNum, boolean isLocal);
 
-    Flowable<String> getStorageNum(String workId,String workCode,String invId,String invCode);
+    Flowable<String> getStorageNum(String workId, String workCode, String invId, String invCode);
 }

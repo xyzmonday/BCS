@@ -341,10 +341,4 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
         ShowErrorMessageDialog dialog = ShowErrorMessageDialog.newInstance(messages);
         dialog.show(fm, "nms_show_error_messages");
     }
-
-    @Override
-    public void networkConnectError(String retryAction) {
-
-    }
-
 }

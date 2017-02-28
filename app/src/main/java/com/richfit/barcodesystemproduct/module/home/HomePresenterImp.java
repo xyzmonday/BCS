@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.base.BasePresenter;
 import com.richfit.barcodesystemproduct.di.ContextLife;
-import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.MenuTreeHelper;
@@ -17,6 +16,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.subscribers.ResourceSubscriber;
 
 
 /**
@@ -47,31 +47,22 @@ public class HomePresenterImp extends BasePresenter<HomeContract.View>
                         .filter(listMenu -> listMenu != null && listMenu.size() > 0)
                         .map(listMenu -> initMenu(listMenu))
                         .compose(TransformerHelper.io2main())
-                        .subscribeWith(new RxSubscriber<List<MenuNode>>(mContext,"正在初始化主功能菜单...") {
+                        .subscribeWith(new ResourceSubscriber<List<MenuNode>>() {
+
                             @Override
-                            public void _onNext(List<MenuNode> menuNodes) {
+                            public void onNext(List<MenuNode> menuNodes) {
                                 if (mView != null) {
                                     mView.initModulesComplete(menuNodes);
                                 }
                             }
 
                             @Override
-                            public void _onNetWorkConnectError(String message) {
+                            public void onError(Throwable t) {
 
                             }
 
                             @Override
-                            public void _onCommonError(String message) {
-
-                            }
-
-                            @Override
-                            public void _onServerError(String code, String message) {
-
-                            }
-
-                            @Override
-                            public void _onComplete() {
+                            public void onComplete() {
 
                             }
                         });

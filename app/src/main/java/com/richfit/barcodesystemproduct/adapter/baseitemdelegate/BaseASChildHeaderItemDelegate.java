@@ -25,6 +25,5 @@ public class BaseASChildHeaderItemDelegate implements ItemViewDelegate<RefDetail
 
     @Override
     public void convert(ViewHolder holder, RefDetailEntity item, int position) {
-
     }
 }
