@@ -48,7 +48,7 @@ public class TransformerHelper {
                     @Override
                     public Publisher<T> apply(Response<T> t) throws Exception {
                         if (t == null || (t instanceof List && ((List) t).size() == 0)) {
-                            return Flowable.error(new ResponseNullException("response is null"));
+                            return Flowable.error(new ResponseNullException("返回的数据实体为空"));
                         } else {
                             //返回S表示请求成功
                             if (Global.RETURN_SUCCESS_CODE.equals(t.retCode)) {

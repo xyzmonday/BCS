@@ -59,6 +59,7 @@ public abstract class BaseDSDetailFragment<P extends IDSDetailPresenter> extends
     //第二过账成功后返回的验收单号
     protected String mInspectionNum;
     protected List<BottomMenuEntity> mBottomMenus;
+    protected DSYDetailAdapter mAdapter;
 
     @Override
     protected int getContentId() {
@@ -164,11 +165,15 @@ public abstract class BaseDSDetailFragment<P extends IDSDetailPresenter> extends
                 break;
             }
         }
-        DSYDetailAdapter adapter = new DSYDetailAdapter(mActivity, allNodes,
-                mSubFunEntity.parentNodeConfigs, mSubFunEntity.childNodeConfigs,
-                mCompanyCode);
-        mRecycleView.setAdapter(adapter);
-        adapter.setOnItemEditAndDeleteListener(this);
+        if (mAdapter == null) {
+            mAdapter = new DSYDetailAdapter(mActivity, allNodes,
+                    mSubFunEntity.parentNodeConfigs, mSubFunEntity.childNodeConfigs,
+                    mCompanyCode);
+            mRecycleView.setAdapter(mAdapter);
+            mAdapter.setOnItemEditAndDeleteListener(this);
+        } else {
+            mAdapter.addAll(allNodes);
+        }
     }
 
     @Override
@@ -222,13 +227,10 @@ public abstract class BaseDSDetailFragment<P extends IDSDetailPresenter> extends
     @Override
     public void deleteNodeSuccess(int position) {
         showMessage("删除成功");
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && DSYDetailAdapter.class.isInstance(adapter)) {
-            DSYDetailAdapter dsyDetailAdapter = (DSYDetailAdapter) adapter;
-            dsyDetailAdapter.removeNodeByPosition(position);
+        if (mAdapter != null ) {
+            mAdapter.removeNodeByPosition(position);
         }
     }
-
 
     @Override
     public void deleteNodeFail(String message) {

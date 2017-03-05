@@ -9,7 +9,7 @@ import com.richfit.common_lib.IInterface.IPresenter;
 public interface IQingHaiDSNHeaderPresenter extends IPresenter<IQingHaiDSNHeaderView>{
 
     void getWorks(int flag);
-    void getCostCenterList(String workCode,String keyWord,int defaultItemNum,int flag);
+    void getAutoCompleteList(String workCode,String keyWord,int defaultItemNum,int flag,String bizType);
     /**
      * 删除整单缓存
      * @param bizType：业务类型

@@ -93,6 +93,7 @@ public class RefDetailEntity extends TreeNode {
     /*接收批次*/
     public String recBatchFlag;
 
+    public String inspectionQuantity;// 送检数
     public String manufacturer;//制造商
     public String randomQuantity;// 抽检
     public String rustQuantity;// 锈蚀
@@ -100,14 +101,25 @@ public class RefDetailEntity extends TreeNode {
     public String badQuantity;// 变质
     public String otherQuantity;// 其他
     public String qualifiedQuantity;//质检数量
-    public String zPackage;// 包装情况 1.完好/2.散箱/3.包/4.件/5.无包装/6.其他
+    public String sapPackage;// 包装情况 1.完好/2.散箱/3.包/4.件/5.无包装/6.其他
     public String qmNum;// 质检单号
     public String certificate;// 合格证
-    public String nstructions;// 说明书
+    public String instructions;// 说明书
     public String qmCertificate;// 质检证书
     public String claimNum;// 索赔单号
-
-
+    //不合格数量
+    public String unqualifiedQuantity;
+    //退货交货数量
+    public String returnQuantity;
+    //检验批数量
+    public String insLotQuantity;
+    public String insLot; //检验批
+    public String decisionCode; //决策代码
+    public String projectText; //项目文本
+    public String moveCause; //移动原因
+    public String moveCauseDesc; //移动原因描述
+    public String refDoc; // 参考物料凭证
+    public Integer refDocItem; // 参考物料凭证行号
     /*仓位信息*/
     public List<LocationInfoEntity> locationList;
 
@@ -143,6 +155,7 @@ public class RefDetailEntity extends TreeNode {
                 ", workId='" + workId + '\'' +
                 ", workCode='" + workCode + '\'' +
                 ", workName='" + workName + '\'' +
+                ", qmFlag='" + qmFlag + '\'' +
                 ", invId='" + invId + '\'' +
                 ", invCode='" + invCode + '\'' +
                 ", invName='" + invName + '\'' +
@@ -156,6 +169,30 @@ public class RefDetailEntity extends TreeNode {
                 ", price='" + price + '\'' +
                 ", recLocation='" + recLocation + '\'' +
                 ", recBatchFlag='" + recBatchFlag + '\'' +
+                ", inspectionQuantity='" + inspectionQuantity + '\'' +
+                ", manufacturer='" + manufacturer + '\'' +
+                ", randomQuantity='" + randomQuantity + '\'' +
+                ", rustQuantity='" + rustQuantity + '\'' +
+                ", damagedQuantity='" + damagedQuantity + '\'' +
+                ", badQuantity='" + badQuantity + '\'' +
+                ", otherQuantity='" + otherQuantity + '\'' +
+                ", qualifiedQuantity='" + qualifiedQuantity + '\'' +
+                ", sapPackage='" + sapPackage + '\'' +
+                ", qmNum='" + qmNum + '\'' +
+                ", certificate='" + certificate + '\'' +
+                ", instructions='" + instructions + '\'' +
+                ", qmCertificate='" + qmCertificate + '\'' +
+                ", claimNum='" + claimNum + '\'' +
+                ", unqualifiedQuantity='" + unqualifiedQuantity + '\'' +
+                ", returnQuantity='" + returnQuantity + '\'' +
+                ", insLotQuantity='" + insLotQuantity + '\'' +
+                ", insLot='" + insLot + '\'' +
+                ", decisionCode='" + decisionCode + '\'' +
+                ", projectText='" + projectText + '\'' +
+                ", moveCause='" + moveCause + '\'' +
+                ", moveCauseDesc='" + moveCauseDesc + '\'' +
+                ", refDoc='" + refDoc + '\'' +
+                ", refDocItem=" + refDocItem +
                 ", locationList=" + locationList +
                 ", mapExt=" + mapExt +
                 '}';

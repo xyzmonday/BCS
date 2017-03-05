@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/horizontal_scroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include
+            layout="@layout/item_qinghai_rsn_detail_header" />
+
+        <com.richfit.common_lib.widget.AutoSwipeRefreshLayout
+            android:id="@+id/swipe_refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/data_details_recycle_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </com.richfit.common_lib.widget.AutoSwipeRefreshLayout>
+    </LinearLayout>
+</HorizontalScrollView>

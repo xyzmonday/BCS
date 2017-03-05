@@ -1,6 +1,7 @@
 package com.richfit.barcodesystemproduct.module_delivery.qinghai_dsxs;
 
 import android.support.annotation.NonNull;
+import android.view.View;
 
 import com.richfit.barcodesystemproduct.module_delivery.baseheader.BaseDSHeaderFragment;
 import com.richfit.domain.bean.RefNumEntity;
@@ -23,6 +24,12 @@ public class QingHaiDSXSHeaderFragment extends BaseDSHeaderFragment{
     @Override
     protected String getMoveType() {
         return "1";
+    }
+
+    @Override
+    public void initView() {
+        llCustomer.setVisibility(View.VISIBLE);
+        super.initView();
     }
 
     @Override

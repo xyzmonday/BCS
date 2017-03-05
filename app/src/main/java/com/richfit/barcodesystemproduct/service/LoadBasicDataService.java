@@ -64,8 +64,6 @@ public class LoadBasicDataService extends Service implements ILoadBasicDataServi
         task.queryType = "SD";
         requestParam.add(task);
 
-
-
         mPresenter.loadAndSaveBasicData(requestParam);
         return super.onStartCommand(intent, flags, startId);
     }

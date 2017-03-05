@@ -44,7 +44,6 @@ public class QingHaiNMS311DetailFragment extends BaseNMSDetailFragment<QingHaiNM
                 break;
             }
         }
-        setRefreshing(true, "加载明细成功");
         QingHaiNMS311DetailAdapter adapter = new QingHaiNMS311DetailAdapter(mActivity,
                 R.layout.base_nms_detail_item, allNodes, mConfigs, null, mCompanyCode);
         mRecycleView.setAdapter(adapter);

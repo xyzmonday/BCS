@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/root_id"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/len_40"
+        android:layout_marginBottom="@dimen/len_10"
+        android:layout_marginLeft="@dimen/len_52"
+        android:layout_marginRight="@dimen/len_52"
+        android:layout_marginTop="@dimen/len_10"
+        android:background="@drawable/top_tab_bg"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/btn_warehouse_level"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/top_tab_leftrb_selector"
+            android:button="@null"
+            android:checked="true"
+            android:gravity="center"
+            android:text="仓库级" />
+
+        <RadioButton
+            android:id="@+id/btn_storage_num_level"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/top_tab_rightrb_selector"
+            android:button="@null"
+            android:gravity="center"
+            android:text="仓位级" />
+
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+
+        <LinearLayout
+            android:id="@+id/ll_warehouse_level"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+                <TextView
+                    style="@style/LeftTextViewItemStyle"
+                    android:text="@string/work" />
+
+                <Spinner
+                    android:id="@+id/sp_work"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/spinner_min_height"
+                    android:layout_weight="2" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+                <TextView
+                    style="@style/LeftTextViewItemStyle"
+                    android:text="@string/inv" />
+
+                <Spinner
+                    android:id="@+id/sp_inv"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/spinner_min_height"
+                    android:layout_weight="2" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_storage_num_level"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal"
+            android:padding="5dp"
+            android:visibility="invisible">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/warehouse_num" />
+
+            <Spinner
+                android:id="@+id/sp_storage_num"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/spinner_min_height"
+                android:layout_weight="2" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/checker" />
+
+        <TextView
+            android:id="@+id/tv_checker"
+            style="@style/RightTextViewItemStyle" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/collect_row_padding">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
+            android:text="@string/check_date" />
+
+        <com.richfit.common_lib.widget.RichEditText
+            android:id="@+id/et_check_date"
+            style="@style/RightRichEditTextItemStyle"
+            android:drawableRight="@mipmap/icon_find"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
+    </LinearLayout>
+
+
+</LinearLayout>

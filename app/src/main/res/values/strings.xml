@@ -16,8 +16,6 @@
     <string name="richfit_barcodesystem_local_upload">数据上传</string>
     <string name="richfit_barcodesystem_new_user">新用户</string>
 
-
-
     <!--ui界面的字段-->
     <string name="ref_name">业务单据</string>
     <string name="supplier">供应商</string>
@@ -210,6 +208,9 @@
     //库存类型
     <string name="invTypeDaiGuan">0</string>
     <string name="invTypeNorm">1</string>
+    <string name="return_delivery_quantity">退货交货数量</string>
+    <string name="set_zero">标记0数量</string>
+    <string name="new_flag">新增</string>
 
     //组织机构
     <integer name="orgNorm">0</integer>
@@ -219,6 +220,22 @@
     <string-array name="special_inv_flags">
         <item>N</item>
         <item>K</item>
+    </string-array>
+
+    //青海验收-其他包装情况列表
+    <string-array name="package_conditions">
+        <item>完好</item>
+        <item>散箱</item>
+        <item>包</item>
+        <item>件</item>
+        <item>无包装</item>
+        <item>其他</item>
+    </string-array>
+
+    //验收-其他的检验结果列表
+    <string-array name="inspection_results">
+        <item>合格</item>
+        <item>不合格</item>
     </string-array>
 
 </resources>

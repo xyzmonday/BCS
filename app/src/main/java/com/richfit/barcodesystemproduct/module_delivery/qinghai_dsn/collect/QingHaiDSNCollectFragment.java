@@ -165,7 +165,7 @@ public class QingHaiDSNCollectFragment extends BaseFragment<QingHaiDSNCollectPre
             return;
         }
         if (TextUtils.isEmpty(mRefData.costCenter)) {
-            showMessage("请先在抬头界面输入成本中心");
+            showMessage("请先在抬头界面输入必要字段");
             return;
         }
         etMaterialNum.setEnabled(true);
@@ -462,6 +462,7 @@ public class QingHaiDSNCollectFragment extends BaseFragment<QingHaiDSNCollectPre
             result.location = mInventoryDatas.get(spLocation.getSelectedItemPosition()).location;
             result.quantity = getString(etQuantity);
             result.costCenter = mRefData.costCenter;
+            result.projectNum = mRefData.projectNum;
             result.invType = "1";
             result.modifyFlag = "N";
             result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, mExtraLineMap, mExtraLocationMap);

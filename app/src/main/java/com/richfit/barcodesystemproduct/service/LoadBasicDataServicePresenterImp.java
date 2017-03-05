@@ -114,17 +114,17 @@ public class LoadBasicDataServicePresenterImp extends BasePresenter<ILoadBasicDa
         int ptr = 0;
         if (count == 0) {
             // 说明数据长度小于PATCH_MAX_LENGTH，直接写入即可
-            tasks.addLast(new LoadDataTask(++mTaskId, queryType, "getPage", 1
+            tasks.addLast(new LoadDataTask(++mTaskId, queryType, "queryPage", 1
                     , totalCount, ptr,Global.MAX_PATCH_LENGTH,true, true));
         } else if (count > 0) {
             for (; ptr < count; ptr++) {
-                tasks.addLast(new LoadDataTask(++mTaskId, queryType, "getPage",
+                tasks.addLast(new LoadDataTask(++mTaskId, queryType, "queryPage",
                         Global.MAX_PATCH_LENGTH * ptr + 1, Global.MAX_PATCH_LENGTH * (ptr + 1),
                         ptr,Global.MAX_PATCH_LENGTH,true, ptr == 0 ? true : false));
             }
             if (residual > 0) {
                 // 说明还有剩余的数据
-                tasks.addLast(new LoadDataTask(++mTaskId, queryType, "getPage",
+                tasks.addLast(new LoadDataTask(++mTaskId, queryType, "queryPage",
                         Global.MAX_PATCH_LENGTH * ptr + 1, Global.MAX_PATCH_LENGTH * ptr + residual,
                         ptr,Global.MAX_PATCH_LENGTH,true, false));
             }

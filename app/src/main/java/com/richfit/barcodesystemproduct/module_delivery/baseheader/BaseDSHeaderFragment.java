@@ -42,6 +42,10 @@ public abstract class BaseDSHeaderFragment extends BaseFragment<DSHeaderPresente
     TextView tvCreator;
     @BindView(R.id.ll_supplier)
     protected LinearLayout llSuppier;
+    @BindView(R.id.ll_customer)
+    protected LinearLayout llCustomer;
+    @BindView(R.id.tv_customer)
+    TextView tvCustomer;
     @BindView(R.id.tv_supplier)
     TextView tvSupplier;
     @BindView(R.id.ll_creator)
@@ -150,6 +154,8 @@ public abstract class BaseDSHeaderFragment extends BaseFragment<DSHeaderPresente
             tvCreator.setText(mRefData.recordCreator);
             //供应商
             tvSupplier.setText(mRefData.supplierNum);
+            //客户
+            tvCustomer.setText(mRefData.customer);
             //过账日期
             if (!TextUtils.isEmpty(mRefData.voucherDate))
                 etTransferDate.setText(mRefData.voucherDate);

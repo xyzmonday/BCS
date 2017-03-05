@@ -166,55 +166,67 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="5dp">
+            android:layout_height="wrap_content">
 
-            <TextView
-                style="@style/LeftTextViewItemStyle"
-                android:text="@string/certificate" />
 
-            <CheckBox
-                android:id="@+id/cb_certificate"
+            <LinearLayout
                 android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.2" />
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-        </LinearLayout>
+                <TextView
+                    style="@style/LeftTextViewItemStyle"
+                    android:text="@string/certificate" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dp">
+                <CheckBox
+                    android:id="@+id/cb_certificate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.4" />
 
-            <TextView
-                style="@style/LeftTextViewItemStyle"
-                android:text="@string/manual" />
+            </LinearLayout>
 
-            <CheckBox
-                android:id="@+id/cb_manual"
+            <LinearLayout
                 android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.2" />
+                android:orientation="horizontal"
+                android:padding="5dp">
 
-        </LinearLayout>
+                <TextView
+                    style="@style/LeftTextViewItemStyle"
+                    android:text="@string/manual" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dp">
+                <CheckBox
+                    android:id="@+id/cb_instructions"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.4" />
 
-            <TextView
-                style="@style/LeftTextViewItemStyle"
-                android:text="@string/quality_certificate" />
+            </LinearLayout>
 
-            <CheckBox
-                android:id="@+id/cb_qm_certificate"
+            <LinearLayout
                 android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.2" />
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+                <TextView
+                    style="@style/LeftTextViewItemStyle"
+                    android:text="@string/quality_certificate" />
+
+                <CheckBox
+                    android:id="@+id/cb_qm_certificate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.4" />
+
+            </LinearLayout>
+
 
         </LinearLayout>
 

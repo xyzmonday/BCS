@@ -175,12 +175,9 @@ public abstract class BaseMSDetailPresenter extends BasePresenter<IMSDetailView>
                     //批次
                     bundle.putString(Global.EXTRA_BATCH_FLAG_KEY, node.batchFlag);
 
-                    //累计数量
-                    bundle.putSerializable(Global.EXTRA_TOTAL_QUANTITY_KEY, node.totalQuantity);
-
-                    //需要修改的字段
                     //上架仓位
                     bundle.putString(Global.EXTRA_LOCATION_KEY, node.location);
+
                     //实收数量
                     bundle.putString(Global.EXTRA_QUANTITY_KEY, node.quantity);
 

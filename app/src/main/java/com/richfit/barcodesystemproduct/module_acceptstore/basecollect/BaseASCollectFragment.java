@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -84,6 +85,10 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
     protected CheckBox cbSingle;
     @BindView(R.id.tv_total_quantity)
     protected TextView tvTotalQuantity;
+    @BindView(R.id.ll_return_quantity)
+    protected LinearLayout llReturnQuantity;
+    @BindView(R.id.et_return_quantity)
+    protected EditText etReturnQuantity;
 
     /*是否不上架.对于非质检的物资isNLocation=false。也就是说子类如果不处理那么默认需要输入上架仓位*/
     protected boolean isNLocation;
@@ -133,7 +138,7 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
                 //在单品模式下，扫描不同的物料
                 loadMaterialInfo(materialNum, batchFlag);
             }
-        //处理仓位
+            //处理仓位
         } else if (list != null && list.length == 1 & !cbSingle.isChecked()) {
             final String location = list[0];
             etLocation.setText(location);
@@ -552,6 +557,12 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
             showMessage("请先在抬头界面获取单据数据");
             return false;
         }
+
+        if (TextUtils.isEmpty(mSelectedRefLineNum)) {
+            showMessage("请先获取物料信息");
+            return false;
+        }
+
         //检查数据是否可以保存
         if (spRefLine.getSelectedItemPosition() == 0) {
             showMessage("请先选择单据行");

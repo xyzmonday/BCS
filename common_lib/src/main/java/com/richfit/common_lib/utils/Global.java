@@ -109,6 +109,8 @@ public class Global {
     public static final String RETRY_LOAD_INVENTORY_ACTION = "retry_load_inventory_action";
     /*数据修改*/
     public static final String RETRY_EDIT_DATA_ACTION = "retry_edit_data_action";
+    /*下载扩展字段的配置信息*/
+    public static final String RETRY_LOAD_EXTRACONFIG_ACTION = "retry_load_extraconfig_action";
 
     /*
      * 父节点的布局类型,存在两种状态的父节点
@@ -170,6 +172,41 @@ public class Global {
     public static final String EXTRA_REC_BATCH_FLAG_KEY = "extra_rec_batch_flag";
     public static final String EXTRA_INSPECTION_RESULT = "Extra_inspection_result";
     public static final String EXTRA_TOTAL_QUANTITY_KEY = "extra_total_quantity";
+
+    /*特殊库存标识*/
+    public static final String EXTRA_SPECIAL_INV_FLAG_KEY = "extra_special_inv_flag_key";
+    public static final String EXTRA_SPECIAL_INV_NUM_KEY  = "extra_special_inv_num_key";
+    /*制造商*/
+    public static final String EXTRA_MANUFUCTURER_KEY = "extra_manufucturer";
+    /*抽检数量*/
+    public static final String EXTRA_SAMPLE_QUANTITY_KEY = "extra_sample_quantity";
+    /*完好数量*/
+    public static final String EXTRA_QUALIFIED_QUANTITY_KEY = "extra_qualified_quantity";
+    /*损坏数量*/
+    public static final String EXTRA_DAMAGED_QUANTITY_KEY = "extra_damaged_quantity";
+    /*送检数量*/
+    public static final String EXTRA_INSPECTION_QUANTITY_KEY = "extra_inspection_quantity";
+    /*锈蚀数量*/
+    public static final String EXTRA_RUST_QUANTITY_KEY = "extra_rust_quantity";
+    /*变质*/
+    public static final String EXTRA_BAD_QUANTITY_KEY = "extra_bad_quantity";
+    /*其他数量*/
+    public static final String EXTRA_OTHER_QUANTITY_KEY = "extra_other_quantity";
+    /*包装情况*/
+    public static final String EXTRA_PACKAGE_KEY = "extra_package";
+    /*质检单号*/
+    public static final String EXTRA_QM_NUM_KEY = "extra_qm_num";
+    /*索赔单号*/
+    public static final String EXTRA_CLAIM_NUM_KEY = "extra_claim_num";
+    /*合格证*/
+    public static final String EXTRA_CERTIFICATE_KEY = "extra_certificate";
+    /*说明书*/
+    public static final String EXTRA_INSTRUCTIONS_KEY = "extra_instructions";
+    /*质检证书*/
+    public static final String EXTRA_QM_CERTIFICATE_KEY = "extra_qm_certificate";
+    /*检验结果*/
+    public static final String EXTRA_INSPECTION_RESULT_KEY = "extra_inspection_result";
+
     /*子节点的额外字段的数据*/
     public static final String LOCATION_EXTRA_MAP_KEY = "location_extra_map";
     /*父节点额外字段的数据*/

@@ -20,7 +20,7 @@ public interface IQingHaiAODetailView extends BaseView {
      *
      * @param nodes
      */
-    void showNodes(List<RefDetailEntity> nodes);
+    void showNodes(List<RefDetailEntity> nodes,String transId);
 
     /**
      * 设置刷新动画是否结束

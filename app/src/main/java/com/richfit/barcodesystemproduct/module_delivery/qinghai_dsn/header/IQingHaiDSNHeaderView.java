@@ -14,8 +14,8 @@ public interface IQingHaiDSNHeaderView extends BaseView {
     void showWorks(List<WorkEntity> works);
     void loadWorksFail(String message);
 
-    void showCostCenterList(List<String> suppliers);
-    void loadCostCenterFail(String message);
+    void showAutoCompleteList(List<String> suppliers);
+    void loadAutoCompleteFail(String message);
 
     void deleteCacheSuccess(String message);
     void deleteCacheFail(String message);

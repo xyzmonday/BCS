@@ -46,9 +46,6 @@ import java.util.UUID;
 public class UiUtil {
     private final static int LENGTH = 11;
 
-
-
-
     public static int getToolbarHeight(Context context) {
         final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(
                 new int[]{R.attr.actionBarSize});

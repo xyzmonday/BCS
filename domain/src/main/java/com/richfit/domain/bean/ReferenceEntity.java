@@ -11,11 +11,14 @@ public class ReferenceEntity {
     /*单据id，同时也是本地数据抬的id(主键)*/
     public String checkId;
     public String refCodeId;
+
     /*单据号*/
     public String checkNum;
     public String recordNum;
     /*验收抬头缓存标识*/
     public String tempFlag ;
+    /*盘点缓存*/
+    public String checkFlag;
     /*缓存抬头id*/
     public String transId;
     public String transLineId;
@@ -84,7 +87,7 @@ public class ReferenceEntity {
     public String storageNum;
 
     /*盘点总条数*/
-    public String totalCount;
+    public int totalCount;
     /*验收类型*/
     public int inspectionType;
     /*行明细*/
@@ -95,4 +98,57 @@ public class ReferenceEntity {
     public Map<String, Object> mapExt;
 
 
+    public String checkLevel;
+    public String specialFlag;
+
+    @Override
+    public String toString() {
+        return "ReferenceEntity{" +
+                "checkId='" + checkId + '\'' +
+                ", refCodeId='" + refCodeId + '\'' +
+                ", checkNum='" + checkNum + '\'' +
+                ", recordNum='" + recordNum + '\'' +
+                ", tempFlag='" + tempFlag + '\'' +
+                ", checkFlag='" + checkFlag + '\'' +
+                ", transId='" + transId + '\'' +
+                ", transLineId='" + transLineId + '\'' +
+                ", refType='" + refType + '\'' +
+                ", moveType='" + moveType + '\'' +
+                ", bizType='" + bizType + '\'' +
+                ", workId='" + workId + '\'' +
+                ", workCode='" + workCode + '\'' +
+                ", workName='" + workName + '\'' +
+                ", recWorkId='" + recWorkId + '\'' +
+                ", recWorkCode='" + recWorkCode + '\'' +
+                ", recWorkName='" + recWorkName + '\'' +
+                ", invId='" + invId + '\'' +
+                ", invCode='" + invCode + '\'' +
+                ", invName='" + invName + '\'' +
+                ", invType='" + invType + '\'' +
+                ", recInvId='" + recInvId + '\'' +
+                ", recInvCode='" + recInvCode + '\'' +
+                ", recInvName='" + recInvName + '\'' +
+                ", recordCreator='" + recordCreator + '\'' +
+                ", poNum='" + poNum + '\'' +
+                ", supplierDesc='" + supplierDesc + '\'' +
+                ", supplierNum='" + supplierNum + '\'' +
+                ", supplierId='" + supplierId + '\'' +
+                ", voucherDate='" + voucherDate + '\'' +
+                ", projectNum='" + projectNum + '\'' +
+                ", netNum='" + netNum + '\'' +
+                ", customer='" + customer + '\'' +
+                ", costCenter='" + costCenter + '\'' +
+                ", dsReason='" + dsReason + '\'' +
+                ", asType='" + asType + '\'' +
+                ", status='" + status + '\'' +
+                ", storageNum='" + storageNum + '\'' +
+                ", totalCount='" + totalCount + '\'' +
+                ", inspectionType=" + inspectionType +
+                ", billDetailList=" + billDetailList +
+                ", checkList=" + checkList +
+                ", mapExt=" + mapExt +
+                ", checkLevel='" + checkLevel + '\'' +
+                ", specialFlag='" + specialFlag + '\'' +
+                '}';
+    }
 }

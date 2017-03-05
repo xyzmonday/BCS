@@ -88,7 +88,7 @@ public class ResultEntity {
     public Map<String, Object> mapExHead;// 头扩展字段
     public Map<String, Object> mapExLine;// 行扩展字段
     public Map<String, Object> mapExLocation;// 仓位扩展字段
-
+    public String inspectionQuantity;// 送检数
     public String manufacturer;//制造商
     public String randomQuantity;// 抽检
     public String rustQuantity;// 锈蚀
@@ -96,10 +96,10 @@ public class ResultEntity {
     public String badQuantity;// 变质
     public String otherQuantity;// 其他
     public String qualifiedQuantity;//质检数量
-    public String zPackage;// 包装情况 1.完好/2.散箱/3.包/4.件/5.无包装/6.其他
+    public String sapPackage;// 包装情况 1.完好/2.散箱/3.包/4.件/5.无包装/6.其他
     public String qmNum;// 质检单号
     public String certificate;// 合格证
-    public String nstructions;// 说明书
+    public String instructions;// 说明书
     public String qmCertificate;// 质检证书
     public String claimNum;// 索赔单号
     public String specialInvNum;
@@ -107,4 +107,5 @@ public class ResultEntity {
     public String costCenter;
     //项目编号
     public String projectNum;
+    public String checkLineId;
 }

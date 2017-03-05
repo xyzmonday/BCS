@@ -1,0 +1,143 @@
+package com.richfit.barcodesystemproduct.module_check.qinghai_blind.edit;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.richfit.barcodesystemproduct.R;
+import com.richfit.barcodesystemproduct.base.BaseFragment;
+import com.richfit.barcodesystemproduct.module_check.qinghai_blind.edit.imp.BlindEditPresenterImp;
+import com.richfit.barcodesystemproduct.module_check.qinghai_cn.edit.ICNEditView;
+import com.richfit.common_lib.rxutils.TransformerHelper;
+import com.richfit.common_lib.utils.Global;
+import com.richfit.common_lib.utils.UiUtil;
+import com.richfit.domain.bean.ResultEntity;
+
+import butterknife.BindView;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableOnSubscribe;
+
+/**
+ * Created by monday on 2016/12/6.
+ */
+
+public class QingHaiBlindEditFragment extends BaseFragment<BlindEditPresenterImp, Object>
+        implements ICNEditView {
+
+    @BindView(R.id.et_check_location)
+    TextView etCheckLocation;
+    @BindView(R.id.tv_material_num)
+    TextView tvMaterialNum;
+    @BindView(R.id.tv_material_desc)
+    TextView tvMaterialDesc;
+    @BindView(R.id.tv_material_group)
+    TextView tvMaterialGroup;
+    @BindView(R.id.tv_special_inv_flag)
+    TextView tvSpecialInvFlag;
+    @BindView(R.id.tv_special_inv_num)
+    TextView tvSpecialInvNum;
+    @BindView(R.id.tv_inv_quantity)
+    TextView tvInvQuantity;
+    @BindView(R.id.et_check_quantity)
+    EditText etCheckQuantity;
+    @BindView(R.id.tv_total_quantity)
+    TextView tvTotalQuantity;
+
+    @Override
+    protected int getContentId() {
+        return R.layout.fragment_cn_edit;
+    }
+
+    @Override
+    public void initInjector() {
+        mFragmentComponent.inject(this);
+    }
+
+    @Override
+    public void initData() {
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            String materialNum = bundle.getString(Global.EXTRA_MATERIAL_NUM_KEY);
+            String materialId = bundle.getString(Global.EXTRA_MATERIAL_ID_KEY);
+            String materialGroup = bundle.getString(Global.EXTRA_MATERIAL_GROUP_KEY);
+            String materialDesc = bundle.getString(Global.EXTRA_MATERIAL_DESC_KEY);
+            String location = bundle.getString(Global.EXTRA_LOCATION_KEY);
+            String quantity = bundle.getString(Global.EXTRA_QUANTITY_KEY);
+            String invQuantity = bundle.getString(Global.EXTRA_INV_QUANTITY_KEY);
+            String specialInvFlag = bundle.getString(Global.EXTRA_SPECIAL_INV_FLAG_KEY);
+            String specialInvNum = bundle.getString(Global.EXTRA_SPECIAL_INV_NUM_KEY);
+            tvMaterialNum.setText(materialNum);
+            tvMaterialNum.setTag(materialId);
+            tvMaterialDesc.setText(materialDesc);
+            tvMaterialGroup.setText(materialGroup);
+            tvSpecialInvFlag.setText(specialInvFlag);
+            tvSpecialInvNum.setText(specialInvNum);
+            etCheckLocation.setText(location);
+            tvInvQuantity.setText(invQuantity);
+            etCheckQuantity.setText(quantity);
+            tvTotalQuantity.setText(quantity);
+        }
+    }
+
+    @Override
+    public boolean checkCollectedDataBeforeSave() {
+        if (TextUtils.isEmpty(getString(etCheckQuantity))) {
+            showMessage("请输入盘点数量");
+            return false;
+        }
+        if (TextUtils.isEmpty(getString(etCheckLocation))) {
+            showMessage("请输入盘底仓位");
+            return false;
+        }
+        float quantity = UiUtil.convertToFloat(getString(etCheckQuantity), 0.0F);
+        if (quantity <= 0.0F) {
+            showMessage("输入盘点数量小于零");
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void saveCollectedData() {
+        Flowable.create((FlowableOnSubscribe<ResultEntity>) emitter -> {
+            ResultEntity result = new ResultEntity();
+            result.checkId = mRefData.checkId;
+            result.voucherDate = mRefData.voucherDate;
+            result.materialId = tvMaterialNum.getTag().toString();
+            result.materialNum = getString(tvMaterialNum);
+            result.invType = "代管物资".equals(mRefData.invType) ? "0" : "1";
+            result.location = getString(etCheckLocation);
+            result.quantity = getString(etCheckQuantity);
+            result.userId = Global.USER_ID;
+            result.modifyFlag = "Y";
+            emitter.onNext(result);
+            emitter.onComplete();
+        }, BackpressureStrategy.BUFFER).compose(TransformerHelper.io2main())
+                .subscribe(result -> mPresenter.uploadCheckDataSingle(result));
+    }
+    @Override
+    public void saveCheckDataSuccess() {
+        showMessage("修改成功");
+        tvTotalQuantity.setText(getString(etCheckQuantity));
+        etCheckQuantity.setText("");
+    }
+
+    @Override
+    public void saveCheckDataFail(String message) {
+        showMessage("修改失败;" + message);
+        etCheckQuantity.setText("");
+    }
+
+    @Override
+    public void networkConnectError(String retryAction) {
+        showNetConnectErrorDialog(retryAction);
+    }
+
+    @Override
+    public void retry(String retryAction) {
+        saveCheckDataSuccess();
+        super.retry(retryAction);
+    }
+}

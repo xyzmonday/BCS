@@ -1,6 +1,7 @@
 package com.richfit.barcodesystemproduct.module.welcome;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.view.View;
 import android.widget.Button;
 
@@ -21,6 +22,9 @@ import butterknife.BindView;
 
 public class WelcomeActivity extends BaseActivity<WelcomePresenterImp> implements WelcomeContract.View {
 
+    private final static String QINGHAI_FRAGMENT_CONFIG = "bizConfig_QingHai.json";
+    private final static String QINGYANG_FRAGMENT_CONFIG = "bizConfig_QingYang.json";
+
     @BindView(R.id.btn_online_mode)
     Button btnOnlineMode;
 
@@ -29,6 +33,8 @@ public class WelcomeActivity extends BaseActivity<WelcomePresenterImp> implement
 
     @BindView(R.id.reveal_view)
     View revealView;
+
+    int mode;
 
     @Override
     protected int getContentId() {
@@ -44,31 +50,58 @@ public class WelcomeActivity extends BaseActivity<WelcomePresenterImp> implement
     public void initEvent() {
 
         RxView.clicks(btnOnlineMode)
-                .throttleFirst(500, TimeUnit.MILLISECONDS)
-                .subscribe(a -> mPresenter.loadConfig(Global.companyId, Global.ONLINE_MODE));
+                .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                .subscribe(a -> {
+                    mode = Global.ONLINE_MODE;
+                    mPresenter.loadFragmentConfig(Global.companyId,QINGHAI_FRAGMENT_CONFIG);
+                });
 
         RxView.clicks(btnOfflineMode)
-                .throttleFirst(500, TimeUnit.MILLISECONDS)
-                .subscribe(a -> mPresenter.loadConfig(Global.companyId, Global.OFFLINE_MODE));
+                .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                .subscribe(a -> {
+                    mode = Global.OFFLINE_MODE;
+                    mPresenter.loadFragmentConfig(Global.companyId,QINGHAI_FRAGMENT_CONFIG);
+                });
     }
 
     @Override
-    public void loadConfigSuccess(int mode) {
+    public void loadFragmentConfigSuccess() {
+        //如果fragment的配置信加载成功，那么直接下载扩展字段的配置信息
+        mPresenter.loadExtraConfig(Global.companyId);
+    }
+
+    @Override
+    public void loadFragmentConfigFail(String message) {
+        showMessage(message);
+    }
+
+    /**
+     * 下载配置文件成功。注意不管是否下载扩展字段的配置信息都必须去下载
+     */
+    @Override
+    public void loadExtraConfigSuccess() {
+        toHome();
+    }
+
+    @Override
+    public void loadExtraConfigFail(String message) {
+        showMessage(message);
+        toHome();
+    }
+
+    /**
+     * 显示动画，在动画结束后直接跳转到home页面
+     */
+    private void toHome() {
         final View view = Global.ONLINE_MODE == mode ? btnOnlineMode : btnOfflineMode;
-        int primaryColor = AppCompat.getColor(R.color.colorPrimary,this);
+        int primaryColor = AppCompat.getColor(R.color.colorPrimary, this);
         int[] location = new int[2];
         revealView.setBackgroundColor(primaryColor);
         view.getLocationOnScreen(location);
         int cx = (location[0] + (view.getWidth() / 2));
         int cy = location[1] + (GUIUtils.getStatusBarHeight(this) / 2);
         hideNavigationStatus();
-        GUIUtils.showRevealEffect(revealView, cx, cy, new RevealAnimationListener(mode));
-
-    }
-
-    @Override
-    public void loadConfigFail(String message) {
-        showMessage(message);
+        GUIUtils.showRevealEffect(revealView, cx, cy, new RevealAnimationListener());
     }
 
     private void hideNavigationStatus() {
@@ -77,38 +110,13 @@ public class WelcomeActivity extends BaseActivity<WelcomePresenterImp> implement
         decorView.setSystemUiVisibility(uiOptions);
     }
 
-    protected class RevealAnimationListener implements Animator.AnimatorListener {
-
-        private final int mode;
-
-        public RevealAnimationListener(int mode) {
-            this.mode = mode;
-        }
-
-        @Override
-        public void onAnimationStart(Animator animation) {
-
-        }
+    protected class RevealAnimationListener extends AnimatorListenerAdapter {
 
         @Override
         public void onAnimationEnd(Animator animation) {
             mPresenter.toHome(mode);
         }
-
-        @Override
-        public void onAnimationCancel(Animator animation) {
-
-        }
-
-        @Override
-        public void onAnimationRepeat(Animator animation) {
-
-        }
     }
 
 
-    @Override
-    public void networkConnectError(String retryAction) {
-
-    }
 }

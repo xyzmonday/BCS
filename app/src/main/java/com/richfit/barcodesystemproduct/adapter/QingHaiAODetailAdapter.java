@@ -46,10 +46,11 @@ public class QingHaiAODetailAdapter extends CommonTreeAdapter<RefDetailEntity> {
                 .setText(R.id.damagedQuantity,item.damagedQuantity)
                 .setText(R.id.badQuantity,item.badQuantity)
                 .setText(R.id.otherQuantity,item.otherQuantity)
-                .setText(R.id.zPackage,item.zPackage)
+                .setText(R.id.zPackage,item.sapPackage)
                 .setText(R.id.qmNum,item.qmNum)
                 .setText(R.id.certificate,item.certificate)
-                .setText(R.id.manual,item.nstructions)
+                .setText(R.id.manual,item.instructions)
+                .setText(R.id.inspectionQuantity,item.inspectionQuantity)
                 .setText(R.id.qmCertificate,item.qmCertificate)
                 .setText(R.id.claimNum,item.claimNum)
                 .setText(R.id.inspectionResult,item.inspectionResult);
@@ -73,10 +74,10 @@ public class QingHaiAODetailAdapter extends CommonTreeAdapter<RefDetailEntity> {
         deleteNode.damagedQuantity = "";
         deleteNode.badQuantity = "";
         deleteNode.otherQuantity = "";
-        deleteNode.zPackage = "";
+        deleteNode.sapPackage = "";
         deleteNode.qmNum = "";
         deleteNode.certificate = "";
-        deleteNode.nstructions = "";
+        deleteNode.instructions = "";
         deleteNode.qmCertificate = "";
         deleteNode.inspectionResult = "";
         notifyItemChanged(position);

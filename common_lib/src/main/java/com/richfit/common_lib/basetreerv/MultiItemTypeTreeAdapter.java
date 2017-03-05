@@ -16,7 +16,6 @@ import com.richfit.common_lib.baseadapterrv.base.ItemViewDelegateManager;
 import com.richfit.common_lib.baseadapterrv.base.ViewHolder;
 import com.richfit.common_lib.utils.CreateExtraUIHelper;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.RowConfig;
 import com.richfit.domain.bean.TreeNode;
 
@@ -147,6 +146,14 @@ public abstract class MultiItemTypeTreeAdapter<T extends TreeNode> extends Recyc
     }
 
 
+    public void addAll(List<T> data) {
+        if (data == null || data.size() == 0)
+            return;
+        mAllNodes = data;
+        mVisibleNodes = RecycleTreeViewHelper.filterVisibleNodes(data);
+        notifyDataSetChanged();
+    }
+
     public T getItem(int position) {
         if (mVisibleNodes != null && position >= 0 && position < mVisibleNodes.size()) {
             return mVisibleNodes.get(position);
@@ -158,12 +165,12 @@ public abstract class MultiItemTypeTreeAdapter<T extends TreeNode> extends Recyc
         return mVisibleNodes;
     }
 
-    public MultiItemTypeTreeAdapter addItemViewDelegate(ItemViewDelegate<RefDetailEntity> itemViewDelegate) {
+    public MultiItemTypeTreeAdapter addItemViewDelegate(ItemViewDelegate<T> itemViewDelegate) {
         mItemViewDelegateManager.addDelegate(itemViewDelegate);
         return this;
     }
 
-    public MultiItemTypeTreeAdapter addItemViewDelegate(int viewType, ItemViewDelegate<RefDetailEntity> itemViewDelegate) {
+    public MultiItemTypeTreeAdapter addItemViewDelegate(int viewType, ItemViewDelegate<T> itemViewDelegate) {
         mItemViewDelegateManager.addDelegate(viewType, itemViewDelegate);
         return this;
     }
@@ -341,6 +348,7 @@ public abstract class MultiItemTypeTreeAdapter<T extends TreeNode> extends Recyc
 
     /**
      * 对于无参考或者验收等没有父子节点结构明细界面，直接删除该节点
+     *
      * @param position
      */
     public abstract void notifyNodeChanged(int position);

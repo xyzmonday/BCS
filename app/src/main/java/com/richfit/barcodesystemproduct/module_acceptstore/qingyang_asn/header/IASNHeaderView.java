@@ -2,7 +2,7 @@ package com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.header;
 
 
 import com.richfit.barcodesystemproduct.base.BaseView;
-import com.richfit.domain.bean.SupplierEntity;
+import com.richfit.domain.bean.SimpleEntity;
 import com.richfit.domain.bean.WorkEntity;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public interface IASNHeaderView extends BaseView {
     /**
      * 显示供应商列表
      */
-    void showSuppliers(ArrayList<SupplierEntity> suppliers);
+    void showSuppliers(ArrayList<SimpleEntity> suppliers);
 
     /**
      * 获取供应商失败

@@ -123,4 +123,7 @@ public interface IRequestApi {
 
     @GET("getMaterialInfo")
     Flowable<Response<MaterialEntity>> getMaterialInfo(@Query("requestParam") String requestParam);
+
+    @GET("transferCheckData")
+    Flowable<Map<String,Object>> transferCheckData(@Query("requestParam") String requestParam);
 }

@@ -49,11 +49,7 @@ import io.reactivex.FlowableOnSubscribe;
 public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPresenterImp, Object>
         implements IQingHaiAOCollectView {
 
-    /*包装情况列表*/
-    private static final String[] PAKAGE_CONIDITIONS = {"完好", "散箱", "包", "件", "无包装", "其他"};
-    /*检验结果*/
-    private static final String[] INSPECTION_RESULTS = {"合格", "不合格"};//01,02
-    private static final String DEFUALT_CHOOSED_FLAG = "X";
+    public static final String DEFUALT_CHOOSED_FLAG = "X";
 
     @BindView(R.id.sp_ref_line_num)
     Spinner spRefLine;
@@ -77,8 +73,8 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
     EditText etManufacturer;
     @BindView(R.id.cb_certificate)
     CheckBox cbCertificate;
-    @BindView(R.id.cb_manual)
-    CheckBox cbManual;
+    @BindView(R.id.cb_instructions)
+    CheckBox cbInstructions;
     @BindView(R.id.cb_qm_certificate)
     CheckBox cbQmCertificate;
     @BindView(R.id.et_sample_quantity)
@@ -160,9 +156,9 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
     public void initData() {
         //初始化包装结果以及验收结果
         ArrayAdapter<String> pakageConditionAdapter = new ArrayAdapter<>(mActivity,
-                android.R.layout.simple_spinner_item, PAKAGE_CONIDITIONS);
+                android.R.layout.simple_spinner_item, getStringArray(R.array.package_conditions));
         ArrayAdapter<String> inspectionResultAdapter = new ArrayAdapter<>(mActivity,
-                android.R.layout.simple_spinner_item, PAKAGE_CONIDITIONS);
+                android.R.layout.simple_spinner_item, getStringArray(R.array.inspection_results));
         spPackageCondition.setAdapter(pakageConditionAdapter);
         spInspectionResult.setAdapter(inspectionResultAdapter);
     }
@@ -311,7 +307,7 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
         etQualifiedQuantity.setText(lineData.actQuantity);
 
         cbCertificate.setChecked(true);
-        cbManual.setChecked(true);
+        cbInstructions.setChecked(true);
         cbQmCertificate.setChecked(true);
 
         if (mCachedRefDetailData != null) {
@@ -332,20 +328,21 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
             //其他
             etOtherQuantity.setText(mCachedRefDetailData.otherQuantity);
             //包装情况
-            setSelectionForSp(PAKAGE_CONIDITIONS, mCachedRefDetailData.zPackage, spPackageCondition);
+            setSelectionForSp(getStringArray(R.array.package_conditions), mCachedRefDetailData.sapPackage, spPackageCondition);
             //验收结果
-            setSelectionForSp(INSPECTION_RESULTS, mCachedRefDetailData.inspectionResult, spInspectionResult);
+            setSelectionForSp(getStringArray(R.array.inspection_results), mCachedRefDetailData.inspectionResult, spInspectionResult);
+            //送检数量
+            etInspectQuantity.setText(mCachedRefDetailData.inspectionQuantity);
             // 质检单号
             etQmNum.setText(mCachedRefDetailData.qmNum);
             //索赔单号
             etQueryClaimNum.setText(mCachedRefDetailData.claimNum);
             //说明书
-            cbManual.setSelected(DEFUALT_CHOOSED_FLAG.equals(mCachedRefDetailData.nstructions));
+            cbInstructions.setSelected(DEFUALT_CHOOSED_FLAG.equals(mCachedRefDetailData.instructions));
             //合格证
             cbCertificate.setSelected(DEFUALT_CHOOSED_FLAG.equalsIgnoreCase(mCachedRefDetailData.certificate));
             //质检证书
             cbQmCertificate.setSelected(DEFUALT_CHOOSED_FLAG.equals(mCachedRefDetailData.qmCertificate));
-
 
             bindExtraUI(mSubFunEntity.collectionConfigs, mCachedRefDetailData.mapExt);
         }
@@ -353,7 +350,7 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
         mPresenter.getInvsByWorkId(lineData.workId, 0);
     }
 
-    private void setSelectionForSp(String[] dataSet, String keyWord, Spinner sp) {
+    private void setSelectionForSp(List<String> dataSet, String keyWord, Spinner sp) {
         int position = -1;
         if (TextUtils.isEmpty(keyWord))
             return;
@@ -542,13 +539,13 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
             result.refCodeId = mRefData.refCodeId;
             result.refLineId = lineData.refLineId;
             result.businessType = mRefData.bizType;
+            result.materialId = lineData.materialId;
             result.refType = mRefData.refType;
             result.moveType = mRefData.moveType;
             result.inspectionType = mRefData.inspectionType;
             result.inspectionPerson = Global.USER_ID;
             result.userId = Global.USER_ID;
             result.invId = mInvDatas.get(spInv.getSelectedItemPosition()).invId;
-
             //制造商
             result.manufacturer = getString(etManufacturer);
             //实收数量
@@ -557,6 +554,10 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
             result.randomQuantity = getString(etSampleQuantity);
             //完好数量
             result.qualifiedQuantity = getString(etQualifiedQuantity);
+            //损坏数量
+            result.damagedQuantity = getString(etDamage);
+            //送检数量
+            result.inspectionQuantity = getString(etInspectQuantity);
             //锈蚀数量
             result.rustQuantity = getString(etCorrosion);
             //变质
@@ -564,7 +565,7 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
             //其他数量
             result.otherQuantity = getString(etOtherQuantity);
             //包装情况
-            result.zPackage = String.valueOf(spPackageCondition.getSelectedItemPosition() + 1);
+            result.sapPackage = String.valueOf(spPackageCondition.getSelectedItemPosition() + 1);
             //质检单号
             result.qmNum = getString(etQmNum);
             //索赔单号
@@ -572,7 +573,7 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
             //合格证
             result.certificate = cbCertificate.isChecked() ? "X" : "";
             //说明书
-            result.nstructions = cbManual.isChecked() ? "X" : "";
+            result.instructions = cbInstructions.isChecked() ? "X" : "";
             //质检证书
             result.qmCertificate = cbQmCertificate.isChecked() ? "X" : "";
             //检验结果
@@ -665,7 +666,7 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
                 etManufacturer, etCorrosion, etDamage, etBad,
                 etQmNum, etInspectQuantity, etQualifiedQuantity, etOtherQuantity,
                 etQuantity, etQueryClaimNum, etSampleQuantity, cbCertificate,
-                cbManual, cbCertificate, cbQmCertificate);
+                cbInstructions, cbCertificate, cbQmCertificate);
 
         //库存地点
         if (spInv.getAdapter() != null) {

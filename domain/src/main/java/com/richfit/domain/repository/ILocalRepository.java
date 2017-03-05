@@ -3,11 +3,10 @@ package com.richfit.domain.repository;
 import android.support.annotation.NonNull;
 
 import com.richfit.domain.bean.BizFragmentConfig;
-import com.richfit.domain.bean.CostCenterEntity;
 import com.richfit.domain.bean.ImageEntity;
 import com.richfit.domain.bean.InvEntity;
 import com.richfit.domain.bean.RowConfig;
-import com.richfit.domain.bean.SupplierEntity;
+import com.richfit.domain.bean.SimpleEntity;
 import com.richfit.domain.bean.UserEntity;
 import com.richfit.domain.bean.WorkEntity;
 
@@ -127,10 +126,23 @@ public interface ILocalRepository extends IRepository {
      * @param flag:0:表示以及组织机构;1:表示二级组织机构
      * @return
      */
-    Flowable<ArrayList<SupplierEntity>> getSupplierList(String workCode, String keyWord, int defaultItemNum, int flag);
+    Flowable<ArrayList<SimpleEntity>> getSupplierList(String workCode, String keyWord, int defaultItemNum, int flag);
 
 
-    Flowable<ArrayList<CostCenterEntity>> getCostCenterList(String workCode, String keyWord, int defaultItemNum,int flag);
+    Flowable<ArrayList<SimpleEntity>> getCostCenterList(String workCode, String keyWord, int defaultItemNum,int flag);
+
+    /**
+     * 获取项目编号
+     * @param workCode
+     * @param keyWord
+     * @param defaultItemNum
+     * @param flag
+     * @return
+     */
+    Flowable<ArrayList<SimpleEntity>> getProjectNumList(String workCode, String keyWord, int defaultItemNum,int flag);
+
+
+
 
     /**
      * 保存所有业务的页面信息。
@@ -204,5 +216,20 @@ public interface ILocalRepository extends IRepository {
      */
     ArrayList<ImageEntity> readImagesByRefNum(String refNum, boolean isLocal);
 
+    /**
+     * 获取该工厂下的storageNum
+     * @param workId
+     * @param workCode
+     * @param invId
+     * @param invCode
+     * @return
+     */
     Flowable<String> getStorageNum(String workId, String workCode, String invId, String invCode);
+
+    /**
+     * 获取用户的仓库号列表
+     * @param flag
+     * @return
+     */
+    Flowable<ArrayList<String>> getStorageNumList(int flag);
 }

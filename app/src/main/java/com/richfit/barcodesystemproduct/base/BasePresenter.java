@@ -14,6 +14,7 @@ import com.richfit.data.repository.Repository;
 import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.ReferenceEntity;
 import com.richfit.domain.bean.RowConfig;
+import com.richfit.domain.bean.SimpleEntity;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
@@ -195,13 +196,13 @@ public class BasePresenter<T extends BaseView> implements IPresenter<T> {
 
 
     @Override
-    public void readExtraConfigs(String companyCode, String bizType,String refType, String... configTypes) {
+    public void readExtraConfigs(String companyId, String bizType,String refType, String... configTypes) {
         final T view = getView();
 
         if (view == null)
             return;
 
-        if (TextUtils.isEmpty(companyCode) || TextUtils.isEmpty(bizType)) {
+        if (TextUtils.isEmpty(companyId) || TextUtils.isEmpty(bizType)) {
             view.readConfigsFail("读取配置信息失败,请检查传入的参数!");
             return;
         }
@@ -211,8 +212,9 @@ public class BasePresenter<T extends BaseView> implements IPresenter<T> {
             return;
         }
 
-        ResourceSubscriber<List<ArrayList<RowConfig>>> subscriber = Flowable.fromArray(configTypes)
-                .concatMap(configType -> mRepository.readExtraConfigInfo(companyCode, bizType,refType, configType))
+        ResourceSubscriber<List<ArrayList<RowConfig>>> subscriber =
+                Flowable.fromArray(configTypes)
+                .concatMap(configType -> mRepository.readExtraConfigInfo(companyId, bizType,refType, configType))
                 .buffer(configTypes.length)
                 .filter(configs -> configs.size() == configTypes.length)
                 .compose(TransformerHelper.io2main())
@@ -244,7 +246,8 @@ public class BasePresenter<T extends BaseView> implements IPresenter<T> {
         if (configs == null || configs.size() == 0)
             return;
 
-        ResourceSubscriber<Map<String, Object>> subscriber = Flowable.fromIterable(configs)
+        ResourceSubscriber<Map<String, Object>> subscriber =
+                Flowable.fromIterable(configs)
                 .filter(config -> !TextUtils.isEmpty(config.dataSource) &&
                         !TextUtils.isEmpty(config.propertyCode))
                 .flatMap(config -> mRepository.readExtraDataSourceByDictionary(config.propertyCode, config.dataSource))
@@ -279,5 +282,16 @@ public class BasePresenter<T extends BaseView> implements IPresenter<T> {
                 return Flowable.just(entity);
         }
         return Flowable.error(new Throwable("未能找到与该行匹配的缓存"));
+    }
+
+    protected ArrayList<String> wrapper2Str(ArrayList<SimpleEntity> list) {
+        ArrayList<String> strs = new ArrayList<>();
+        StringBuffer sb = new StringBuffer();
+        for (SimpleEntity entity : list) {
+            sb.setLength(0);
+            sb.append(entity.code).append("_").append(entity.name);
+            strs.add(sb.toString());
+        }
+        return strs;
     }
 }

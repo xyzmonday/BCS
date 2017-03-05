@@ -7,10 +7,10 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.orhanobut.logger.Logger;
 import com.richfit.barcodesystemproduct.base.BasePresenter;
 import com.richfit.barcodesystemproduct.di.ContextLife;
 import com.richfit.barcodesystemproduct.module.home.HomeActivity;
+import com.richfit.common_lib.rxutils.RetryWhenNetworkException;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.LocalFileUtil;
@@ -20,6 +20,7 @@ import com.richfit.domain.bean.RowConfig;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,6 +28,8 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.subscribers.ResourceSubscriber;
+
+import static com.richfit.common_lib.utils.Global.companyId;
 
 /**
  * Created by monday on 2016/11/8.
@@ -45,69 +48,63 @@ public class WelcomePresenterImp extends BasePresenter<WelcomeContract.View>
     /**
      * 下载配置文件(包括了扩展字段的配置信息和所有业务的页面配置信息)，并保存到本地数据库
      *
-     * @param mode
+     * @param companyId:公司Id
      */
     @Override
-    public void loadConfig(String companyId, int mode) {
-
+    public void loadExtraConfig(String companyId) {
+        mView = getView();
         if (TextUtils.isEmpty(companyId)) {
-            mView.loadConfigFail("未获取到公司id");
+            mView.loadExtraConfigFail("未获取到公司id");
+            return;
+        }
+        ResourceSubscriber<List<RowConfig>> subscriber = mRepository.loadExtraConfig(companyId)
+                .doOnNext(configs -> mRepository.saveExtraConfigInfo(configs))
+                .doOnNext(configs -> updateExtraConfigTable(configs))
+                .retryWhen(new RetryWhenNetworkException(3,2000))
+                .compose(TransformerHelper.io2main())
+                .subscribeWith(new ResourceSubscriber<List<RowConfig>>() {
+                    @Override
+                    public void onNext(List<RowConfig> rowConfigs) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable t) {
+                        if(mView != null) {
+                            mView.loadExtraConfigFail(t.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        if(mView != null) {
+                            mView.loadExtraConfigSuccess();
+                        }
+                    }
+                });
+        addSubscriber(subscriber);
+
+    }
+
+    @Override
+    public void loadFragmentConfig(String companyI, String configFileName) {
+        mView = getView();
+        if (TextUtils.isEmpty(configFileName) && mView != null) {
+            mView.loadFragmentConfigFail("未找到合适Fragment也只文件名称");
             return;
         }
 
-        mView = getView();
-//
-//        ResourceSubscriber<List<RowConfig>> subscriber = mRepository.loadExtraConfig(companyId)
-//                .doOnNext(configs -> mRepository.saveExtraConfigInfo(configs))
-//                .doOnNext(configs -> updateExtraConfigTable(configs))
-//                .compose(TransformerHelper.io2main())
-//                .subscribeWith(new RxSubscriber<List<RowConfig>>(mContext, "正在初始化条码系统,请稍后...") {
-//                    @Override
-//                    public void _onNext(List<RowConfig> configs) {
-//                    }
-//
-//                    @Override
-//                    public void _onNetWorkConnectError(String message) {
-//                        if (mView != null) {
-//                            mView.loadConfigFail(message);
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void _onCommonError(String message) {
-//                        if (mView != null) {
-//                            mView.loadConfigFail(message);
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void _onServerError(String code, String message) {
-//                        if (mView != null) {
-//                            mView.loadConfigFail(message);
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void _onComplete() {
-//                        if (mView != null) {
-//                            mView.loadConfigSuccess(mode);
-//                         }
-//                    }
-//                });
-//        addSubscriber(subscriber);
-//        final String jsonPath = "bizConfig_QingYang.json";
-        final String jsonPath = "bizConfig_QingHai.json";
-        Flowable.just(jsonPath)
-                .map(path -> LocalFileUtil.getStringFormAsset(mContext, path))
-                .map(json -> {
-                    Gson gson = new Gson();
-                    ArrayList<BizFragmentConfig> list=
-                            gson.fromJson(json,new TypeToken<ArrayList<BizFragmentConfig>>(){}.getType());
-                    return list;
-                })
+        if (TextUtils.isEmpty(companyId) && mView != null) {
+            mView.loadExtraConfigFail("未获取到公司id");
+            return;
+        }
+
+        ResourceSubscriber<Boolean> subscriber = Flowable.just(configFileName)
+                .map(name -> LocalFileUtil.getStringFormAsset(mContext, name))
+                .map(json -> parseJson(json))
                 .flatMap(list -> mRepository.saveBizFragmentConfig(list))
                 .compose(TransformerHelper.io2main())
-                .subscribe(new ResourceSubscriber<Boolean>() {
+                .subscribeWith(new ResourceSubscriber<Boolean>() {
                     @Override
                     public void onNext(Boolean aBoolean) {
 
@@ -115,14 +112,26 @@ public class WelcomePresenterImp extends BasePresenter<WelcomeContract.View>
 
                     @Override
                     public void onError(Throwable t) {
-                        Logger.d("保存业务配置信息出错 = " + t.getMessage());
+                        if (mView != null) {
+                            mView.loadFragmentConfigFail(t.getMessage());
+                        }
                     }
 
                     @Override
                     public void onComplete() {
-                        mView.loadConfigSuccess(mode);
+                        if (mView != null)
+                            mView.loadFragmentConfigSuccess();
                     }
                 });
+        addSubscriber(subscriber);
+    }
+
+    private ArrayList<BizFragmentConfig> parseJson(final String json) {
+        Gson gson = new Gson();
+        ArrayList<BizFragmentConfig> list =
+                gson.fromJson(json, new TypeToken<ArrayList<BizFragmentConfig>>() {
+                }.getType());
+        return list;
     }
 
     @Override

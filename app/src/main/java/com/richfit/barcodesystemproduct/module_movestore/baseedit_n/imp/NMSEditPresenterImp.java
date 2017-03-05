@@ -38,7 +38,8 @@ public class NMSEditPresenterImp extends BasePresenter<INMSEditView>
     @Override
     public void getTransferInfoSingle(String bizType, String materialNum, String userId, String workId, String invId, String recWorkId, String recInvId, String batchFlag) {
         mView = getView();
-        RxSubscriber<ReferenceEntity> subscriber = mRepository.getTransferInfoSingle("", "", bizType, "",
+        RxSubscriber<ReferenceEntity> subscriber =
+                mRepository.getTransferInfoSingle("", "", bizType, "",
                 workId, invId, recWorkId, recInvId, materialNum, batchFlag, "", userId)
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<ReferenceEntity>(mContext) {

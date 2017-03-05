@@ -8,13 +8,14 @@ import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsn.header.IQing
 import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsn.header.IQingHaiDSNHeaderView;
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
-import com.richfit.domain.bean.CostCenterEntity;
+import com.richfit.domain.bean.SimpleEntity;
 import com.richfit.domain.bean.WorkEntity;
 
 import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import io.reactivex.Flowable;
 import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
@@ -32,11 +33,11 @@ public class QingHaiDSNHeaderPresenterImp extends BasePresenter<IQingHaiDSNHeade
     }
 
     @Override
-    public void deleteCollectionData(String refType,String bizType, String userId,
+    public void deleteCollectionData(String refType, String bizType, String userId,
                                      String companyCode) {
         mView = getView();
-        RxSubscriber<String> subscriber = mRepository.deleteCollectionData("","","",refType,bizType,
-                userId,companyCode)
+        RxSubscriber<String> subscriber = mRepository.deleteCollectionData("", "", "", refType, bizType,
+                userId, companyCode)
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext, "正在删除缓存...") {
                     @Override
@@ -102,24 +103,32 @@ public class QingHaiDSNHeaderPresenterImp extends BasePresenter<IQingHaiDSNHeade
     }
 
     @Override
-    public void getCostCenterList(String workCode, String keyWord, int defaultItemNum, int flag) {
+    public void getAutoCompleteList(String workCode, String keyWord, int defaultItemNum, int flag,
+                                    String bizType) {
         mView = getView();
+
+        if (("26".equals(bizType) && "27".equals(bizType))) {
+            mView.loadAutoCompleteFail("未找到合适业务类型");
+            return;
+        }
+        final Flowable<ArrayList<SimpleEntity>> flowable = "26".equals(bizType) ? mRepository.getCostCenterList(workCode, keyWord, defaultItemNum, flag)
+                : mRepository.getProjectNumList(workCode, keyWord, defaultItemNum, flag);
+
         ResourceSubscriber<ArrayList<String>> subscriber =
-                mRepository.getCostCenterList(workCode, keyWord, defaultItemNum, flag)
-                        .filter(list -> list != null && list.size() > 0)
-                        .map(list->wrapper2Str(list))
+                flowable.filter(list -> list != null && list.size() > 0)
+                        .map(list -> wrapper2Str(list))
                         .subscribeWith(new ResourceSubscriber<ArrayList<String>>() {
                             @Override
                             public void onNext(ArrayList<String> suppliers) {
                                 if (mView != null) {
-                                    mView.showCostCenterList(suppliers);
+                                    mView.showAutoCompleteList(suppliers);
                                 }
                             }
 
                             @Override
                             public void onError(Throwable t) {
                                 if (mView != null) {
-                                    mView.loadCostCenterFail(t.getMessage());
+                                    mView.loadAutoCompleteFail(t.getMessage());
                                 }
                             }
 
@@ -129,16 +138,5 @@ public class QingHaiDSNHeaderPresenterImp extends BasePresenter<IQingHaiDSNHeade
                             }
                         });
         addSubscriber(subscriber);
-    }
-
-    private ArrayList<String> wrapper2Str(ArrayList<CostCenterEntity> list) {
-        ArrayList<String> strs = new ArrayList<>();
-        StringBuffer sb = new StringBuffer();
-        for (CostCenterEntity entity : list) {
-            sb.setLength(0);
-            sb.append(entity.costCenterCode).append("_").append(entity.costCenterDesc);
-            strs.add(sb.toString());
-        }
-        return strs;
     }
 }

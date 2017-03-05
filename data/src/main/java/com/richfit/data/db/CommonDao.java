@@ -12,16 +12,15 @@ import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.domain.bean.BizFragmentConfig;
-import com.richfit.domain.bean.CostCenterEntity;
 import com.richfit.domain.bean.InvEntity;
 import com.richfit.domain.bean.RowConfig;
-import com.richfit.domain.bean.SupplierEntity;
+import com.richfit.domain.bean.SimpleEntity;
 import com.richfit.domain.bean.UserEntity;
 import com.richfit.domain.bean.WorkEntity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,7 +49,7 @@ public class CommonDao extends BaseDao {
         return mSqliteHelper.getWritableDatabase();
     }
 
-    public void updatExtraConfigTable(Map<String, Set<String>> map) {
+    public void updateExtraConfigTable(Map<String, Set<String>> map) {
         //尝试更新T_EXTRA_HEADER表
         updateExtraHeader(map.get(Global.HEADER_CONFIG_TYPE), "T_EXTRA_HEADER");
         updateExtraHeader(map.get(Global.COLLECT_CONFIG_TYPE), "T_EXTRA_LINE");
@@ -158,13 +157,13 @@ public class CommonDao extends BaseDao {
         StringBuffer sb = new StringBuffer();
         for (RowConfig config : configs) {
             sb.append("INSERT INTO T_CONFIG(id,property_name,");
-            sb.append("property_code,display_flag,input_flag,company_code,");
-            sb.append("company_name,module_code,module_name,biz_type,");
-            sb.append("ref_code,ref_name,config_type,ui_type,col_num,col_name,data_source)");
-            sb.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            sb.append("property_code,display_flag,input_flag,");
+            sb.append("company_id,biz_type,");
+            sb.append("ref_type,config_type,ui_type,col_num,col_name,data_source)");
+            sb.append(" values(?,?,?,?,?,?,?,?,?,?,?,?,?)");
             db.execSQL(sb.toString(), new Object[]{config.id, config.propertyName,
-                    config.propertyCode, config.displayFlag, config.inputFlag, config.companyCode,
-                    config.companyName, config.moduleCode, config.moduleName, config.bizType, config.refCode, config.refName, config.configType, config.uiType,
+                    config.propertyCode, config.displayFlag, config.inputFlag,
+                    config.companyId, config.businessType, config.refType, config.configType, config.uiType,
                     config.colNum, config.colName, config.dataSource});
             sb.setLength(0);
         }
@@ -174,21 +173,21 @@ public class CommonDao extends BaseDao {
     /**
      * 读取配置文件
      *
-     * @param companyCode：地区公司编码
+     * @param companyId：地区公司Id
      * @param bizType：子模块编码
      * @param configType：配置类型
      * @return
      */
-    public ArrayList<RowConfig> readExtraConfigInfo(String companyCode, String bizType, String refType,
+    public ArrayList<RowConfig> readExtraConfigInfo(String companyId, String bizType, String refType,
                                                     String configType) {
         ArrayList<RowConfig> configs = new ArrayList<>();
 
-        if (TextUtils.isEmpty(bizType) || TextUtils.isEmpty(companyCode)) {
+        if (TextUtils.isEmpty(bizType)) {
             return configs;
         }
 
         SQLiteDatabase db = mSqliteHelper.getReadableDatabase();
-        configs = readExtraConfigInfo(db, refType, companyCode, bizType, configType);
+        configs = readExtraConfigInfo(db, refType, companyId, bizType, configType);
         db.close();
         return configs;
     }
@@ -201,7 +200,7 @@ public class CommonDao extends BaseDao {
      * @return
      */
     public Map<String, String> readExtraDataSourceByDictionary(String dictionaryCode) {
-        HashMap<String, String> map = new HashMap<>();
+        Map<String, String> map = new LinkedHashMap<>();
         if (TextUtils.isEmpty(dictionaryCode))
             return map;
         SQLiteDatabase db = mSqliteHelper.getReadableDatabase();
@@ -556,7 +555,7 @@ public class CommonDao extends BaseDao {
                         stmt.bindString(1, item.get(Global.id_Key).toString());
                         stmt.bindString(2, item.get(Global.code_Key).toString());
                         stmt.bindString(3, item.get(Global.name_Key).toString());
-                        stmt.bindString(4, item.get(Global.sort_key).toString());
+                        stmt.bindLong(4, Long.valueOf(item.get(Global.sort_key).toString()));
                         stmt.bindString(5, item.get(Global.value_key).toString());
                         stmt.execute();
                         stmt.clearBindings();
@@ -701,8 +700,8 @@ public class CommonDao extends BaseDao {
      * @param workCode：工厂编码
      * @return
      */
-    public ArrayList<SupplierEntity> getSupplierList(String workCode, String keyWord, int defaultItemNum, int flag) {
-        ArrayList<SupplierEntity> list = new ArrayList<>();
+    public ArrayList<SimpleEntity> getSupplierList(String workCode, String keyWord, int defaultItemNum, int flag) {
+        ArrayList<SimpleEntity> list = new ArrayList<>();
         if (TextUtils.isEmpty(workCode))
             return list;
 
@@ -721,13 +720,12 @@ public class CommonDao extends BaseDao {
             sb.append(" limit 0, ")
                     .append(defaultItemNum);
         }
-        L.e("查询供应商列表的sql = " + sb.toString());
         Cursor cursor = db.rawQuery(sb.toString(), new String[]{workCode});
         while (cursor.moveToNext()) {
-            SupplierEntity supplierEntity = new SupplierEntity();
-            supplierEntity.supplierId = cursor.getString(0);
-            supplierEntity.supplierCode = cursor.getString(1);
-            supplierEntity.supplierName = cursor.getString(2);
+            SimpleEntity supplierEntity = new SimpleEntity();
+            supplierEntity.id = cursor.getString(0);
+            supplierEntity.code = cursor.getString(1);
+            supplierEntity.name = cursor.getString(2);
             list.add(supplierEntity);
         }
 
@@ -735,8 +733,17 @@ public class CommonDao extends BaseDao {
         return list;
     }
 
-    public ArrayList<CostCenterEntity> getCostCenterList(String workCode, String keyWord, int defaultItemNum, int flag) {
-        ArrayList<CostCenterEntity> list = new ArrayList<>();
+    /**
+     * 获取成本中心列表
+     *
+     * @param workCode
+     * @param keyWord
+     * @param defaultItemNum
+     * @param flag
+     * @return
+     */
+    public ArrayList<SimpleEntity> getCostCenterList(String workCode, String keyWord, int defaultItemNum, int flag) {
+        ArrayList<SimpleEntity> list = new ArrayList<>();
         if (TextUtils.isEmpty(workCode))
             return list;
 
@@ -757,75 +764,29 @@ public class CommonDao extends BaseDao {
         }
         Cursor cursor = db.rawQuery(sb.toString(), new String[]{workCode});
         while (cursor.moveToNext()) {
-            CostCenterEntity entity = new CostCenterEntity();
+            SimpleEntity entity = new SimpleEntity();
             entity.id = cursor.getString(0);
-            entity.costCenterCode = cursor.getString(1);
-            entity.costCenterDesc = cursor.getString(2);
+            entity.code = cursor.getString(1);
+            entity.name = cursor.getString(2);
             list.add(entity);
         }
         db.close();
         return list;
     }
 
-    /**
-     * 获得成本中心
-     *
-     * @param workId：工厂id
-     */
-    public ArrayList<String> getCostCenterListByWorkId(String workId) {
-        ArrayList<String> list = new ArrayList<>();
-        if (TextUtils.isEmpty(workId)) {
-            return list;
-        }
-        SQLiteDatabase db = mSqliteHelper.getWritableDatabase();
-        String parent_id = "";
-        //查询工厂的父节点
-        Cursor cursor = db.rawQuery("select parent_id from P_AUTH_ORG where org_id = ?",
-                new String[]{workId});
-        while (cursor.moveToNext()) {
-            parent_id = cursor.getString(0);
-        }
-        cursor.close();
-        if (TextUtils.isEmpty(parent_id)) {
-            db.close();
-            return null;
-        }
-
-        Cursor cursor_cz = db.rawQuery("select cost_center,cost_center_desc from BASE_COST_CENTER where org_id = ?",
-                new String[]{parent_id});
-        while (cursor_cz.moveToNext()) {
-            if (!TextUtils.isEmpty(cursor_cz.getString(1))) {
-                list.add(cursor_cz.getString(0) + "_" + cursor_cz.getString(1));
-            } else {
-                list.add(cursor_cz.getString(0));
-            }
-        }
-        cursor_cz.close();
-        db.close();
-        return list;
-    }
 
     /**
      * 获取项目编号
      *
-     * @param workId:工厂id
+     * @param workCode:工厂编码
      */
-    public ArrayList<String> getProjectNumListByWorkId(String workId) {
-        ArrayList<String> list = new ArrayList<>();
-        if (TextUtils.isEmpty(workId)) {
+    public ArrayList<SimpleEntity> getProjectNumList(String workCode, String keyWord, int defaultItemNum, int flag) {
+        ArrayList<SimpleEntity> list = new ArrayList<>();
+        if (TextUtils.isEmpty(workCode)) {
             return list;
         }
 
         return list;
-    }
-
-    /**
-     * 获取网络编号
-     *
-     * @param workId:工厂id
-     */
-    public ArrayList<String> getNetNumListByWorkId(String workId) {
-        return null;
     }
 
     /**
@@ -892,5 +853,40 @@ public class CommonDao extends BaseDao {
         cursor.close();
         db.close();
         return storageNum;
+    }
+
+    public ArrayList<String> getStorageNumList(int flag) {
+        SQLiteDatabase db = getReadableDB();
+        ArrayList<String> list = new ArrayList<>();
+
+        ArrayList<String> authOrgs = new ArrayList<>();
+        if (!TextUtils.isEmpty(Global.authOrg)) {
+            authOrgs.addAll(Arrays.asList(Global.authOrg.split("\\|")));
+        }
+
+        StringBuffer sb = new StringBuffer();
+        final String tableName = flag == 0 ? PAuthOrgKey : PAuthOrg2Key;
+        sb.append("select distinct  storage_code from ").append(tableName).append(" where org_level = ? ")
+        .append(" and parent_id IN ( select org_id from ").append(tableName);
+
+        if (authOrgs.size() > 0 && flag == 0) {
+            sb.append(" where org_code IN (");
+            for (int i = 0; i < authOrgs.size(); i++) {
+                sb.append("'").append(authOrgs.get(i)).append("'").append(i == authOrgs.size() - 1 ? "" : ",");
+            }
+            sb.append(" and org_level = ? ");
+            sb.append(")");
+            sb.append(")");
+        }
+        L.e("查询仓库号列表sql = " + sb.toString());
+        Cursor cursor = db.rawQuery(sb.toString(), new String[]{"3","2"});
+        list.add("请选择");
+        while (cursor.moveToNext()) {
+            list.add(cursor.getString(0));
+        }
+        sb.setLength(0);
+        cursor.close();
+        db.close();
+        return list;
     }
 }

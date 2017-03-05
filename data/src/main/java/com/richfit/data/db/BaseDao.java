@@ -281,37 +281,35 @@ public abstract class BaseDao {
     /**
      * 读取扩展字段的配置信息
      *
-     * @param companyCode：公司编码
+     * @param companyId：公司Id
      * @param refType：单据类型
      * @param bizType：子功能模块编码
      * @param configType：配置类型
      * @return
      */
-    protected synchronized ArrayList<RowConfig> readExtraConfigInfo(SQLiteDatabase db, String refType, String companyCode,
+    protected synchronized ArrayList<RowConfig> readExtraConfigInfo(SQLiteDatabase db, String refType, String companyId,
                                                                     String bizType, String configType) {
         ArrayList<RowConfig> configs = new ArrayList<>();
 
-        if (TextUtils.isEmpty(companyCode) || TextUtils.isEmpty(bizType)) {
+        if (TextUtils.isEmpty(bizType)) {
             return configs;
         }
 
         StringBuffer sb = new StringBuffer();
         sb.append("select id,property_name,property_code,");
-        sb.append("display_flag,input_flag,company_code,");
-        sb.append("company_name,module_code,module_name,");
-        sb.append("biz_type,ref_code,");
-        sb.append("ref_name,config_type,ui_type,col_num,col_name,data_source ");
+        sb.append("display_flag,input_flag,company_id,");
+        sb.append("biz_type,ref_type,");
+        sb.append("config_type,ui_type,col_num,col_name,data_source ");
         sb.append(" from T_CONFIG ");
         Cursor cursor;
         if (!TextUtils.isEmpty(refType)) {
-            sb.append("where company_code = ? and biz_type = ? and ref_code = ? and config_type = ?");
-            cursor = db.rawQuery(sb.toString(), new String[]{companyCode, bizType, refType, configType});
+            sb.append("where  biz_type = ? and ref_type = ? and config_type = ?");
+            cursor = db.rawQuery(sb.toString(), new String[]{bizType, refType, configType});
         } else {
-            sb.append("where company_code = ? and  module_code = ? and biz_type = ? and config_type = ?");
-            cursor = db.rawQuery(sb.toString(), new String[]{companyCode, bizType, configType});
+            sb.append("where  biz_type = ? and config_type = ?");
+            cursor = db.rawQuery(sb.toString(), new String[]{bizType, configType});
         }
-
-
+//        Log.e("yff","配置信息的sql = " + sb.toString() + "; bizType = " + bizType + "; refType = " + refType + "; configType = " + configType);
         while (cursor.moveToNext()) {
             RowConfig config = new RowConfig();
             config.id = cursor.getString(0);
@@ -319,18 +317,14 @@ public abstract class BaseDao {
             config.propertyCode = cursor.getString(2);
             config.displayFlag = cursor.getString(3);
             config.inputFlag = cursor.getString(4);
-            config.companyCode = cursor.getString(5);
-            config.companyName = cursor.getString(6);
-            config.moduleCode = cursor.getString(7);
-            config.moduleName = cursor.getString(8);
-            config.bizType = cursor.getString(9);
-            config.refCode = cursor.getString(10);
-            config.refName = cursor.getString(11);
-            config.configType = cursor.getString(12);
-            config.uiType = cursor.getString(13);
-            config.colNum = cursor.getString(14);
-            config.colName = cursor.getString(15);
-            config.dataSource = cursor.getString(16);
+            config.companyId = cursor.getString(5);
+            config.businessType = cursor.getString(6);
+            config.refType = cursor.getString(7);
+            config.configType = cursor.getString(8);
+            config.uiType = cursor.getString(9);
+            config.colNum = cursor.getString(10);
+            config.colName = cursor.getString(11);
+            config.dataSource = cursor.getString(12);
 
             configs.add(config);
         }
@@ -361,6 +355,4 @@ public abstract class BaseDao {
         sb.setLength(0);
         return columns;
     }
-
-
 }

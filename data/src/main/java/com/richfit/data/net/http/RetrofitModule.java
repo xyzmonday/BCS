@@ -151,7 +151,7 @@ public class RetrofitModule {
             OkHttpClient httpClient = new OkHttpClient.Builder()
                     .addInterceptor(interceptor)//添加拦截器
                     .addInterceptor(logging)//添加打印拦截器
-                    .connectTimeout(10, TimeUnit.SECONDS)//设置请求超时时间
+                    .connectTimeout(15, TimeUnit.SECONDS)//设置请求超时时间
                     .readTimeout(20, TimeUnit.SECONDS)
                     .writeTimeout(20, TimeUnit.SECONDS)
                     .retryOnConnectionFailure(true)//设置出现错误进行重新连接。

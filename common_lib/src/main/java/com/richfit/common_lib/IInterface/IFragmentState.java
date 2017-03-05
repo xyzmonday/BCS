@@ -14,14 +14,13 @@ public interface IFragmentState<T> {
 
     void operationOnHeader(final String companyCode);
 
-    boolean checkDataBeforeOperationOnDetail();
+
     /**
      * 在数据明细界面，不同的功能模块需要操作不同。比如验收只需要过账，
      * 而入库需要过账和数据上传。
-     * @param companyCode:菜单名称列表
      */
+    boolean checkDataBeforeOperationOnDetail();
     void showOperationMenuOnDetail(final String companyCode);
-
     /**
      * 明细界面子节点删除
      * @param node

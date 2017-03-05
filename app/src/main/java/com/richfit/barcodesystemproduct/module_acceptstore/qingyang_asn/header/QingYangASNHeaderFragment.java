@@ -20,7 +20,7 @@ import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.RichEditText;
 import com.richfit.domain.bean.ReferenceEntity;
 import com.richfit.domain.bean.RowConfig;
-import com.richfit.domain.bean.SupplierEntity;
+import com.richfit.domain.bean.SimpleEntity;
 import com.richfit.domain.bean.WorkEntity;
 
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class QingYangASNHeaderFragment extends BaseFragment<ASNHeaderPresenterIm
     private MoveTypeAdapter mMoveTypeAdapter;
     private ArrayList<WorkEntity> mWorks;
     private ArrayList<String> mMoveTypes;
-    private ArrayList<SupplierEntity> mSuppliers;
+    private ArrayList<SimpleEntity> mSuppliers;
 
     @Override
     protected int getContentId() {
@@ -168,12 +168,12 @@ public class QingYangASNHeaderFragment extends BaseFragment<ASNHeaderPresenterIm
     }
 
     @Override
-    public void showSuppliers(ArrayList<SupplierEntity> suppliers) {
+    public void showSuppliers(ArrayList<SimpleEntity> suppliers) {
         mSuppliers.clear();
         mSuppliers.addAll(suppliers);
         ArrayList<String> list = new ArrayList<>();
-        for (SupplierEntity supplier : suppliers) {
-            list.add(supplier.supplierCode + "_" + supplier.supplierName);
+        for (SimpleEntity supplier : suppliers) {
+            list.add(supplier.code + "_" + supplier.name);
         }
         MultiArrayAdapter<String> adapter = new MultiArrayAdapter<>(mActivity,
                 R.layout.simple_auto_edittext_item1, list);
@@ -225,9 +225,9 @@ public class QingYangASNHeaderFragment extends BaseFragment<ASNHeaderPresenterIm
             final String selectedSupplier = getString(etSupplier);
             if(!TextUtils.isEmpty(selectedSupplier)) {
                 final String supplierCode = selectedSupplier.split("_")[0];
-                for (SupplierEntity entity : mSuppliers) {
-                    if(supplierCode.equalsIgnoreCase(entity.supplierCode)) {
-                        mRefData.supplierId = entity.supplierId;
+                for (SimpleEntity entity : mSuppliers) {
+                    if(supplierCode.equalsIgnoreCase(entity.code)) {
+                        mRefData.supplierId = entity.id;
                     }
                 }
             }

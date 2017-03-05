@@ -7,14 +7,14 @@ import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.data.db.ApprovalDao;
 import com.richfit.data.db.CommonDao;
 import com.richfit.domain.bean.BizFragmentConfig;
-import com.richfit.domain.bean.CostCenterEntity;
 import com.richfit.domain.bean.ImageEntity;
 import com.richfit.domain.bean.InvEntity;
 import com.richfit.domain.bean.InventoryEntity;
+import com.richfit.domain.bean.MaterialEntity;
 import com.richfit.domain.bean.ReferenceEntity;
 import com.richfit.domain.bean.ResultEntity;
 import com.richfit.domain.bean.RowConfig;
-import com.richfit.domain.bean.SupplierEntity;
+import com.richfit.domain.bean.SimpleEntity;
 import com.richfit.domain.bean.UserEntity;
 import com.richfit.domain.bean.WorkEntity;
 import com.richfit.domain.repository.ILocalRepository;
@@ -80,17 +80,17 @@ public class LocalRepositoryImp implements ILocalRepository {
     }
 
     @Override
-    public Flowable<ReferenceEntity> getCheckInfo(String checkNum) {
+    public Flowable<ReferenceEntity> getCheckInfo(String userId, String bizType, String checkLevel, String checkSpecial, String storageNum, String workId, String invId, String checkNum) {
         return null;
     }
 
     @Override
-    public Flowable<String> deleteCheckData(String checkId, String userId) {
+    public Flowable<String> deleteCheckData(String storageNum, String workId, String invId,String checkId, String userId) {
         return null;
     }
 
     @Override
-    public Flowable<List<InventoryEntity>> getCheckTransferInfoSingle(String checkId, String materialNum, String location) {
+    public Flowable<List<InventoryEntity>> getCheckTransferInfoSingle(String checkId,String materialId, String materialNum, String location) {
         return null;
     }
 
@@ -101,6 +101,16 @@ public class LocalRepositoryImp implements ILocalRepository {
 
     @Override
     public Flowable<String> deleteCheckDataSingle(String checkId, String checkLineId, String userId) {
+        return null;
+    }
+
+    @Override
+    public Flowable<MaterialEntity> getMaterialInfo(String queryType, String materialNum) {
+        return null;
+    }
+
+    @Override
+    public Flowable<String> transferCheckData(String checkId) {
         return null;
     }
 
@@ -146,17 +156,21 @@ public class LocalRepositoryImp implements ILocalRepository {
     }
 
     @Override
-    public Flowable<ArrayList<RowConfig>> readExtraConfigInfo(String companyCode, String bizType, String refType, String configType) {
-        return Flowable.create(new SimpleSubscriber<ArrayList<RowConfig>>() {
-            @Override
-            ArrayList<RowConfig> execute() throws Throwable {
-                return mCommonDao.readExtraConfigInfo(companyCode, bizType, refType, configType);
+    public Flowable<ArrayList<RowConfig>> readExtraConfigInfo(String companyId, String bizType, String refType, String configType) {
+        return Flowable.create(emitter -> {
+            try {
+                ArrayList<RowConfig> rowConfigs = mCommonDao.readExtraConfigInfo(companyId, bizType, refType, configType);
+                emitter.onNext(rowConfigs);
+                emitter.onComplete();
+            } catch (Exception e) {
+                emitter.onError(e);
             }
         }, BackpressureStrategy.LATEST);
     }
 
     @Override
-    public Flowable<Map<String, Object>> readExtraDataSourceByDictionary(@NonNull String propertyCode, @NonNull String dictionaryCode) {
+    public Flowable<Map<String, Object>> readExtraDataSourceByDictionary(@NonNull String propertyCode,
+                                                                         @NonNull String dictionaryCode) {
         return Flowable.create(new SimpleSubscriber<Map<String, Object>>() {
             @Override
             Map<String, Object> execute() throws Throwable {
@@ -198,7 +212,7 @@ public class LocalRepositoryImp implements ILocalRepository {
 
     @Override
     public void updateExtraConfigTable(Map<String, Set<String>> map) {
-        mCommonDao.updatExtraConfigTable(map);
+        mCommonDao.updateExtraConfigTable(map);
     }
 
     @Override
@@ -239,10 +253,10 @@ public class LocalRepositoryImp implements ILocalRepository {
     }
 
     @Override
-    public Flowable<ArrayList<SupplierEntity>> getSupplierList(String workCode, String keyWord, int defaultItemNum, int flag) {
+    public Flowable<ArrayList<SimpleEntity>> getSupplierList(String workCode, String keyWord, int defaultItemNum, int flag) {
         return Flowable.create(emitter -> {
             try {
-                final ArrayList<SupplierEntity> list = mCommonDao.getSupplierList(workCode, keyWord, defaultItemNum, flag);
+                final ArrayList<SimpleEntity> list = mCommonDao.getSupplierList(workCode, keyWord, defaultItemNum, flag);
                 if (list == null || list.size() == 0) {
                     emitter.onError(new Throwable("未获取到供应商数据,请检查工厂或者是否已经下载了供应基础数据。如果您还未下载，请到设置界面下载该基础数据"));
                 } else {
@@ -256,12 +270,30 @@ public class LocalRepositoryImp implements ILocalRepository {
     }
 
     @Override
-    public Flowable<ArrayList<CostCenterEntity>> getCostCenterList(String workCode, String keyWord, int defaultItemNum,int flag) {
+    public Flowable<ArrayList<SimpleEntity>> getCostCenterList(String workCode, String keyWord, int defaultItemNum, int flag) {
         return Flowable.create(emitter -> {
             try {
-                final ArrayList<CostCenterEntity> list = mCommonDao.getCostCenterList(workCode, keyWord, defaultItemNum,flag);
+                final ArrayList<SimpleEntity> list = mCommonDao.getCostCenterList(workCode, keyWord, defaultItemNum, flag);
                 if (list == null || list.size() == 0) {
-                    emitter.onError(new Throwable("未获取到供应商数据,请检查工厂或者是否已经下载了供应基础数据。" +
+                    emitter.onError(new Throwable("未获取到供应商数据,请检查工厂是否合适或者是否已经下载了供应基础数据。" +
+                            "如果您还未下载，请到设置界面下载该基础数据"));
+                } else {
+                    emitter.onNext(list);
+                    emitter.onComplete();
+                }
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        }, BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Flowable<ArrayList<SimpleEntity>> getProjectNumList(String workCode, String keyWord, int defaultItemNum, int flag) {
+        return Flowable.create(emitter -> {
+            try {
+                final ArrayList<SimpleEntity> list = mCommonDao.getProjectNumList(workCode, keyWord, defaultItemNum, flag);
+                if (list == null || list.size() == 0) {
+                    emitter.onError(new Throwable("未获取到项目编号数据,请检查工厂是否合适或者是否已经下载了供应基础数据。" +
                             "如果您还未下载，请到设置界面下载该基础数据"));
                 } else {
                     emitter.onNext(list);
@@ -364,6 +396,23 @@ public class LocalRepositoryImp implements ILocalRepository {
                 String storageNum = mCommonDao.getStorageNum(workId, workCode, invId, invCode);
                 e.onNext(storageNum);
                 e.onComplete();
+            }
+        }, BackpressureStrategy.LATEST);
+    }
+
+    @Override
+    public Flowable<ArrayList<String>> getStorageNumList(int flag) {
+        return Flowable.create(emitter -> {
+            try {
+                final ArrayList<String> list = mCommonDao.getStorageNumList(flag);
+                if (list == null || list.size() <= 1) {
+                    emitter.onError(new Throwable("未查询到仓库列表"));
+                } else {
+                    emitter.onNext(list);
+                    emitter.onComplete();
+                }
+            } catch (Exception e) {
+                emitter.onError(e);
             }
         }, BackpressureStrategy.LATEST);
     }

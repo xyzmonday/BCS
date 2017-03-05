@@ -2,11 +2,10 @@ package com.richfit.barcodesystemproduct.module_delivery.qinghai_dsn.header;
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxAdapterView;
 import com.jakewharton.rxbinding.widget.RxAutoCompleteTextView;
@@ -33,6 +32,9 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 
 /**
+ * 青海201,221(对应的bizType是26,27)无参考出库。201和221的
+ * 区别在于移动类型不同，系统根据BizType自动生成供应商(26)或者
+ * 项目编号(27)。
  * Created by monday on 2017/2/23.
  */
 
@@ -45,12 +47,8 @@ public class QingHaiDSNHeaderFragment extends BaseFragment<QingHaiDSNHeaderPrese
     Spinner spWork;
     @BindView(R.id.et_cost_center)
     AutoCompleteTextView etCostCenter;
-    @BindView(R.id.ll_cost_center)
-    LinearLayout llCostCenter;
-    @BindView(R.id.et_project_num)
-    AutoCompleteTextView etProjectNum;
-    @BindView(R.id.ll_project_num)
-    LinearLayout llProjectNum;
+    @BindView(R.id.tv_cost_center_name)
+    TextView tvCostCenterName;
     @BindView(R.id.et_transfer_date)
     RichEditText etTransferDate;
 
@@ -94,8 +92,8 @@ public class QingHaiDSNHeaderFragment extends BaseFragment<QingHaiDSNHeaderPrese
         /*选择工厂，初始化供应商或者项目编号*/
         RxAdapterView.itemSelections(spWork)
                 .filter(position -> position.intValue() > 0)
-                .subscribe(position -> mPresenter.getCostCenterList(mWorks.get(position).workCode,
-                        getString(etCostCenter), 100, ORG_FLAG));
+                .subscribe(position -> mPresenter.getAutoCompleteList(mWorks.get(position).workCode,
+                        getString(etCostCenter), 100, ORG_FLAG, mBizType));
 
         RxCilck.clicks(etCostCenter)
                 .subscribe(a -> showAutoCompleteConfig(etCostCenter));
@@ -104,19 +102,21 @@ public class QingHaiDSNHeaderFragment extends BaseFragment<QingHaiDSNHeaderPrese
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .filter(str -> !TextUtils.isEmpty(str) && mCostCenters != null &&
                         mCostCenters.size() > 0 && !filterKeyWord(str) && spWork.getSelectedItemPosition() > 0)
-                .subscribe(a -> mPresenter.getCostCenterList(mWorks.get(spWork.getSelectedItemPosition()).workCode,
-                        getString(etCostCenter), 100, ORG_FLAG));
+                .subscribe(a -> mPresenter.getAutoCompleteList(mWorks.get(spWork.getSelectedItemPosition()).workCode,
+                        getString(etCostCenter), 100, ORG_FLAG, mBizType));
 
         RxAutoCompleteTextView.itemClickEvents(etCostCenter)
                 .subscribe(a -> hideKeyboard(etCostCenter));
 
-        mPresenter.deleteCollectionData("",mBizType,Global.USER_ID,mCompanyCode);
+        mPresenter.deleteCollectionData("", mBizType, Global.USER_ID, mCompanyCode);
     }
 
     @Override
     protected void initView() {
         //如果BizType是26那么显示成本中心,否者显示项目编号
-        llCostCenter.setVisibility(View.VISIBLE);
+        if ("27".equalsIgnoreCase(mBizType)) {
+            tvCostCenterName.setText("项目编号");
+        }
         mPresenter.readExtraConfigs(mCompanyCode, mBizType, mRefType, Global.HEADER_CONFIG_TYPE);
     }
 
@@ -173,7 +173,7 @@ public class QingHaiDSNHeaderFragment extends BaseFragment<QingHaiDSNHeaderPrese
     }
 
     @Override
-    public void showCostCenterList(List<String> list) {
+    public void showAutoCompleteList(List<String> list) {
         mCostCenters.clear();
         mCostCenters.addAll(list);
         if (mCostCenterAdapter == null) {
@@ -187,7 +187,8 @@ public class QingHaiDSNHeaderFragment extends BaseFragment<QingHaiDSNHeaderPrese
     }
 
     @Override
-    public void loadCostCenterFail(String message) {
+    public void loadAutoCompleteFail(String message) {
+        hideKeyboard(etCostCenter);
         showMessage(message);
     }
 
@@ -221,7 +222,12 @@ public class QingHaiDSNHeaderFragment extends BaseFragment<QingHaiDSNHeaderPrese
             mRefData.workId = mWorks.get(position).workId;
             mRefData.workCode = mWorks.get(position).workCode;
             mRefData.workName = mWorks.get(position).workName;
-            mRefData.costCenter = getString(etCostCenter).split("_")[0];
+
+            if ("27".equalsIgnoreCase(mBizType)) {
+                mRefData.projectNum = getString(etCostCenter).split("_")[0];
+            } else {
+                mRefData.costCenter = getString(etCostCenter).split("_")[0];
+            }
             mRefData.bizType = mBizType;
             mRefData.voucherDate = getString(etTransferDate);
 
@@ -231,10 +237,4 @@ public class QingHaiDSNHeaderFragment extends BaseFragment<QingHaiDSNHeaderPrese
         }
 
     }
-
-    @Override
-    public void networkConnectError(String retryAction) {
-
-    }
-
 }

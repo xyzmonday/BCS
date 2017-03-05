@@ -387,16 +387,18 @@ public abstract class BaseNMSEditFragment<P extends INMSEditPresenter> extends B
             result.userId = Global.USER_ID;
             result.workId = mRefData.workId;
             result.locationId = mLocationId;
+            result.invType =
             result.invId = CommonUtil.Obj2String(tvSendInv.getTag());
             result.recWorkId = mRefData.recWorkId;
             result.recInvId = mRefData.recInvId;
-            result.materialId = result.invId = CommonUtil.Obj2String(tvMaterialNum.getTag());
+            result.materialId = CommonUtil.Obj2String(tvMaterialNum.getTag());
             result.batchFlag = getString(tvSendBatchFlag);
             result.location = mInventoryDatas.get(spSendLoc.getSelectedItemPosition()).location;
             result.recLocation = getString(etRecLoc);
             result.recBatchFlag = getString(tvRecBatchFlag);
             result.quantity = getString(etQuantity);
             result.modifyFlag = "Y";
+            result.invType = getInvType();
             result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
             result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
             result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, mExtraLineMap, mExtraLocationMap);

@@ -18,18 +18,10 @@ public class RowConfig{
     /*该控件是否必输*/
     public String inputFlag;
     /*地区公司的编码*/
-    public String companyCode;
-    public String companyName;
-    /*功能模块的编码*/
-    public String moduleCode;
-    public String moduleName;
-    public String bizType;
-    /*子功能模块的编码*/
-    public String subFunCode;
-    public String subFunName;
+    public String companyId;
+    public String businessType;
     /*单据编码和类型*/
-    public String refCode;
-    public String refName;
+    public String refType;
     /*配置文件的类型，0表示抬头，1表示明细父节点，2表示明细子节点,3表示数据采集*/
     public String configType;
     /*控件类型TextView(0);EditText(1),RichEditText(2);Spinner(3);
@@ -50,14 +42,9 @@ public class RowConfig{
                 ", propertyCode='" + propertyCode + '\'' +
                 ", displayFlag='" + displayFlag + '\'' +
                 ", inputFlag='" + inputFlag + '\'' +
-                ", companyCode='" + companyCode + '\'' +
-                ", companyName='" + companyName + '\'' +
-                ", moduleCode='" + moduleCode + '\'' +
-                ", moduleName='" + moduleName + '\'' +
-                ", subFunCode='" + subFunCode + '\'' +
-                ", subFunName='" + subFunName + '\'' +
-                ", refCode='" + refCode + '\'' +
-                ", refName='" + refName + '\'' +
+                ", companyId='" + companyId + '\'' +
+                ", businessType='" + businessType + '\'' +
+                ", refType='" + refType + '\'' +
                 ", configType='" + configType + '\'' +
                 ", uiType='" + uiType + '\'' +
                 ", colNum='" + colNum + '\'' +

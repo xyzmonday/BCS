@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.domain.bean.BizFragmentConfig;
-import com.richfit.domain.bean.CostCenterEntity;
 import com.richfit.domain.bean.ImageEntity;
 import com.richfit.domain.bean.InvEntity;
 import com.richfit.domain.bean.InventoryEntity;
@@ -17,7 +16,7 @@ import com.richfit.domain.bean.RefNumEntity;
 import com.richfit.domain.bean.ReferenceEntity;
 import com.richfit.domain.bean.ResultEntity;
 import com.richfit.domain.bean.RowConfig;
-import com.richfit.domain.bean.SupplierEntity;
+import com.richfit.domain.bean.SimpleEntity;
 import com.richfit.domain.bean.UpdateEntity;
 import com.richfit.domain.bean.UserEntity;
 import com.richfit.domain.bean.WorkEntity;
@@ -318,20 +317,22 @@ public class Repository implements ILocalRepository, IServerRepository {
     }
 
     @Override
-    public Flowable<ReferenceEntity> getCheckInfo(String checkNum) {
-        return isLocal ? mLocalRepository.getCheckInfo(checkNum) : mServerRepository.getCheckInfo(checkNum);
+    public Flowable<ReferenceEntity> getCheckInfo(String userId, String bizType, String checkLevel, String checkSpecial,
+                                                  String storageNum, String workId, String invId, String checkNum) {
+        return isLocal ? mLocalRepository.getCheckInfo(userId, bizType, checkLevel, checkSpecial, storageNum, workId, invId, checkNum) :
+                mServerRepository.getCheckInfo(userId, bizType, checkLevel, checkSpecial, storageNum, workId, invId, checkNum);
     }
 
     @Override
-    public Flowable<String> deleteCheckData(String checkId, String userId) {
-        return isLocal ? mLocalRepository.deleteCheckData(checkId, userId) :
-                mServerRepository.deleteCheckData(checkId, userId);
+    public Flowable<String> deleteCheckData(String storageNum, String workId, String invId, String checkId, String userId) {
+        return isLocal ? mLocalRepository.deleteCheckData(storageNum, workId, invId, checkId, userId) :
+                mServerRepository.deleteCheckData(storageNum, workId, invId, checkId, userId);
     }
 
     @Override
-    public Flowable<List<InventoryEntity>> getCheckTransferInfoSingle(String checkId, String materialNum, String location) {
-        return isLocal ? mLocalRepository.getCheckTransferInfoSingle(checkId, materialNum, location)
-                : mServerRepository.getCheckTransferInfoSingle(checkId, materialNum, location);
+    public Flowable<List<InventoryEntity>> getCheckTransferInfoSingle(String checkId, String materialId, String materialNum, String location) {
+        return isLocal ? mLocalRepository.getCheckTransferInfoSingle(checkId, materialId, materialNum, location)
+                : mServerRepository.getCheckTransferInfoSingle(checkId, materialId, materialNum, location);
     }
 
     @Override
@@ -345,7 +346,6 @@ public class Repository implements ILocalRepository, IServerRepository {
         return isLocal ? mLocalRepository.deleteCheckDataSingle(checkId, checkLineId, userId)
                 : mServerRepository.deleteCheckDataSingle(checkId, checkLineId, userId);
     }
-
 
     /**
      * 保存基础数据的下载日期
@@ -385,13 +385,18 @@ public class Repository implements ILocalRepository, IServerRepository {
     }
 
     @Override
-    public Flowable<ArrayList<SupplierEntity>> getSupplierList(String workCode, String keyWord, int defaultItemNum, int flag) {
+    public Flowable<ArrayList<SimpleEntity>> getSupplierList(String workCode, String keyWord, int defaultItemNum, int flag) {
         return mLocalRepository.getSupplierList(workCode, keyWord, defaultItemNum, flag);
     }
 
     @Override
-    public Flowable<ArrayList<CostCenterEntity>> getCostCenterList(String workCode, String keyWord, int defaultItemNum,int flag) {
-        return mLocalRepository.getCostCenterList(workCode,keyWord,defaultItemNum,flag);
+    public Flowable<ArrayList<SimpleEntity>> getCostCenterList(String workCode, String keyWord, int defaultItemNum, int flag) {
+        return mLocalRepository.getCostCenterList(workCode, keyWord, defaultItemNum, flag);
+    }
+
+    @Override
+    public Flowable<ArrayList<SimpleEntity>> getProjectNumList(String workCode, String keyWord, int defaultItemNum, int flag) {
+        return mLocalRepository.getProjectNumList(workCode, keyWord, defaultItemNum, flag);
     }
 
     @Override
@@ -435,6 +440,11 @@ public class Repository implements ILocalRepository, IServerRepository {
         return mLocalRepository.getStorageNum(workId, workCode, invId, invCode);
     }
 
+    @Override
+    public Flowable<ArrayList<String>> getStorageNumList(int flag) {
+        return mLocalRepository.getStorageNumList(flag);
+    }
+
 
     @Override
     public Flowable<String> changeLoginInfo(String userId, String newPassword) {
@@ -448,7 +458,12 @@ public class Repository implements ILocalRepository, IServerRepository {
 
     @Override
     public Flowable<MaterialEntity> getMaterialInfo(String queryType, String materialNum) {
-        return mServerRepository.getMaterialInfo(queryType, materialNum);
+        return isLocal ? mLocalRepository.getMaterialInfo(queryType, materialNum) : mServerRepository.getMaterialInfo(queryType, materialNum);
+    }
+
+    @Override
+    public Flowable<String> transferCheckData(String checkId) {
+        return isLocal ? mLocalRepository.transferCheckData(checkId) : mServerRepository.transferCheckData(checkId);
     }
 
     @Override

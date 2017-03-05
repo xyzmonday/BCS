@@ -3,7 +3,6 @@ package com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.detail;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,10 +19,8 @@ import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.ASNDetailAdapter;
 import com.richfit.barcodesystemproduct.adapter.BottomMenuAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
-import com.richfit.barcodesystemproduct.module.main.MainActivity;
 import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.detail.imp.ASNDetailPresenterImp;
 import com.richfit.common_lib.animationrv.Animation.animators.FadeInDownAnimator;
-import com.richfit.common_lib.dialog.ShowErrorMessageDialog;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.AutoSwipeRefreshLayout;
@@ -143,7 +140,7 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
     public void onRefresh() {
         String transferFlag = (String) getData(mBizType + mRefType, "0");
         if ("1".equals(transferFlag)) {
-            setRefreshing(false,"本次采集已经过账,请先进行数据上传操作");
+            setRefreshing(false, "本次采集已经过账,请先进行数据上传操作");
             return;
         }
         //单据抬头id
@@ -164,7 +161,7 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
     @Override
     public void showNodes(List<RefDetailEntity> nodes) {
         for (RefDetailEntity node : nodes) {
-            if(!TextUtils.isEmpty(node.transId)) {
+            if (!TextUtils.isEmpty(node.transId)) {
                 mTransId = node.transId;
                 break;
             }
@@ -211,7 +208,7 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
         RecyclerView.Adapter adapter = mRecycleView.getAdapter();
         if (adapter != null && ASNDetailAdapter.class.isInstance(adapter)) {
             ASNDetailAdapter asnDetailAdapter = (ASNDetailAdapter) adapter;
-            ArrayList<String> Locations = asnDetailAdapter.getLocations(position,0);
+            ArrayList<String> Locations = asnDetailAdapter.getLocations(position, 0);
             mPresenter.editNode(Locations, null, node, mCompanyCode, mBizType, mRefType, "其他入库-无参考");
         }
     }
@@ -308,7 +305,7 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
 
     @Override
     public void submitBarcodeSystemSuccess() {
-        showSuccessDialog("过账成功" + mTransNum);
+        showSuccessDialog(mTransNum);
     }
 
     @Override
@@ -325,7 +322,7 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
             return;
         }
         mPresenter.submitData2SAP(mTransId, mBizType, mRefType, Global.USER_ID,
-                mRefData.voucherDate,null, createExtraHeaderMap());
+                mRefData.voucherDate, null, createExtraHeaderMap());
     }
 
     @Override
@@ -336,9 +333,6 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
 
     @Override
     public void submitSAPFail(String[] messages) {
-        MainActivity activity = (MainActivity) mActivity;
-        FragmentManager fm = activity.getSupportFragmentManager();
-        ShowErrorMessageDialog dialog = ShowErrorMessageDialog.newInstance(messages);
-        dialog.show(fm, "nms_show_error_messages");
+        showErrorDialog(messages);
     }
 }

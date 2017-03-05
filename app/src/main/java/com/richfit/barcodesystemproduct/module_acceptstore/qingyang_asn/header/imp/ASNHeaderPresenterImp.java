@@ -8,7 +8,7 @@ import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.header.I
 import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.header.IASNHeaderView;
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
-import com.richfit.domain.bean.SupplierEntity;
+import com.richfit.domain.bean.SimpleEntity;
 import com.richfit.domain.bean.WorkEntity;
 
 import java.util.ArrayList;
@@ -65,13 +65,13 @@ public class ASNHeaderPresenterImp extends BasePresenter<IASNHeaderView>
     @Override
     public void getSupplierList(String workCode, String keyWord, int defaultItemNum, int flag) {
         mView = getView();
-        ResourceSubscriber<ArrayList<SupplierEntity>> subscriber =
+        ResourceSubscriber<ArrayList<SimpleEntity>> subscriber =
                 mRepository.getSupplierList(workCode, keyWord, defaultItemNum, flag)
                         .filter(list -> list != null && list.size() > 0)
                         .compose(TransformerHelper.io2main())
-                        .subscribeWith(new ResourceSubscriber<ArrayList<SupplierEntity>>() {
+                        .subscribeWith(new ResourceSubscriber<ArrayList<SimpleEntity>>() {
                             @Override
-                            public void onNext(ArrayList<SupplierEntity> list) {
+                            public void onNext(ArrayList<SimpleEntity> list) {
                                 if (mView != null) {
                                     mView.showSuppliers(list);
                                 }

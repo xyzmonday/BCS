@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/root_id"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/parent_node_bg"
+    android:orientation="horizontal">
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/rowNum"
+        style="@style/TableHeaderStyle"
+        android:layout_width="60dp"
+        android:text="@string/row_num" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/materialNum"
+        style="@style/TableHeaderStyle"
+        android:layout_width="140dp"
+        android:text="@string/material_num" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/materialDesc"
+        style="@style/TableHeaderStyle"
+        android:layout_width="240dp"
+        android:text="@string/material_desc" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/materialGroup"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/material_group" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/checkLocation"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/check_location" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/specialInvFlag"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/special_inv_flag" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/specialInvNum"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/special_inv_num" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/invQuantity"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/inv_quantity" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+
+    <TextView
+        android:id="@+id/checkQuantity"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/check_quantity" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/setZero"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/set_zero" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/newFlag"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/new_flag" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/checkState"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/check_state" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+</LinearLayout>

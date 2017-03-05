@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import com.richfit.common_lib.baseadapterrv.base.ItemViewDelegate;
 import com.richfit.common_lib.baseadapterrv.base.ViewHolder;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.RowConfig;
 import com.richfit.domain.bean.TreeNode;
 
@@ -30,23 +29,25 @@ public abstract class CommonTreeAdapter<T extends TreeNode> extends MultiItemTyp
         mInflater = LayoutInflater.from(context);
         mLayoutId = layoutId;
 
-        addItemViewDelegate(Global.PARENT_NODE_ITEM_TYPE,new ItemViewDelegate<RefDetailEntity>() {
+        addItemViewDelegate(Global.PARENT_NODE_ITEM_TYPE,new ItemViewDelegate<T>() {
             @Override
             public int getItemViewLayoutId() {
-                return layoutId;
+                return mLayoutId;
             }
 
             @Override
-            public boolean isForViewType(RefDetailEntity item, int position) {
+            public boolean isForViewType(T item, int position) {
                 return true;
             }
 
             @Override
-            public void convert(ViewHolder holder, RefDetailEntity item, int position) {
+            public void convert(ViewHolder holder, T item, int position) {
                 CommonTreeAdapter.this.convert(holder, item, position);
             }
         });
+
+
     }
 
-    protected abstract void convert(ViewHolder holder, RefDetailEntity item, int position);
+    protected abstract void convert(ViewHolder holder, T item, int position);
 }

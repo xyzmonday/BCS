@@ -34,6 +34,7 @@ import com.richfit.common_lib.IInterface.IFragmentState;
 import com.richfit.common_lib.IInterface.IPresenter;
 import com.richfit.common_lib.dialog.NetConnectErrorDialogFragment;
 import com.richfit.common_lib.dialog.ShowErrorMessageDialog;
+import com.richfit.common_lib.utils.CommonUtil;
 import com.richfit.common_lib.utils.CreateExtraUIHelper;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.UiUtil;
@@ -48,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -561,7 +563,7 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
         if (mExtraViews == null || mExtraViews.size() == 0) {
             return;
         }
-        if (extraDataMap == null)
+        if (extraDataMap == null || extraDataMap.size() == 0)
             return;
         if (configs == null || configs.size() == 0)
             return;
@@ -588,29 +590,16 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
                 //说明是下拉列表
                 if (MaterialSpinner.class.isInstance(extraView)) {
                     MaterialSpinner spinner = (MaterialSpinner) extraView;
-                    //1.通过字典绑定spinner
-                    Object o = extraDataMap.get(UiUtil.MD5(propertyCode));
-                    if (o != null && HashMap.class.isInstance(o)) {
-                        final HashMap<String, String> map = (HashMap<String, String>) o;
-                        if (map.size() > 0) {
-                            spinner.setTag(map);
-                            ArrayList<String> keys = new ArrayList<>();
-                            ArrayList<String> values = new ArrayList<>();
-                            for (Map.Entry<String, String> entry : map.entrySet()) {
-                                keys.add(entry.getKey());
-                                values.add(entry.getValue());
-                            }
-                            spinner.setItems(values);
-                            //2.选中用户选择的缓存数据
-                            final String selectedItem = (String) extraDataMap.get(propertyCode);
-                            if (!TextUtils.isEmpty(selectedItem)) {
-                                int indexOf = keys.indexOf(selectedItem);
-                                if (indexOf >= 0) {
-                                    spinner.setSelectedIndex(indexOf);
-                                }
-                            }
-                        }
+                    //1.如果spiner已经绑定过，那么使用tag再次绑定数据
+                    Object obj = null;
+                    final Object tag = spinner.getTag();
+                    if (tag != null) {
+                        obj = tag;
+                    } else {
+                        //2.通过字典绑定spinner
+                        obj = extraDataMap.get(UiUtil.MD5(propertyCode));
                     }
+                    setSelection(spinner, obj, CommonUtil.Obj2String(extraDataMap.get(propertyCode)));
                 }
             } else if ("4".equals(uiType)) {
                 //checkBox类型
@@ -621,6 +610,29 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
                         String isCheck = (String) obj;
                         //0表示选中
                         cb.setChecked("0".equals(isCheck));
+                    }
+                }
+            }
+        }
+    }
+
+    private void setSelection(MaterialSpinner spinner, Object o, String selectedItem) {
+        if (o != null && LinkedHashMap.class.isInstance(o)) {
+            Map<String, String> map = (LinkedHashMap<String, String>) o;
+            if (map.size() > 0) {
+                spinner.setTag(map);
+                ArrayList<String> keys = new ArrayList<>();
+                ArrayList<String> values = new ArrayList<>();
+                for (Map.Entry<String, String> entry : map.entrySet()) {
+                    keys.add(entry.getKey());
+                    values.add(entry.getValue());
+                }
+                spinner.setItems(values);
+
+                if (!TextUtils.isEmpty(selectedItem)) {
+                    int indexOf = keys.indexOf(selectedItem);
+                    if (indexOf >= 0) {
+                        spinner.setSelectedIndex(indexOf);
                     }
                 }
             }
@@ -639,7 +651,7 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
         if (mExtraViews == null || mExtraViews.size() == 0) {
             return;
         }
-        if (extraDataMap == null)
+        if (extraDataMap == null || extraDataMap.size() == 0)
             return;
         if (configs == null || configs.size() == 0)
             return;
@@ -666,23 +678,16 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
                 //说明是下拉列表
                 if (MaterialSpinner.class.isInstance(extraView)) {
                     MaterialSpinner spinner = (MaterialSpinner) extraView;
-                    //1.通过字典绑定spinner
-                    Object o = extraDataMap.get(UiUtil.MD5(propertyCode));
-                    if (o != null && ArrayList.class.isInstance(o)) {
-                        final ArrayList<String> items = (ArrayList<String>) o;
-                        if (items.size() > 0) {
-                            spinner.setTag(items);
-                            spinner.setItems(items);
-                            //2.选中用户选择的缓存数据
-                            final String selectedItem = (String) extraDataMap.get(propertyCode);
-                            if (!TextUtils.isEmpty(selectedItem)) {
-                                int indexOf = items.indexOf(selectedItem);
-                                if (indexOf >= 0) {
-                                    spinner.setSelectedIndex(indexOf);
-                                }
-                            }
-                        }
+                    Object obj = null;
+                    final Object tag = spinner.getTag();
+                    if (tag != null) {
+                        obj = tag;
+                    } else {
+                        //2.通过字典绑定spinner
+                        obj = extraDataMap.get(UiUtil.MD5(propertyCode));
                     }
+                    setSelection(spinner, obj, CommonUtil.Obj2String(extraDataMap.get(propertyCode)));
+                    spinner.setEnabled(isEnable);
                 }
             } else if ("4".equals(uiType)) {
                 //checkBox类型
@@ -694,9 +699,14 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
                         //0表示选中
                         cb.setChecked("0".equals(isCheck));
                     }
+                    cb.setEnabled(isEnable);
                 }
             }
         }
+    }
+
+    private void setSelection(MaterialSpinner spinner, List<String> values, String selectedItem) {
+
     }
 
     /**
@@ -719,12 +729,12 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
                     tv.setText("");
                 }
             } else if ("3".equals(uiType)) {
-                //说明是下拉列表
-                final View extraView = mExtraViews.get(propertyCode);
-                if (extraView != null && MaterialSpinner.class.isInstance(extraView)) {
-                    MaterialSpinner spinner = (MaterialSpinner) extraView;
-                    spinner.setItems("");
-                }
+                //说明是下拉列表。这里先不清除下拉列表的数据源
+//                final View extraView = mExtraViews.get(propertyCode);
+//                if (extraView != null && MaterialSpinner.class.isInstance(extraView)) {
+//                    MaterialSpinner spinner = (MaterialSpinner) extraView;
+//                    spinner.setItems("");
+//                }
             }
         }
     }
@@ -759,8 +769,8 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
                         MaterialSpinner spinner = (MaterialSpinner) view;
 
                         Object obj = spinner.getTag();
-                        if (obj != null && HashMap.class.isInstance(obj)) {
-                            HashMap<String, String> map = (HashMap<String, String>) obj;
+                        if (obj != null && LinkedHashMap.class.isInstance(obj)) {
+                            Map<String, String> map = (LinkedHashMap<String, String>) obj;
                             ArrayList<String> items = new ArrayList<>();
                             for (Map.Entry<String, String> entry : map.entrySet()) {
                                 items.add(entry.getKey());
@@ -813,7 +823,7 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
                 View view = mExtraViews.get(config.propertyCode);
                 MaterialSpinner spinner = (MaterialSpinner) view;
                 int selectedIndex = spinner.getSelectedIndex();
-                if (selectedIndex <= 0) {
+                if (selectedIndex < 0) {
                     return false;
                 }
             }

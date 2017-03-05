@@ -323,13 +323,9 @@ create table IF not exists T_CONFIG
     property_code    TEXT,
     display_flag     TEXT,
     input_flag       TEXT,
-    company_code     TEXT,
-    company_name     TEXT,
-    module_code      TEXT,
-    module_name      TEXT,
+    company_id       TEXT,
     biz_type         TEXT,
-    ref_code         TEXT,
-    ref_name         TEXT,
+    ref_type         TEXT,
     config_type      TEXT,
     ui_type          TEXT,
     col_num          TEXT,
@@ -342,7 +338,7 @@ create table IF not exists T_EXTRA_DATA_SOURCE
     id               VARCHAR2(32) PRIMARY KEY NOT NULL,
     code             TEXT,
     name             TEXT,
-    sort             TEXT,
+    sort             INTEGER,
     val              TEXT
 );
 

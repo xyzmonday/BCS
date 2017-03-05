@@ -56,8 +56,7 @@
 
         <AutoCompleteTextView
             android:id="@+id/et_supplier"
-            style="@style/RightEditTextItemStyle"
-             />
+            style="@style/RightEditTextItemStyle" />
 
     </LinearLayout>
 

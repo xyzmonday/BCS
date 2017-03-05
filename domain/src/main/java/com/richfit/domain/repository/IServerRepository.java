@@ -6,7 +6,6 @@ import com.richfit.domain.bean.BizFragmentConfig;
 import com.richfit.domain.bean.InventoryEntity;
 import com.richfit.domain.bean.LoadBasicDataWrapper;
 import com.richfit.domain.bean.LoadDataTask;
-import com.richfit.domain.bean.MaterialEntity;
 import com.richfit.domain.bean.MenuNode;
 import com.richfit.domain.bean.RefNumEntity;
 import com.richfit.domain.bean.ReferenceEntity;
@@ -202,5 +201,5 @@ public interface IServerRepository extends IRepository {
      */
     Flowable<String> uploadInspectionDataOffline(ReferenceEntity refData);
 
-    Flowable<MaterialEntity> getMaterialInfo(String queryType, String materialNum);
+
 }

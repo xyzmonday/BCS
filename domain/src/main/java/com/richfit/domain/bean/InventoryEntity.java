@@ -4,7 +4,7 @@ package com.richfit.domain.bean;
  * 库存信息实体类
  * Created by monday on 2016/5/28.
  */
-public class InventoryEntity {
+public class InventoryEntity extends TreeNode{
     public String checkLineId;
     public boolean isChecked;
     public String rowId;
@@ -23,6 +23,7 @@ public class InventoryEntity {
     public String materialDesc;
     public String materialGroup;
     public String materialUnit;
+    public String lineNum;
     public String unit;
     public String invQuantity;
     public String quantity;
@@ -46,7 +47,43 @@ public class InventoryEntity {
      * 特殊库存编号
      */
     public String specialInventoryNum;
+    public String newFlag;//新增库存标识
 
 
-
+    @Override
+    public String toString() {
+        return "InventoryEntity{" +
+                "checkLineId='" + checkLineId + '\'' +
+                ", isChecked=" + isChecked +
+                ", rowId='" + rowId + '\'' +
+                ", id='" + id + '\'' +
+                ", newFlag='" + newFlag + '\'' +
+                ", transId='" + transId + '\'' +
+                ", storageNum='" + storageNum + '\'' +
+                ", workId='" + workId + '\'' +
+                ", workCode='" + workCode + '\'' +
+                ", invId='" + invId + '\'' +
+                ", invCode='" + invCode + '\'' +
+                ", invName='" + invName + '\'' +
+                ", location='" + location + '\'' +
+                ", batchFlag='" + batchFlag + '\'' +
+                ", materialId='" + materialId + '\'' +
+                ", materialNum='" + materialNum + '\'' +
+                ", materialDesc='" + materialDesc + '\'' +
+                ", materialGroup='" + materialGroup + '\'' +
+                ", materialUnit='" + materialUnit + '\'' +
+                ", lineNum='" + lineNum + '\'' +
+                ", unit='" + unit + '\'' +
+                ", invQuantity='" + invQuantity + '\'' +
+                ", quantity='" + quantity + '\'' +
+                ", supplierId='" + supplierId + '\'' +
+                ", supplierNum='" + supplierNum + '\'' +
+                ", totalQuantity='" + totalQuantity + '\'' +
+                ", workName='" + workName + '\'' +
+                ", checkVisa='" + checkVisa + '\'' +
+                ", inventoryType='" + inventoryType + '\'' +
+                ", specialInventoryFlag='" + specialInventoryFlag + '\'' +
+                ", specialInventoryNum='" + specialInventoryNum + '\'' +
+                '}';
+    }
 }

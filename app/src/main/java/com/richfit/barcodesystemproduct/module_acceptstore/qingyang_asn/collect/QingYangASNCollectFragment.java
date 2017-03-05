@@ -33,6 +33,7 @@ import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 
 /**
+ * 注意庆阳的无参考出库没有上架仓位，默认为barcode
  * Created by monday on 2016/11/27.
  */
 

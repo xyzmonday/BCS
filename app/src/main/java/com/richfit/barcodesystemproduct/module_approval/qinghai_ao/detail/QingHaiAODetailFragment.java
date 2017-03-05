@@ -137,13 +137,8 @@ public class QingHaiAODetailFragment extends BaseFragment<QingHaiAODetailPresent
     }
 
     @Override
-    public void showNodes(List<RefDetailEntity> nodes) {
-        for (RefDetailEntity node : nodes) {
-            if (!TextUtils.isEmpty(node.transId)) {
-                mTransId = node.transId;
-                break;
-            }
-        }
+    public void showNodes(List<RefDetailEntity> nodes, String transId) {
+        mTransId = transId;
         QingHaiAODetailAdapter mAdapter = new QingHaiAODetailAdapter(mActivity,
                 R.layout.item_qinghai_ao_detail, nodes,
                 mSubFunEntity.parentNodeConfigs, null, mCompanyCode);
@@ -167,8 +162,8 @@ public class QingHaiAODetailFragment extends BaseFragment<QingHaiAODetailPresent
      */
     @Override
     public void deleteNode(final RefDetailEntity node, int position) {
-
-        if (TextUtils.isEmpty(node.totalQuantity) || "0".equals(node.totalQuantity)) {
+        if (TextUtils.isEmpty(node.transLineId) || TextUtils.isEmpty(node.totalQuantity) ||
+                "0".equals(node.totalQuantity)) {
             showMessage("该行还未进行数据采集!");
             return;
         }
@@ -193,16 +188,11 @@ public class QingHaiAODetailFragment extends BaseFragment<QingHaiAODetailPresent
 
     @Override
     public void editNode(final RefDetailEntity node, int position) {
-        if ("Y".equals(node.lineInspectFlag)) {
-            showMessage("该行已经过账,不允许编辑");
-            return;
-        }
-
-        if (TextUtils.isEmpty(node.totalQuantity) || "0".equals(node.totalQuantity)) {
+        if (TextUtils.isEmpty(node.transLineId) || TextUtils.isEmpty(node.totalQuantity) ||
+                "0".equals(node.totalQuantity)) {
             showMessage("该行还未进行数据采集!");
             return;
         }
-
         mPresenter.editNode(node, mCompanyCode, mBizType, mRefType, "验收结果修改", position);
     }
 
@@ -273,16 +263,22 @@ public class QingHaiAODetailFragment extends BaseFragment<QingHaiAODetailPresent
 
     @Override
     public void showSubmitComplete() {
+
         //清除界面显示的历史明细
         RecyclerView.Adapter adapter = mRecycleView.getAdapter();
         if (adapter != null && QingHaiAODetailAdapter.class.isInstance(adapter)) {
             QingHaiAODetailAdapter qingYangAOAdapter = (QingHaiAODetailAdapter) adapter;
             qingYangAOAdapter.removeAllVisibleNodes();
         }
+
         new SweetAlertDialog(mActivity, SweetAlertDialog.SUCCESS_TYPE)
                 .setTitleText("温馨提示")
                 .setContentText(mTransNum)
                 .show();
+
+        //清除数据，防止重复上传数据
+        mRefData = null;
+
         //跳转到抬头界面,并且清除抬头界面的字段信息。
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }

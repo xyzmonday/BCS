@@ -3,6 +3,7 @@ package com.richfit.domain.repository;
 import android.support.annotation.NonNull;
 
 import com.richfit.domain.bean.InventoryEntity;
+import com.richfit.domain.bean.MaterialEntity;
 import com.richfit.domain.bean.ReferenceEntity;
 import com.richfit.domain.bean.ResultEntity;
 
@@ -101,12 +102,19 @@ public interface IRepository {
     Flowable<String> uploadCollectionDataSingle(ResultEntity result);
 
     /**
-     * 获取盘点头数据
-     *
-     * @param checkNum
+     * 获取盘点头数据。
+     * @param userId
+     * @param bizType
+     * @param checkLevel:盘点级别 01:仓位级别 02:仓库级别
+     * @param checkSpecial:特殊寄售标识
+     * @param storageNum:仓库号
+     * @param workId
+     * @param invId
+     * @param checkNum:对于有参考盘点需要的盘点单号
      * @return
      */
-    Flowable<ReferenceEntity> getCheckInfo(String checkNum);
+    Flowable<ReferenceEntity> getCheckInfo(String userId,String bizType,String checkLevel,String checkSpecial,
+                                           String storageNum,String workId,String invId,String checkNum);
 
     /**
      * 删除整个盘点单
@@ -115,7 +123,7 @@ public interface IRepository {
      * @param userId：用户id
      * @return
      */
-    Flowable<String> deleteCheckData(String checkId, String userId);
+    Flowable<String> deleteCheckData(String storageNum, String workId, String invId,String checkId, String userId);
 
     /**
      * 盘点数据采集界面获取单条缓存
@@ -125,7 +133,7 @@ public interface IRepository {
      * @param location：仓位
      * @return
      */
-    Flowable<List<InventoryEntity>> getCheckTransferInfoSingle(String checkId, String materialNum, String location);
+    Flowable<List<InventoryEntity>> getCheckTransferInfoSingle(String checkId,String materialId, String materialNum, String location);
 
     /**
      * 获取整单盘点缓存
@@ -149,4 +157,19 @@ public interface IRepository {
      * @return
      */
     Flowable<String> deleteCheckDataSingle(String checkId, String checkLineId, String userId);
+
+    /**
+     * 获取物料信息
+     * @param queryType 01
+     * @param materialNum
+     * @return
+     */
+    Flowable<MaterialEntity> getMaterialInfo(String queryType, String materialNum);
+
+    /**
+     * 保存本次盘点的结果
+     * @param checkId
+     * @return
+     */
+    Flowable<String> transferCheckData(String checkId);
 }

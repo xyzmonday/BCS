@@ -1,6 +1,7 @@
 package com.richfit.barcodesystemproduct.adapter;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.adapter.itemdelegate.DSYChildHeaderItemDelegate;
 import com.richfit.barcodesystemproduct.adapter.itemdelegate.DSYChildItemDelegate;
@@ -24,10 +25,10 @@ public class DSYDetailAdapter extends MultiItemTypeTreeAdapter<RefDetailEntity> 
                             List<RowConfig> parentNodeConfigs,
                             List<RowConfig> childNodeConfigs,
                             String companyCode) {
-        super(context, allNodes, parentNodeConfigs, childNodeConfigs,companyCode);
-        addItemViewDelegate(Global.PARENT_NODE_HEADER_TYPE,new DSYParentHeaderItemDelegate());
-        addItemViewDelegate(Global.CHILD_NODE_HEADER_TYPE,new DSYChildHeaderItemDelegate());
-        addItemViewDelegate(Global.CHILD_NODE_ITEM_TYPE,new DSYChildItemDelegate());
+        super(context, allNodes, parentNodeConfigs, childNodeConfigs, companyCode);
+        addItemViewDelegate(Global.PARENT_NODE_HEADER_TYPE, new DSYParentHeaderItemDelegate());
+        addItemViewDelegate(Global.CHILD_NODE_HEADER_TYPE, new DSYChildHeaderItemDelegate());
+        addItemViewDelegate(Global.CHILD_NODE_ITEM_TYPE, new DSYChildItemDelegate());
     }
 
     @Override
@@ -38,6 +39,24 @@ public class DSYDetailAdapter extends MultiItemTypeTreeAdapter<RefDetailEntity> 
     @Override
     public void notifyNodeChanged(int position) {
 
+    }
+
+    /**
+     * 判断是否可以过账
+     *
+     * @return
+     */
+    public boolean isTransferValide() {
+        if (mVisibleNodes != null) {
+            for (RefDetailEntity item : mVisibleNodes) {
+                //如果累计数量为空或者等于0，那么认为该明细没有采集过数据
+                if (TextUtils.isEmpty(item.totalQuantity) || "0".equals(item.toString())) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
