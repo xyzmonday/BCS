@@ -158,6 +158,7 @@ public class Global {
     public static final String EXTRA_QUANTITY_KEY = "extra_quantity";
     public static final String EXTRA_LOCATION_KEY = "extra_location";
     public static final String EXTRA_INV_ID_KEY = "extra_inv_id";
+    public static final String EXTRA_WORK_ID_KEY = "extra_work_id";
     public static final String EXTRA_INV_CODE_KEY = "extra_inv_code";
     public static final String EXTRA_LOCATION_ID_KEY = "extra_location_id";
     public static final String EXTRA_MATERIAL_NUM_KEY = "extra_material_num";
@@ -225,5 +226,7 @@ public class Global {
     public static final String EXTRA_REF_LINE_ID_KEY = "extra_ref_line_id";
     public static final String EXTRA_POSITION_KEY = "extra_position";
     public static final String EXTRA_IS_LOCAL_KEY = "extra_is_local";
-
+    public static final String EXTRA_RETURN_QUANTITY_KEY = "extra_return_quantity";
+    public static final String EXTRA_PROJECT_TEXT_KEY = "extra_project_text";
+    public static final String EXTRA_MOVE_CAUSE_DESC_KEY = "extra_move_cause_desc";
 }

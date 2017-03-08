@@ -58,10 +58,9 @@ public class QingHaiDSXSDetailFFragment extends BaseDSDetailFragment<QingHaiDSXS
     @Override
     public void submitBarcodeSystemFail(String message) {
         if (TextUtils.isEmpty(message)) {
-            showMessage(message);
-        } else {
-            showErrorDialog(message);
+            message += "过账失败";
         }
+        showErrorDialog(message);
         mTransNum = "";
     }
 
@@ -72,6 +71,9 @@ public class QingHaiDSXSDetailFFragment extends BaseDSDetailFragment<QingHaiDSXS
     public void submitSAPSuccess() {
         setRefreshing(false, "数据上传成功");
         showSuccessDialog(mInspectionNum);
+        if(mAdapter != null) {
+            mAdapter.removeAllVisibleNodes();
+        }
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 

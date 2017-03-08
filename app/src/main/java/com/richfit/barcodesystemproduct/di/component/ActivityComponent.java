@@ -3,8 +3,8 @@ package com.richfit.barcodesystemproduct.di.component;
 import android.app.Activity;
 import android.content.Context;
 
-import com.richfit.barcodesystemproduct.di.ActivityScope;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ActivityScope;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.di.module.ActivityModule;
 import com.richfit.barcodesystemproduct.module.edit.EditActivity;
 import com.richfit.barcodesystemproduct.module.home.HomeActivity;

@@ -211,6 +211,12 @@
     <string name="return_delivery_quantity">退货交货数量</string>
     <string name="set_zero">标记0数量</string>
     <string name="new_flag">新增</string>
+    <string name="project_text">项目文本</string>
+    <string name="move_cause_desc">移动原因说明</string>
+    <string name="insLot">检验批编号</string>
+    <string name="refDoc">物料凭证</string>
+    <string name="refDocItem">物料凭证行项目</string>
+    <string name="move_cause">移动原因</string>
 
     //组织机构
     <integer name="orgNorm">0</integer>

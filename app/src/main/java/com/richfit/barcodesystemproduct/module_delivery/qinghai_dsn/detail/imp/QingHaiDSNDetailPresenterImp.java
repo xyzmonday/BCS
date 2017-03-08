@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module.main.MainActivity;
 import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsn.detail.IQingHaiDSNDetailPresenter;
 import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsn.detail.IQingHaiDSNDetailView;

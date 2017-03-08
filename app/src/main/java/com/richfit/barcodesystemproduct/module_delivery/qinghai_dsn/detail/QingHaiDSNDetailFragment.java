@@ -60,6 +60,7 @@ public class QingHaiDSNDetailFragment extends BaseFragment<QingHaiDSNDetailPrese
     protected ArrayList<RowConfig> mConfigs;
     protected String mInspectionNum;
     protected List<BottomMenuEntity> mBottomMenus;
+    DSNDetailAdapter mAdapter;
 
     @Override
     public void initInjector() {
@@ -101,8 +102,12 @@ public class QingHaiDSNDetailFragment extends BaseFragment<QingHaiDSNDetailPrese
             showMessage("请先在抬头界面选择工厂");
             return;
         }
-        if (TextUtils.isEmpty(mRefData.costCenter)) {
+        if ("26".equals(mBizType) && TextUtils.isEmpty(mRefData.costCenter)) {
             showMessage("请先在抬头界面输入成本中心");
+            return;
+        }
+        if ("27".equals(mBizType) && TextUtils.isEmpty(mRefData.projectNum)) {
+            showMessage("请现在抬头界面输入项目编号");
             return;
         }
         startAutoRefresh();
@@ -168,11 +173,14 @@ public class QingHaiDSNDetailFragment extends BaseFragment<QingHaiDSNDetailPrese
                 break;
             }
         }
-        setRefreshing(true, "加载明细成功");
-        DSNDetailAdapter adapter = new DSNDetailAdapter(mActivity,
-                R.layout.base_dsn_detail_parent_item, allNodes, mConfigs, null, mCompanyCode);
-        mRecycleView.setAdapter(adapter);
-        adapter.setOnItemEditAndDeleteListener(this);
+        if (mAdapter == null) {
+            mAdapter = new DSNDetailAdapter(mActivity,
+                    R.layout.base_dsn_detail_parent_item, allNodes, mConfigs, null, mCompanyCode);
+            mRecycleView.setAdapter(mAdapter);
+            mAdapter.setOnItemEditAndDeleteListener(this);
+        } else {
+            mAdapter.addAll(allNodes);
+        }
     }
 
     @Override
@@ -197,10 +205,8 @@ public class QingHaiDSNDetailFragment extends BaseFragment<QingHaiDSNDetailPrese
             return;
         }
         //获取与该子节点的物料编码和发出库位一致的发出仓位和接收仓位列表
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && DSNDetailAdapter.class.isInstance(adapter)) {
-            DSNDetailAdapter detailAdapter = (DSNDetailAdapter) adapter;
-            ArrayList<String> sendLocations = detailAdapter.getLocations(position, 0);
+        if (mAdapter != null) {
+            ArrayList<String> sendLocations = mAdapter.getLocations(position, 0);
             mPresenter.editNode(sendLocations, null, node, EditActivity.class, mCompanyCode,
                     mBizType, mRefType, "201无参考出库");
         }
@@ -227,11 +233,9 @@ public class QingHaiDSNDetailFragment extends BaseFragment<QingHaiDSNDetailPrese
     @Override
     public void deleteNodeSuccess(int position) {
         showMessage("删除成功");
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && DSNDetailAdapter.class.isInstance(adapter)) {
-            DSNDetailAdapter detailAdapter = (DSNDetailAdapter) adapter;
-            detailAdapter.removeItemByPosition(position);
-            int itemCount = detailAdapter.getItemCount();
+        if (mAdapter != null) {
+            mAdapter.removeItemByPosition(position);
+            int itemCount = mAdapter.getItemCount();
             if (itemCount == 0) {
                 mExtraContainer.setVisibility(View.INVISIBLE);
             }
@@ -327,10 +331,9 @@ public class QingHaiDSNDetailFragment extends BaseFragment<QingHaiDSNDetailPrese
     @Override
     public void submitBarcodeSystemFail(String message) {
         if (TextUtils.isEmpty(message)) {
-            showMessage(message);
-        } else {
-            showErrorDialog(message);
+            message += "过账失败";
         }
+        showErrorDialog(message);
         mTransNum = "";
     }
 
@@ -353,6 +356,9 @@ public class QingHaiDSNDetailFragment extends BaseFragment<QingHaiDSNDetailPrese
     public void submitSAPSuccess() {
         setRefreshing(false, "数据上传成功");
         showSuccessDialog(mInspectionNum);
+        if (mAdapter != null) {
+            mAdapter.removeAllVisibleNodes();
+        }
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 

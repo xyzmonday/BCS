@@ -108,4 +108,15 @@ public class ResultEntity {
     //项目编号
     public String projectNum;
     public String checkLineId;
+    //物料凭证
+    public String refDoc;
+    public Integer refDocItem;
+    //退货交货数量
+    public String returnQuantity;
+    //检验批数量
+    public String insLot;
+    //移动原因说明
+    public String moveCauseDesc;
+    //项目文本
+    public String projectText;
 }

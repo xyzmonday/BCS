@@ -1,6 +1,5 @@
 package com.richfit.barcodesystemproduct.module_acceptstore.qinghai_103;
 
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -21,6 +20,8 @@ import java.util.List;
 
 public class QingHaiAS103DetailFragment extends BaseASDetailFragment<QingHaiAS103DetailPresenterImp> {
 
+    QingHaiAS103DetailAdapter mAdapter;
+
     @Override
     public void initInjector() {
         mFragmentComponent.inject(this);
@@ -40,11 +41,14 @@ public class QingHaiAS103DetailFragment extends BaseASDetailFragment<QingHaiAS10
                 break;
             }
         }
-        QingHaiAS103DetailAdapter adapter = new QingHaiAS103DetailAdapter(mActivity, R.layout.base_as_detail_parent_item,
-                allNodes,mSubFunEntity.parentNodeConfigs,mSubFunEntity.childNodeConfigs,mCompanyCode);
-        mRecycleView.setAdapter(adapter);
-        adapter.setOnItemEditAndDeleteListener(this);
-
+        if (mAdapter == null) {
+            mAdapter = new QingHaiAS103DetailAdapter(mActivity, R.layout.base_as_detail_parent_item,
+                    allNodes, mSubFunEntity.parentNodeConfigs, mSubFunEntity.childNodeConfigs, mCompanyCode);
+            mRecycleView.setAdapter(mAdapter);
+            mAdapter.setOnItemEditAndDeleteListener(this);
+        } else {
+            mAdapter.addAll(allNodes);
+        }
     }
 
     @Override
@@ -53,7 +57,7 @@ public class QingHaiAS103DetailFragment extends BaseASDetailFragment<QingHaiAS10
             showMessage("已经过账,不允许修改");
             return;
         }
-        if(TextUtils.isEmpty(node.transLineId)) {
+        if (TextUtils.isEmpty(node.transLineId)) {
             showMessage("该行还未进行数据采集");
             return;
         }
@@ -64,10 +68,8 @@ public class QingHaiAS103DetailFragment extends BaseASDetailFragment<QingHaiAS10
     @Override
     public void deleteNodeSuccess(int position) {
         showMessage("删除成功");
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && QingHaiAS103DetailAdapter.class.isInstance(adapter)) {
-            QingHaiAS103DetailAdapter detailAdapter = (QingHaiAS103DetailAdapter) adapter;
-            detailAdapter.removeNodeByPosition(position);
+        if (mAdapter != null) {
+            mAdapter.removeNodeByPosition(position);
         }
     }
 
@@ -77,17 +79,15 @@ public class QingHaiAS103DetailFragment extends BaseASDetailFragment<QingHaiAS10
             showMessage("本次入库已经过账,不允许在进行修改");
             return;
         }
-        if(TextUtils.isEmpty(node.transLineId)) {
+        if (TextUtils.isEmpty(node.transLineId)) {
             showMessage("该行还未进行数据采集");
             return;
         }
         //获取与该子节点的物料编码和发出库位一致的发出仓位和接收仓位列表
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && QingHaiAS103DetailAdapter.class.isInstance(adapter)) {
-            QingHaiAS103DetailAdapter detailAdapter = (QingHaiAS103DetailAdapter) adapter;
-            ArrayList<String> locations = detailAdapter.getLocations(position, 0);
-            mPresenter.editNode(locations,null, node, mCompanyCode,
-                    mBizType, mRefType, getSubFunName(),position);
+        if (mAdapter != null) {
+            ArrayList<String> locations = mAdapter.getLocations(position, 0);
+            mPresenter.editNode(locations, null, node, mCompanyCode,
+                    mBizType, mRefType, getSubFunName(), position);
         }
     }
 
@@ -95,6 +95,9 @@ public class QingHaiAS103DetailFragment extends BaseASDetailFragment<QingHaiAS10
     public void submitBarcodeSystemSuccess() {
         showMessage("过账成功");
         showSuccessDialog(mTransNum);
+        if (mAdapter != null) {
+            mAdapter.removeAllVisibleNodes();
+        }
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 

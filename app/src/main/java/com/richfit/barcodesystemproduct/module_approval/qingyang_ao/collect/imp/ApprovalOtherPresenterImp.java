@@ -4,7 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_approval.qingyang_ao.collect.IApprovalOtherPresenter;
 import com.richfit.barcodesystemproduct.module_approval.qingyang_ao.collect.IApprovalOtherView;
 import com.richfit.common_lib.rxutils.RxSubscriber;

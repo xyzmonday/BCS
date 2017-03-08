@@ -7,12 +7,11 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module.edit.EditActivity;
 import com.richfit.barcodesystemproduct.module.main.MainActivity;
 import com.richfit.barcodesystemproduct.module_returnstore.qinghai_rsn.detail.IQingHaiRSNDetailPresenter;
 import com.richfit.barcodesystemproduct.module_returnstore.qinghai_rsn.detail.IQingHaiRSNDetailView;
-import com.richfit.common_lib.rxutils.RetryWhenNetworkException;
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
@@ -171,7 +170,6 @@ public class QingHaiRSNDetailPresenterImp extends BasePresenter<IQingHaiRSNDetai
         mView = getView();
         RxSubscriber<String> subscriber = Flowable.concat(mRepository.uploadCollectionData("", transId, bizType, refType, -1, voucherDate, "", userId),
                 mRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate, flagMap, extraHeaderMap))
-                .retryWhen(new RetryWhenNetworkException(3, 3000))
                 .doOnError(str -> SPrefUtil.saveData(bizType + refType, "0"))
                 .doOnComplete(() -> SPrefUtil.saveData(bizType + refType, "1"))
                 .compose(TransformerHelper.io2main())
@@ -219,7 +217,6 @@ public class QingHaiRSNDetailPresenterImp extends BasePresenter<IQingHaiRSNDetai
                                String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
         mView = getView();
         RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType,userId, voucherDate, flagMap, extraHeaderMap)
-                .retryWhen(new RetryWhenNetworkException(3, 3000))
                 .doOnComplete(() -> SPrefUtil.saveData(bizType + refType, "0"))
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext, "正在上传数据...") {

@@ -1,26 +1,21 @@
 package com.richfit.barcodesystemproduct.module_check.qinghai_blind.collect;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.jakewharton.rxbinding.widget.RxAdapterView;
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.barcodesystemproduct.module_check.qinghai_blind.collect.imp.BlindCollectPresenterImp;
 import com.richfit.common_lib.rxutils.TransformerHelper;
+import com.richfit.common_lib.utils.CommonUtil;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.RichEditText;
-import com.richfit.domain.bean.InventoryEntity;
+import com.richfit.domain.bean.MaterialEntity;
 import com.richfit.domain.bean.ResultEntity;
 import com.richfit.domain.bean.RowConfig;
 
@@ -39,29 +34,19 @@ import io.reactivex.FlowableOnSubscribe;
 public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresenterImp, Object>
         implements IBlindCollectView {
 
-    @BindView(R.id.sp_ref_line_num)
-    Spinner spRefLine;
+
     @BindView(R.id.et_check_location)
     EditText etCheckLocation;
     @BindView(R.id.et_material_num)
     RichEditText etMaterialNum;
     @BindView(R.id.tv_material_desc)
     TextView tvMaterialDesc;
-    @BindView(R.id.tv_inv_quantity)
-    TextView tvInvQuantity;
+    @BindView(R.id.tv_material_group)
+    TextView tvMaterialGroup;
     @BindView(R.id.et_quantity)
     EditText etQuantity;
     @BindView(R.id.cb_single)
     CheckBox cbSingle;
-    @BindView(R.id.tv_total_quantity)
-    TextView tvTotalQuantity;
-
-    List<InventoryEntity> mCurrentInventoryList;
-    /*当前匹配的行明细（行号）*/
-    protected ArrayList<String> mRefLines;
-    /*单据行适配器*/
-    ArrayAdapter<String> mRefLineAdapter;
-
 
     @Override
     protected int getContentId() {
@@ -73,10 +58,6 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
         mFragmentComponent.inject(this);
     }
 
-    @Override
-    protected void initVariable(@Nullable Bundle savedInstanceState) {
-        mRefLines = new ArrayList<>();
-    }
 
     @Override
     protected void initView() {
@@ -95,11 +76,7 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
             hideKeyboard(etMaterialNum);
             getCheckTransferInfoSingle(materialNum, getString(etCheckLocation));
         });
-         /*单据行*/
-        RxAdapterView
-                .itemSelections(spRefLine)
-                .filter(position -> position > 0)
-                .subscribe(position -> bindCommonCollectUI());
+
        /*单品(注意单品仅仅控制实收数量，累计数量是由行信息里面控制)*/
         cbSingle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             etQuantity.setText(isChecked ? "1" : "");
@@ -175,8 +152,6 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
             showMessage("本次采集已经过账,请先到数据明细界面进行数据上传操作");
             return;
         }
-
-        final String specialFlag = mRefData.specialFlag;
         etMaterialNum.setEnabled(true);
     }
 
@@ -196,76 +171,22 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
         }
 
         clearAllUI();
-        mCurrentInventoryList = null;
-        mPresenter.getCheckTransferInfoSingle(mRefData.checkId, location, "01", materialNum);
+        mPresenter.getCheckTransferInfoSingle(mRefData.checkId, location, "01", materialNum, mBizType);
     }
 
     /**
      * 获取盘点库存成功。保存到内存。
-     *
-     * @param list
      */
     @Override
-    public void loadInventorySuccess(List<InventoryEntity> list) {
-        mCurrentInventoryList = list;
-    }
-
-    @Override
-    public void loadInventoryComplete() {
-        if (mCurrentInventoryList != null) {
-            ArrayList<String> list = new ArrayList<>();
-            for (InventoryEntity item : mCurrentInventoryList) {
-                list.add(item.lineNum);
-            }
-            setupRefLineAdapter(list);
-        }
-    }
-
-    @Override
-    public void setupRefLineAdapter(ArrayList<String> refLines) {
-        mRefLines.clear();
-        mRefLines.add(getString(R.string.default_ref_name));
-        if (refLines != null)
-            mRefLines.addAll(refLines);
-
-        //如果未查询到提示用户
-        if (mRefLines.size() == 1) {
-            showMessage("该单据中未查询到该物料,请检查物资编码或者批次是否正确");
-            spRefLine.setSelection(0);
-            return;
-        }
-
-        //初始化单据行适配器
-        if (mRefLineAdapter == null) {
-            mRefLineAdapter = new ArrayAdapter<>(mActivity, R.layout.item_simple_sp, mRefLines);
-            spRefLine.setAdapter(mRefLineAdapter);
-
-        } else {
-            mRefLineAdapter.notifyDataSetChanged();
-        }
-        //如果多行设置颜色
-        spRefLine.setBackgroundColor(ContextCompat.getColor(mActivity, mRefLines.size() >= 3 ?
-                R.color.colorPrimary : R.color.white));
-        //默认选择第一个
-        spRefLine.setSelection(1);
-    }
-
-    @Override
-    public void loadInventoryFail(String message) {
-        mCurrentInventoryList = null;
-        showMessage(message);
-    }
-
-    /**
-     * 将当前盘点的库存明细显示
-     */
-    @Override
-    public void bindCommonCollectUI() {
-        //注意这里由于加上了"请选择"，所以需要减去该item
-        final int position = spRefLine.getSelectedItemPosition() - 1;
-        InventoryEntity data = mCurrentInventoryList.get(position);
+    public void loadMaterialInfoSuccess(MaterialEntity data) {
         tvMaterialDesc.setText(data.materialDesc);
-        tvInvQuantity.setText(data.invQuantity);
+        tvMaterialGroup.setText(data.materialGroup);
+        etMaterialNum.setTag(data.id);
+    }
+
+    @Override
+    public void loadMaterialInfoFail(String message) {
+        showMessage(message);
     }
 
     @Override
@@ -293,17 +214,6 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
             return false;
         }
 
-
-        if (spRefLine.getSelectedItemPosition() == 0) {
-            showMessage("请选择单据行");
-            return false;
-        }
-
-        if (TextUtils.isEmpty(getString(tvInvQuantity))) {
-            showMessage("请先获取库存数量");
-            return false;
-        }
-
         if (isEmpty(mRefData.checkId)) {
             showMessage("请先在抬头界面初始化本次盘点");
             return false;
@@ -311,11 +221,6 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
 
         if (isEmpty(getString(etCheckLocation))) {
             showMessage("请输入盘点仓位");
-            return false;
-        }
-
-        if (mCurrentInventoryList == null && mCurrentInventoryList.size() == 0) {
-            showMessage("请先获取需要盘点的库存明细");
             return false;
         }
 
@@ -339,17 +244,17 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
             return;
         }
         Flowable.create((FlowableOnSubscribe<ResultEntity>) emitter -> {
-            InventoryEntity data = mCurrentInventoryList.get(spRefLine.getSelectedItemPosition() - 1);
             ResultEntity result = new ResultEntity();
             result.businessType = mRefData.bizType;
             result.checkId = mRefData.checkId;
-            result.checkLineId = data.checkLineId;
+            result.workId = mRefData.workId;
+            result.invId = mRefData.invId;
             result.location = getString(etCheckLocation);
             result.voucherDate = mRefData.voucherDate;
             result.userId = Global.USER_ID;
             result.workId = mRefData.workId;
             result.invId = mRefData.invId;
-            result.materialId = data.materialId;
+            result.materialId = CommonUtil.Obj2String(etMaterialNum.getTag());
             result.quantity = getString(etQuantity);
             result.modifyFlag = "N";
             emitter.onNext(result);
@@ -362,9 +267,9 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
     @Override
     public void saveCollectedDataSuccess() {
         showMessage("盘点成功");
-        final float totalQuantityV = UiUtil.convertToFloat(getString(tvTotalQuantity), 0.0f);
-        final float quantityV = UiUtil.convertToFloat(getString(etQuantity), 0.0f);
-        tvTotalQuantity.setText(String.valueOf(totalQuantityV + quantityV));
+        if (!cbSingle.isChecked()) {
+            etQuantity.setText("");
+        }
     }
 
     @Override
@@ -373,26 +278,22 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
     }
 
     private void clearAllUI() {
-        clearCommonUI(tvMaterialDesc, tvInvQuantity, etQuantity, tvTotalQuantity);
+        clearCommonUI(tvMaterialDesc,tvMaterialGroup, etQuantity);
         clearExtraUI(mSubFunEntity.collectionConfigs);
         clearExtraUI(mSubFunEntity.locationConfigs);
-        //单据行
-        if (mRefLineAdapter != null) {
-            mRefLines.clear();
-            mRefLineAdapter.notifyDataSetChanged();
-            spRefLine.setBackgroundColor(0);
-        }
+
     }
 
+    @Override
+    public void _onPause() {
+        clearAllUI();
+    }
 
     @Override
     public void retry(String action) {
         switch (action) {
             case Global.RETRY_LOAD_INVENTORY_ACTION:
                 getCheckTransferInfoSingle(getString(etMaterialNum), getString(etCheckLocation));
-                break;
-            case Global.RETRY_TRANSFER_DATA_ACTION:
-
                 break;
         }
         super.retry(action);

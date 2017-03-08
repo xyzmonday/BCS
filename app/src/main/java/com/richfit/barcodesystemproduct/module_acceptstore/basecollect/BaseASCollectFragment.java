@@ -9,7 +9,6 @@ import android.text.TextUtils;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -85,10 +84,7 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
     protected CheckBox cbSingle;
     @BindView(R.id.tv_total_quantity)
     protected TextView tvTotalQuantity;
-    @BindView(R.id.ll_return_quantity)
-    protected LinearLayout llReturnQuantity;
-    @BindView(R.id.et_return_quantity)
-    protected EditText etReturnQuantity;
+
 
     /*是否不上架.对于非质检的物资isNLocation=false。也就是说子类如果不处理那么默认需要输入上架仓位*/
     protected boolean isNLocation;
@@ -106,7 +102,7 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
     /*缓存的批次*/
     String mCachedBatchFlag;
     /*缓存的仓位级别的额外字段*/
-    Map<String, Object> mExtraLocationMap;
+    protected  Map<String, Object> mExtraLocationMap;
     //校验仓位是否存在，如果false表示校验该仓位不存在或者没有校验该仓位，不允许保存数据
     protected boolean isLocationChecked = false;
 
@@ -609,7 +605,6 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
         }
 
         if (!refreshQuantity(cbSingle.isChecked() ? "1" : getString(etQuantity))) {
-            showMessage("实收数量有误");
             return false;
         }
 
@@ -663,6 +658,8 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
             result.batchFlag = getString(etBatchFlag);
             result.quantity = getString(etQuantity);
             result.modifyFlag = "N";
+            result.refDoc = lineData.refDoc;
+            result.refDocItem = lineData.refDocItem;
 
             result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
             result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, lineData.mapExt, mExtraLocationMap);

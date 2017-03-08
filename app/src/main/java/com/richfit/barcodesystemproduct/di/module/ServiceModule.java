@@ -3,8 +3,8 @@ package com.richfit.barcodesystemproduct.di.module;
 import android.app.Service;
 import android.content.Context;
 
-import com.richfit.barcodesystemproduct.di.ContextLife;
-import com.richfit.barcodesystemproduct.di.ServiceScope;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ServiceScope;
 
 import dagger.Module;
 import dagger.Provides;

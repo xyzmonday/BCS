@@ -8,7 +8,7 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module.home.HomeActivity;
 import com.richfit.common_lib.rxutils.RetryWhenNetworkException;
 import com.richfit.common_lib.rxutils.TransformerHelper;

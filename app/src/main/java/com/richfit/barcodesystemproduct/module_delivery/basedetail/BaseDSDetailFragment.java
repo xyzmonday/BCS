@@ -88,7 +88,7 @@ public abstract class BaseDSDetailFragment<P extends IDSDetailPresenter> extends
         }
 
         if (isEmpty(mRefData.recordNum)) {
-            showMessage("请现在抬头界面输入预留单号");
+            showMessage("请现在抬头界面输入参考单号");
             return;
         }
 

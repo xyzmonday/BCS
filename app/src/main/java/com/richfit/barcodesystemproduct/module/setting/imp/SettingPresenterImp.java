@@ -4,7 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module.setting.ISettingPresenter;
 import com.richfit.barcodesystemproduct.module.setting.ISettingView;
 import com.richfit.common_lib.rxutils.RetryWhenNetworkException;

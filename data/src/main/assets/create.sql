@@ -193,16 +193,16 @@ create table BASE_COST_CENTER
 (
   id                VARCHAR2(32) PRIMARY KEY NOT NULL,
   org_id            VARCHAR2(32),
-  cost_center       TEXT,
-  cost_center_desc  TEXT,
-  func_area         TEXT,
-  func_area_desc    TEXT,
-  created_by        TEXT,
-  creation_date     TEXT,
-  last_updated_by   TEXT,
-  last_update_date  TEXT,
-  sap_creation_date TEXT,
-  sap_update_date   TEXT
+  cost_center_code  TEXT,
+  cost_center_desc  TEXT
+);
+
+create table BASE_PROJECT_NUM
+(
+  id                VARCHAR2(32) PRIMARY KEY NOT NULL,
+  org_id            VARCHAR2(32),
+  project_num_code  TEXT,
+  project_num_desc  TEXT
 );
 
 

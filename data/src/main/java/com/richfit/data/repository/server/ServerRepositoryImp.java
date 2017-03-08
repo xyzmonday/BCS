@@ -254,13 +254,14 @@ public class ServerRepositoryImp implements IServerRepository {
      */
     @Override
     public Flowable<String> deleteCheckData(String storageNum, String workId, String invId,
-                                            String checkId, String userId) {
+                                            String checkId, String userId,String bizType) {
         mRequestParam.clear();
         mRequestParam.put("storageNum",storageNum);
         mRequestParam.put("workId",workId);
         mRequestParam.put("invId",invId);
         mRequestParam.put("checkId", checkId);
         mRequestParam.put("userId", userId);
+        mRequestParam.put("businessType",bizType);
         return mRequestApi.deleteCheckData(JsonUtil.map2Json(mRequestParam))
                 .compose(TransformerHelper.MapTransformer);
     }
@@ -273,13 +274,13 @@ public class ServerRepositoryImp implements IServerRepository {
      * @return
      */
     @Override
-    public Flowable<List<InventoryEntity>> getCheckTransferInfoSingle(String checkId, String materialId,String materialNum, String location) {
+    public Flowable<List<InventoryEntity>> getCheckTransferInfoSingle(String checkId, String materialId,String materialNum, String location,String bizType) {
         mRequestParam.clear();
         mRequestParam.put("checkId", checkId);
         mRequestParam.put("materialNum", materialNum);
         mRequestParam.put("materialId", materialId);
         mRequestParam.put("location", location);
-
+        mRequestParam.put("businessType",bizType);
         return mRequestApi.getCheckTransferInfoSingle(JsonUtil.map2Json(mRequestParam))
                 .compose(TransformerHelper.handleResponse());
     }
@@ -296,7 +297,8 @@ public class ServerRepositoryImp implements IServerRepository {
      * @return
      */
     @Override
-    public Flowable<ReferenceEntity> getCheckTransferInfo(String checkId, String materialNum, String location, String queryPage, int pageNum, int pageSize) {
+    public Flowable<ReferenceEntity> getCheckTransferInfo(String checkId, String materialNum,
+                                                          String location, String queryPage, int pageNum, int pageSize,String bizType) {
         mRequestParam.clear();
         mRequestParam.put("checkId", checkId);
         mRequestParam.put("materialNum", materialNum);
@@ -304,6 +306,7 @@ public class ServerRepositoryImp implements IServerRepository {
         mRequestParam.put("queryPage", queryPage);
         mRequestParam.put("pageNum", pageNum);
         mRequestParam.put("pageSize", pageSize);
+        mRequestParam.put("businessType",bizType);
         return mRequestApi.getCheckTransferInfo(JsonUtil.map2Json(mRequestParam))
                 .compose(TransformerHelper.handleResponse());
     }
@@ -317,11 +320,12 @@ public class ServerRepositoryImp implements IServerRepository {
      * @return
      */
     @Override
-    public Flowable<String> deleteCheckDataSingle(String checkId, String checkLineId, String userId) {
+    public Flowable<String> deleteCheckDataSingle(String checkId, String checkLineId, String userId,String bizType) {
         mRequestParam.clear();
         mRequestParam.put("checkId", checkId);
         mRequestParam.put("checkLineId", checkLineId);
         mRequestParam.put("userId", userId);
+        mRequestParam.put("businessType",bizType);
         return mRequestApi.deleteCheckDataSingle(JsonUtil.map2Json(mRequestParam))
                 .compose(TransformerHelper.MapTransformer);
     }
@@ -584,9 +588,11 @@ public class ServerRepositoryImp implements IServerRepository {
     }
 
     @Override
-    public Flowable<String> transferCheckData(String checkId) {
+    public Flowable<String> transferCheckData(String checkId,String userId,String bizType) {
         mRequestParam.clear();
         mRequestParam.put("checkId", checkId);
+        mRequestParam.put("businessType",bizType);
+        mRequestParam.put("userId",userId);
         return mRequestApi.transferCheckData(JsonUtil.map2Json(mRequestParam))
                 .compose(TransformerHelper.MapTransformer);
     }

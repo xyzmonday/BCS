@@ -3,7 +3,7 @@ package com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.edit.im
 import android.content.Context;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.edit.IASNEditPresenter;
 import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.edit.IASNEditView;
 import com.richfit.common_lib.rxutils.RxSubscriber;

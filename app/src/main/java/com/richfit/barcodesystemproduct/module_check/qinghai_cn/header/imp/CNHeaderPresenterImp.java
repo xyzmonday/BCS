@@ -4,7 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_check.qinghai_cn.header.ICNHeaderPresenter;
 import com.richfit.barcodesystemproduct.module_check.qinghai_cn.header.ICNHeaderView;
 import com.richfit.common_lib.rxutils.RxSubscriber;
@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import io.reactivex.functions.Consumer;
 import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
@@ -32,6 +33,17 @@ public class CNHeaderPresenterImp extends BasePresenter<ICNHeaderView>
     @Inject
     public CNHeaderPresenterImp(@ContextLife("Activity") Context context) {
         super(context);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mView = getView();
+        mRxManager.register(Global.CLEAR_HEADER_UI, (Consumer<Boolean>) aBoolean -> {
+            if (aBoolean.booleanValue() && mView != null) {
+                mView.clearAllUIAfterSubmitSuccess();
+            }
+        });
     }
 
     @Override
@@ -162,16 +174,19 @@ public class CNHeaderPresenterImp extends BasePresenter<ICNHeaderView>
 
                     @Override
                     public void _onComplete() {
-
+                        if(mView != null) {
+                            mView.bindCommonHeaderUI();
+                        }
                     }
                 });
         addSubscriber(subscriber);
     }
 
     @Override
-    public void deleteCheckData(String storageNum, String workId, String invId, String checkId) {
+    public void deleteCheckData(String storageNum, String workId, String invId, String checkId,
+                                String userId, String bizType) {
         mView = getView();
-        mRepository.deleteCheckData(storageNum, workId, invId, checkId, Global.USER_ID)
+        mRepository.deleteCheckData(storageNum, workId, invId, checkId, userId, bizType)
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext, "正在删除历史盘点记录") {
                     @Override

@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.richfit.barcodesystemproduct.R;
+import com.richfit.barcodesystemproduct.adapter.ASYDetailAdapter;
 import com.richfit.barcodesystemproduct.adapter.BottomMenuAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.common_lib.animationrv.Animation.animators.FadeInDownAnimator;
@@ -67,9 +68,10 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
     protected LinearLayout mExtraContainer;
     protected String mTransNum;
     protected String mTransId;
-    //第二过账成功后返回的验收单号
+    //第二步过账成功后返回的验收单号
     protected String mInspectionNum;
     protected List<BottomMenuEntity> mBottomMenus;
+    protected ASYDetailAdapter mAdapter;
 
     @Override
     protected int getContentId() {
@@ -135,7 +137,7 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
     public void onRefresh() {
         String transferFlag = (String) getData(mBizType + mRefType, "0");
         if ("1".equals(transferFlag)) {
-            setRefreshing(false,"本次采集已经过账,请先进行数据上传操作");
+            setRefreshing(false, "本次采集已经过账,请先进行数据上传操作");
             return;
         }
         //单据抬头id
@@ -150,6 +152,24 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
         mTransNum = "";
         //获取缓存累计数量不对
         mPresenter.getTransferInfo(mRefData, refCodeId, bizType, refType);
+    }
+
+    @Override
+    public void showNodes(List<RefDetailEntity> allNodes) {
+        for (RefDetailEntity node : allNodes) {
+            if (!TextUtils.isEmpty(node.transId)) {
+                mTransId = node.transId;
+                break;
+            }
+        }
+        if (mAdapter == null) {
+            mAdapter = new ASYDetailAdapter(mActivity, allNodes, mSubFunEntity.parentNodeConfigs,
+                    mSubFunEntity.childNodeConfigs, mCompanyCode);
+            mRecycleView.setAdapter(mAdapter);
+            mAdapter.setOnItemEditAndDeleteListener(this);
+        } else {
+            mAdapter.addAll(allNodes);
+        }
     }
 
     @Override
@@ -186,8 +206,8 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
             showMessage("已经过账,不允许修改");
             return;
         }
-        mPresenter.editNode(null,mRefData, node, mCompanyCode, mBizType,
-                mRefType, getSubFunName(),-1);
+        mPresenter.editNode(null, mRefData, node, mCompanyCode, mBizType,
+                mRefType, getSubFunName(), -1);
     }
 
     @Override

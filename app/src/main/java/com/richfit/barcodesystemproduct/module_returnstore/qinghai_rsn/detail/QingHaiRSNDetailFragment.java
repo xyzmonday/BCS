@@ -60,6 +60,7 @@ public class QingHaiRSNDetailFragment extends BaseFragment<QingHaiRSNDetailPrese
     protected ArrayList<RowConfig> mConfigs;
     protected String mInspectionNum;
     protected List<BottomMenuEntity> mBottomMenus;
+    QingHaiRSNDetailAdapter mAdapter;
 
     @Override
     protected int getContentId() {
@@ -102,6 +103,16 @@ public class QingHaiRSNDetailFragment extends BaseFragment<QingHaiRSNDetailPrese
             setRefreshing(false, "获取明细失败,请先选择工厂");
             return;
         }
+
+        if ("46".equals(mBizType) && TextUtils.isEmpty(mRefData.costCenter)) {
+            showMessage("请先在抬头界面输入成本中心");
+            return;
+        }
+        if ("47".equals(mBizType) && TextUtils.isEmpty(mRefData.projectNum)) {
+            showMessage("请现在抬头界面输入项目编号");
+            return;
+        }
+
         startAutoRefresh();
     }
 
@@ -164,11 +175,15 @@ public class QingHaiRSNDetailFragment extends BaseFragment<QingHaiRSNDetailPrese
                 break;
             }
         }
-        QingHaiRSNDetailAdapter adapter = new QingHaiRSNDetailAdapter(mActivity,
-                R.layout.item_qinghai_rsn_detail, nodes, mConfigs,
-                null, mCompanyCode);
-        mRecycleView.setAdapter(adapter);
-        adapter.setOnItemEditAndDeleteListener(this);
+        if (mAdapter == null) {
+            mAdapter = new QingHaiRSNDetailAdapter(mActivity,
+                    R.layout.item_qinghai_rsn_detail, nodes, mConfigs,
+                    null, mCompanyCode);
+            mRecycleView.setAdapter(mAdapter);
+            mAdapter.setOnItemEditAndDeleteListener(this);
+        } else {
+            mAdapter.addAll(nodes);
+        }
     }
 
     @Override
@@ -204,10 +219,8 @@ public class QingHaiRSNDetailFragment extends BaseFragment<QingHaiRSNDetailPrese
             return;
         }
         //获取与该子节点的物料编码和发出库位一致的发出仓位和接收仓位列表
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && QingHaiRSNDetailAdapter.class.isInstance(adapter)) {
-            QingHaiRSNDetailAdapter detailAdapter = (QingHaiRSNDetailAdapter) adapter;
-            ArrayList<String> Locations = detailAdapter.getLocations(position, 0);
+        if (mAdapter != null) {
+            ArrayList<String> Locations = mAdapter.getLocations(position, 0);
             mPresenter.editNode(Locations, null, node, mCompanyCode, mBizType, mRefType, "202-退库");
         }
     }
@@ -215,14 +228,8 @@ public class QingHaiRSNDetailFragment extends BaseFragment<QingHaiRSNDetailPrese
     @Override
     public void deleteNodeSuccess(int position) {
         showMessage("删除成功");
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && QingHaiRSNDetailAdapter.class.isInstance(adapter)) {
-            QingHaiRSNDetailAdapter detailAdapter = (QingHaiRSNDetailAdapter) adapter;
-            detailAdapter.removeItemByPosition(position);
-            int itemCount = detailAdapter.getItemCount();
-            if (itemCount == 0) {
-                mExtraContainer.setVisibility(View.INVISIBLE);
-            }
+        if (mAdapter != null) {
+            mAdapter.removeNodeByPosition(position);
         }
     }
 
@@ -315,10 +322,9 @@ public class QingHaiRSNDetailFragment extends BaseFragment<QingHaiRSNDetailPrese
     @Override
     public void submitBarcodeSystemFail(String message) {
         if (TextUtils.isEmpty(message)) {
-            showMessage(message);
-        } else {
-            showErrorDialog(message);
+            message += "过账失败";
         }
+        showErrorDialog(message);
         mTransNum = "";
     }
 
@@ -340,6 +346,9 @@ public class QingHaiRSNDetailFragment extends BaseFragment<QingHaiRSNDetailPrese
     public void submitSAPSuccess() {
         setRefreshing(false, "数据上传成功");
         showSuccessDialog(mInspectionNum);
+        if (mAdapter != null) {
+            mAdapter.removeAllVisibleNodes();
+        }
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 
@@ -359,7 +368,7 @@ public class QingHaiRSNDetailFragment extends BaseFragment<QingHaiRSNDetailPrese
         List<BottomMenuEntity> menus = super.provideDefaultBottomMenu();
         menus.get(0).transToSapFlag = "01";
         menus.get(1).transToSapFlag = "05";
-        return menus.subList(0,2);
+        return menus.subList(0, 2);
     }
 
     @Override

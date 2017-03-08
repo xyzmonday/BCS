@@ -78,6 +78,25 @@ public class QingHaiCNCollectFragment extends BaseFragment<CNCollectPresenterImp
     }
 
     @Override
+    public void handleBarCodeScanResult(String type, String[] list) {
+        if (list != null && list.length > 2) {
+            final String materialNum = list[1];
+            if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
+                    saveCollectedData();
+            } else if (!cbSingle.isChecked()) {
+                etMaterialNum.setText(materialNum);
+               getCheckTransferInfoSingle(materialNum,getString(etCheckLocation));
+            }
+
+        } else if (list != null && list.length == 2 & !cbSingle.isChecked()) {
+            final String location = list[1];
+            etCheckLocation.setText("");
+            etCheckLocation.setText(location);
+        }
+    }
+
+
+    @Override
     protected void initVariable(@Nullable Bundle savedInstanceState) {
         mRefLines = new ArrayList<>();
     }
@@ -204,7 +223,7 @@ public class QingHaiCNCollectFragment extends BaseFragment<CNCollectPresenterImp
 
         clearAllUI();
         mCurrentInventoryList = null;
-        mPresenter.getCheckTransferInfoSingle(mRefData.checkId, location, "01", materialNum);
+        mPresenter.getCheckTransferInfoSingle(mRefData.checkId, location, "01", materialNum, mBizType);
     }
 
     /**
@@ -275,6 +294,7 @@ public class QingHaiCNCollectFragment extends BaseFragment<CNCollectPresenterImp
         tvInvQuantity.setText(data.invQuantity);
         etSpecialInvFlag.setText(data.specialInventoryFlag);
         etSpecialInvNum.setText(data.specialInventoryNum);
+        tvTotalQuantity.setText(data.totalQuantity);
     }
 
     @Override
@@ -356,6 +376,8 @@ public class QingHaiCNCollectFragment extends BaseFragment<CNCollectPresenterImp
             result.specialInvFlag = getString(etSpecialInvFlag);
             result.specialInvNum = getString(etSpecialInvNum);
             result.location = getString(etCheckLocation);
+            result.workId = mRefData.workId;
+            result.invId = mRefData.invId;
             result.voucherDate = mRefData.voucherDate;
             result.userId = Global.USER_ID;
             result.workId = mRefData.workId;
@@ -396,6 +418,10 @@ public class QingHaiCNCollectFragment extends BaseFragment<CNCollectPresenterImp
         }
     }
 
+    @Override
+    public void _onPause() {
+        clearAllUI();
+    }
 
     @Override
     public void retry(String action) {

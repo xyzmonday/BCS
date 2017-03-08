@@ -3,7 +3,7 @@ package com.richfit.barcodesystemproduct.module_delivery.qinghai_dsn.collect.imp
 import android.content.Context;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsn.collect.IQingHaiDSNCollectPresenter;
 import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsn.collect.IQingHaiDSNCollectView;
 import com.richfit.common_lib.rxutils.RxSubscriber;

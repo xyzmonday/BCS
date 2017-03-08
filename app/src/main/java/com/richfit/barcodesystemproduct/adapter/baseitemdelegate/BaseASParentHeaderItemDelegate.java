@@ -31,6 +31,7 @@ public class BaseASParentHeaderItemDelegate implements ItemViewDelegate<RefDetai
         holder.setText(R.id.materialNum,data.materialNum);
         holder.setText(R.id.materialDesc,data.materialDesc);
         holder.setText(R.id.materialGroup,data.materialGroup);
+        holder.setText(R.id.materialUnit,data.unit);
         //应收数量
         holder.setText(R.id.actQuantity,data.actQuantity);
         //累计实收数量

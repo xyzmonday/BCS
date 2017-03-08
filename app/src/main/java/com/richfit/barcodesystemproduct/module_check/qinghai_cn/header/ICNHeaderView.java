@@ -55,14 +55,5 @@ public interface ICNHeaderView extends BaseView {
      */
     void getCheckInfoFail(String message);
 
-    /**
-     * 整单缓存处理
-     *
-     * @param cacheFlag：缓存标志
-     * @param transId：缓存id,用于删除缓存
-     * @param refNum：单据号
-     * @param bizType：业务类型
-     */
-    void cacheProcessor(String cacheFlag, String transId, String refNum, String refCodeId, String refType, String bizType);
-
+    void clearAllUIAfterSubmitSuccess();
 }

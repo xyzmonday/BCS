@@ -56,6 +56,8 @@ public class SettingActivity extends BaseActivity<SettingPresenterImp>
     SwitchView sbCostCenter;
     @BindView(R.id.sb_warehouse)
     SwitchView sbWarehouse;
+    @BindView(R.id.sb_project_num)
+    SwitchView sbProjectNum;
     @BindView(R.id.check_update_apk)
     TextView mCheckUpdateApk;
     @BindView(R.id.reset_password)
@@ -126,24 +128,35 @@ public class SettingActivity extends BaseActivity<SettingPresenterImp>
         LoadBasicDataWrapper task = new LoadBasicDataWrapper();
         mMessage = "";
         if (sbSupplier.isOpened()) {
+
             task.isByPage = true;
             task.queryType = "GYS";
             requestParams.add(task);
-            mMessage += "供应商";
+            mMessage += "供应商;";
         }
 
         if(sbCostCenter.isOpened()) {
+            task = new LoadBasicDataWrapper();
             task.isByPage = true;
             task.queryType = "CZ";
             requestParams.add(task);
-            mMessage += "成本中心";
+            mMessage += "成本中心;";
         }
 
         if(sbWarehouse.isOpened()) {
+            task = new LoadBasicDataWrapper();
             task.isByPage = false;
             task.queryType = "LZ";
             requestParams.add(task);
-            mMessage += "成本中心";
+            mMessage += "料组;";
+        }
+
+        if(sbProjectNum.isOpened()) {
+            task = new LoadBasicDataWrapper();
+            task.isByPage = true;
+            task.queryType = "XM";
+            requestParams.add(task);
+            mMessage += "项目编号;";
         }
 
         if (TextUtils.isEmpty(mMessage)) {
@@ -153,7 +166,7 @@ public class SettingActivity extends BaseActivity<SettingPresenterImp>
 
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle("提示");
-        dialog.setMessage("您选择将要下载的基础数据包括:" + mMessage + ";按下确定将开始下载数据!");
+        dialog.setMessage("您选择将要下载的基础数据包括:\n" + mMessage + "\n按下确定将开始下载数据!");
         dialog.setPositiveButton("确定", (dialogInterface, i) -> {
             dialogInterface.dismiss();
             mPresenter.loadAndSaveBasicData(requestParams);

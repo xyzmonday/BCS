@@ -678,7 +678,7 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
                 //说明是下拉列表
                 if (MaterialSpinner.class.isInstance(extraView)) {
                     MaterialSpinner spinner = (MaterialSpinner) extraView;
-                    Object obj = null;
+                    Object obj;
                     final Object tag = spinner.getTag();
                     if (tag != null) {
                         obj = tag;
@@ -687,7 +687,6 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
                         obj = extraDataMap.get(UiUtil.MD5(propertyCode));
                     }
                     setSelection(spinner, obj, CommonUtil.Obj2String(extraDataMap.get(propertyCode)));
-                    spinner.setEnabled(isEnable);
                 }
             } else if ("4".equals(uiType)) {
                 //checkBox类型
@@ -699,7 +698,6 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
                         //0表示选中
                         cb.setChecked("0".equals(isCheck));
                     }
-                    cb.setEnabled(isEnable);
                 }
             }
         }

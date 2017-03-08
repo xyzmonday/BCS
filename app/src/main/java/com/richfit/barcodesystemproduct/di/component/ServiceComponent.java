@@ -2,8 +2,8 @@ package com.richfit.barcodesystemproduct.di.component;
 
 import android.content.Context;
 
-import com.richfit.barcodesystemproduct.di.ContextLife;
-import com.richfit.barcodesystemproduct.di.ServiceScope;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ServiceScope;
 import com.richfit.barcodesystemproduct.di.module.ServiceModule;
 import com.richfit.barcodesystemproduct.service.LoadBasicDataService;
 

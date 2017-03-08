@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module.edit.EditActivity;
 import com.richfit.barcodesystemproduct.module.main.MainActivity;
 import com.richfit.barcodesystemproduct.module_approval.qingyang_ao.detail.IApprovalOtherDetailPresenter;

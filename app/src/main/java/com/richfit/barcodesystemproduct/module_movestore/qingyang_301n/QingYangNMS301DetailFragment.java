@@ -1,6 +1,5 @@
 package com.richfit.barcodesystemproduct.module_movestore.qingyang_301n;
 
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -23,6 +22,8 @@ import java.util.List;
 
 public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment<QingYangNMS301DetailPresenterImp> {
 
+    QingYangNMS301DetailAdapter mAdapter;
+
     @Override
     public void initInjector() {
         mFragmentComponent.inject(this);
@@ -37,20 +38,22 @@ public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment<QingYang
             }
         }
         setRefreshing(true, "加载明细成功");
-        QingYangNMS301DetailAdapter adapter = new QingYangNMS301DetailAdapter(mActivity,
-                R.layout.base_nms_detail_item, allNodes, mConfigs, null, mCompanyCode);
-        mRecycleView.setAdapter(adapter);
-        adapter.setOnItemEditAndDeleteListener(this);
+        if (mAdapter == null) {
+            mAdapter = new QingYangNMS301DetailAdapter(mActivity,
+                    R.layout.base_nms_detail_item, allNodes, mConfigs, null, mCompanyCode);
+            mRecycleView.setAdapter(mAdapter);
+            mAdapter.setOnItemEditAndDeleteListener(this);
+        } else {
+            mAdapter.addAll(allNodes);
+        }
     }
 
     @Override
     public void deleteNodeSuccess(int position) {
         showMessage("删除成功");
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && QingYangNMS301DetailAdapter.class.isInstance(adapter)) {
-            QingYangNMS301DetailAdapter detailAdapter = (QingYangNMS301DetailAdapter) adapter;
-            detailAdapter.removeItemByPosition(position);
-            int itemCount = detailAdapter.getItemCount();
+        if (mAdapter != null) {
+            mAdapter.removeItemByPosition(position);
+            int itemCount = mAdapter.getItemCount();
             if (itemCount == 0) {
                 mExtraContainer.setVisibility(View.INVISIBLE);
             }
@@ -64,11 +67,9 @@ public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment<QingYang
             return;
         }
         //获取与该子节点的物料编码和发出库位一致的发出仓位和接收仓位列表
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && QingYangNMS301DetailAdapter.class.isInstance(adapter)) {
-            QingYangNMS301DetailAdapter detailAdapter = (QingYangNMS301DetailAdapter) adapter;
-            ArrayList<String> sendLocations = detailAdapter.getLocations(position, 0);
-            ArrayList<String> recLocations = detailAdapter.getLocations(position, 1);
+        if (mAdapter != null) {
+            ArrayList<String> sendLocations = mAdapter.getLocations(position, 0);
+            ArrayList<String> recLocations = mAdapter.getLocations(position, 1);
             mPresenter.editNode(sendLocations, recLocations, node, EditActivity.class, mCompanyCode,
                     mBizType, mRefType, getSubFunName());
         }
@@ -78,6 +79,9 @@ public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment<QingYang
     public void submitBarcodeSystemSuccess() {
         setRefreshing(false, "过账成功");
         showSuccessDialog(mTransNum);
+        if (mAdapter != null) {
+            mAdapter.removeAllVisibleNodes();
+        }
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 
@@ -93,7 +97,6 @@ public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment<QingYang
 
     @Override
     public void showInspectionNum(String message) {
-
     }
 
     @Override

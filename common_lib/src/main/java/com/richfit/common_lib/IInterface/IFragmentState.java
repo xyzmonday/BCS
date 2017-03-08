@@ -11,9 +11,7 @@ public interface IFragmentState<T> {
      * 抬头界面的处理。目前的需求仅仅是信息查询中用到
      */
     boolean checkDataBeforeOperationOnHeader();
-
     void operationOnHeader(final String companyCode);
-
 
     /**
      * 在数据明细界面，不同的功能模块需要操作不同。比如验收只需要过账，

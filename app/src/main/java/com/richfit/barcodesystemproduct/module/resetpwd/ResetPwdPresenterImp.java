@@ -3,7 +3,7 @@ package com.richfit.barcodesystemproduct.module.resetpwd;
 import android.content.Context;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 
 import javax.inject.Inject;
 

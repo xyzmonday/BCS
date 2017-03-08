@@ -10,22 +10,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <TextView
-                style="@style/LeftTextViewItemStyle"
-                android:text="@string/ref_line_num" />
-
-            <Spinner
-                android:id="@+id/sp_ref_line_num"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/spinner_min_height"
-                android:layout_weight="2" />
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -73,8 +57,6 @@
                 android:id="@+id/tv_material_desc"
                 style="@style/RightTextViewItemStyle" />
         </LinearLayout>
-
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -83,10 +65,10 @@
 
             <TextView
                 style="@style/LeftTextViewItemStyle"
-                android:text="@string/inv_quantity" />
+                android:text="@string/material_group" />
 
             <TextView
-                android:id="@+id/tv_inv_quantity"
+                android:id="@+id/tv_material_group"
                 style="@style/RightTextViewItemStyle" />
         </LinearLayout>
 
@@ -121,20 +103,6 @@
         </LinearLayout>
 
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <TextView
-                style="@style/LeftTextViewItemStyle"
-                android:text="@string/total_quantity" />
-
-            <TextView
-                android:id="@+id/tv_total_quantity"
-                style="@style/RightTextViewItemStyle" />
-        </LinearLayout>
     </LinearLayout>
 
 

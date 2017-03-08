@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.common_lib.rxutils.TransformerHelper;
+import com.richfit.common_lib.utils.CommonUtil;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.domain.bean.RefDetailEntity;
@@ -30,15 +31,15 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
         implements IASEditView {
 
     @BindView(R.id.tv_ref_line_num)
-    TextView tvRefLineNum;
+    protected TextView tvRefLineNum;
     @BindView(R.id.tv_material_num)
     TextView tvMaterialNum;
     @BindView(R.id.tv_material_desc)
     TextView tvMaterialDesc;
     @BindView(R.id.tv_batch_flag)
-    TextView tvBatchFlag;
+    protected TextView tvBatchFlag;
     @BindView(R.id.tv_inv)
-    TextView tvInv;
+    protected TextView tvInv;
     @BindView(R.id.tv_act_rec_quantity)
     TextView tvActRecQuantity;
     @BindView(R.id.act_quantity_name)
@@ -46,7 +47,7 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
     @BindView(R.id.quantity_name)
     protected TextView quantityName;
     @BindView(R.id.et_quantity)
-    EditText etQuantity;
+    protected EditText etQuantity;
     @BindView(R.id.et_location)
     protected EditText etLocation;
     @BindView(R.id.tv_location_quantity)
@@ -58,14 +59,16 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
     protected List<String> mLocations;
     ///要修改子节点的id
     String mRefLineId;
-    String mLocationId;
+    protected String mLocationId;
     /*修改之前用户数的数量*/
     String mQuantity;
     /*要修改的子节点的父节点在*/
-    int mPosition;
+    protected int mPosition;
     //是否上架（直接通过父节点的标志位判断即可）
-    boolean isNLocation;
-    Map<String, Object> mExtraLocationMap;
+    protected boolean isNLocation;
+
+    protected Map<String, Object> mExtraLocationMap;
+    protected Map<String,Object> mExtraCollectMap;
 
     @Override
     protected int getContentId() {
@@ -83,11 +86,13 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
     public void initData() {
         Bundle bundle = getArguments();
         mExtraLocationMap  = (Map<String, Object>) bundle.getSerializable(Global.LOCATION_EXTRA_MAP_KEY);
+        mExtraCollectMap = (Map<String, Object>) bundle.getSerializable(Global.COLLECT_EXTRA_MAP_KEY);
         final String location = bundle.getString(Global.EXTRA_LOCATION_KEY);
         final String totalQuantity = bundle.getString(Global.EXTRA_TOTAL_QUANTITY_KEY);
         final String batchFlag = bundle.getString(Global.EXTRA_BATCH_FLAG_KEY);
         final String invId = bundle.getString(Global.EXTRA_INV_ID_KEY);
         final String invCode = bundle.getString(Global.EXTRA_INV_CODE_KEY);
+
         mPosition = bundle.getInt(Global.EXTRA_POSITION_KEY);
         mQuantity = bundle.getString(Global.EXTRA_QUANTITY_KEY);
         mLocations = bundle.getStringArrayList(Global.EXTRA_LOCATION_LIST_KEY);
@@ -109,9 +114,9 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
             etQuantity.setText(mQuantity);
             tvLocationQuantity.setText(mQuantity);
             tvTotalQuantity.setText(totalQuantity);
-           /*绑定额外字段的数据*/
-            bindExtraUI(mSubFunEntity.collectionConfigs, lineData.mapExt,false);
-            bindExtraUI(mSubFunEntity.locationConfigs, mExtraLocationMap,false);
+
+            mPresenter.readExtraDataSourceDictionary(mSubFunEntity.collectionConfigs);
+            mPresenter.readExtraDataSourceDictionary(mSubFunEntity.locationConfigs);
         }
     }
 
@@ -198,7 +203,7 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
             result.userId = Global.USER_ID;
             result.refLineId = lineData.refLineId;
             result.workId = lineData.workId;
-            result.invId = tvInv.getTag().toString();
+            result.invId = CommonUtil.Obj2String(tvInv.getTag());
             result.locationId = mLocationId;
             result.materialId = lineData.materialId;
             result.location = getString(etLocation);

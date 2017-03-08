@@ -3,7 +3,7 @@ package com.richfit.barcodesystemproduct.module_acceptstore.qinghai_105.imp;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_acceptstore.basecollect.imp.ASCollectPresenterImp;
 
 import javax.inject.Inject;
@@ -12,7 +12,7 @@ import javax.inject.Inject;
  * Created by monday on 2017/3/2.
  */
 
-public class QingHaiAS105CollectPresenterImp extends ASCollectPresenterImp{
+public class QingHaiAS105CollectPresenterImp extends ASCollectPresenterImp {
 
     @Inject
     public QingHaiAS105CollectPresenterImp(@ContextLife("Activity") Context context) {

@@ -59,8 +59,6 @@
             android:name=".camera.TakephotoActivity"
             android:windowSoftInputMode="adjustPan|stateHidden" />
 
-        <activity android:name=".module.setting.TestActivity"/>
-
         <activity
             android:name=".module.edit.EditActivity"
             android:windowSoftInputMode="adjustPan|stateHidden" />

@@ -3,7 +3,7 @@ package com.richfit.barcodesystemproduct.module_check.qinghai_blind.edit.imp;
 import android.content.Context;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_check.qinghai_blind.edit.IBlindEditPresenter;
 import com.richfit.barcodesystemproduct.module_check.qinghai_blind.edit.IBlindEditView;
 import com.richfit.common_lib.rxutils.RxSubscriber;

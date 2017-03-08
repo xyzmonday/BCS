@@ -3,7 +3,7 @@ package com.richfit.barcodesystemproduct.di.module;
 import android.app.Application;
 import android.content.Context;
 
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.common_lib.rxutils.RxManager;
 import com.richfit.common_lib.rxutils.SimpleRxBus;
 import com.richfit.data.repository.Repository;

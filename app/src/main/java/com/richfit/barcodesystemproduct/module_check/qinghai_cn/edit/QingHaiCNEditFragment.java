@@ -9,6 +9,7 @@ import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.barcodesystemproduct.module_check.qinghai_cn.edit.imp.CNEditPresenterImp;
 import com.richfit.common_lib.rxutils.TransformerHelper;
+import com.richfit.common_lib.utils.CommonUtil;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.domain.bean.ResultEntity;
@@ -44,6 +45,10 @@ public class QingHaiCNEditFragment extends BaseFragment<CNEditPresenterImp, Obje
     @BindView(R.id.tv_total_quantity)
     TextView tvTotalQuantity;
 
+    String mCheckLineId;
+    String mWorkId;
+    String mInvId;
+
     @Override
     protected int getContentId() {
         return R.layout.fragment_cn_edit;
@@ -58,6 +63,7 @@ public class QingHaiCNEditFragment extends BaseFragment<CNEditPresenterImp, Obje
     public void initData() {
         Bundle bundle = getArguments();
         if (bundle != null) {
+            mCheckLineId = bundle.getString(Global.EXTRA_REF_LINE_ID_KEY);
             String materialNum = bundle.getString(Global.EXTRA_MATERIAL_NUM_KEY);
             String materialId = bundle.getString(Global.EXTRA_MATERIAL_ID_KEY);
             String materialGroup = bundle.getString(Global.EXTRA_MATERIAL_GROUP_KEY);
@@ -67,6 +73,8 @@ public class QingHaiCNEditFragment extends BaseFragment<CNEditPresenterImp, Obje
             String invQuantity = bundle.getString(Global.EXTRA_INV_QUANTITY_KEY);
             String specialInvFlag = bundle.getString(Global.EXTRA_SPECIAL_INV_FLAG_KEY);
             String specialInvNum = bundle.getString(Global.EXTRA_SPECIAL_INV_NUM_KEY);
+            mWorkId = bundle.getString(Global.EXTRA_WORK_ID_KEY);
+            mInvId = bundle.getString(Global.EXTRA_INV_ID_KEY);
             tvMaterialNum.setText(materialNum);
             tvMaterialNum.setTag(materialId);
             tvMaterialDesc.setText(materialDesc);
@@ -82,6 +90,18 @@ public class QingHaiCNEditFragment extends BaseFragment<CNEditPresenterImp, Obje
 
     @Override
     public boolean checkCollectedDataBeforeSave() {
+        if (TextUtils.isEmpty(mCheckLineId)) {
+            showMessage("该行的盘点Id为空");
+            return false;
+        }
+        if (TextUtils.isEmpty(mWorkId)) {
+            showMessage("盘点工厂Id为空");
+            return false;
+        }
+        if (TextUtils.isEmpty(mInvId)) {
+            showMessage("盘点库存地点Id为空");
+            return false;
+        }
         if (TextUtils.isEmpty(getString(etCheckQuantity))) {
             showMessage("请输入盘点数量");
             return false;
@@ -102,20 +122,27 @@ public class QingHaiCNEditFragment extends BaseFragment<CNEditPresenterImp, Obje
     public void saveCollectedData() {
         Flowable.create((FlowableOnSubscribe<ResultEntity>) emitter -> {
             ResultEntity result = new ResultEntity();
+            result.businessType = mRefData.bizType;
             result.checkId = mRefData.checkId;
-            result.voucherDate = mRefData.voucherDate;
-            result.materialId = tvMaterialNum.getTag().toString();
-            result.materialNum = getString(tvMaterialNum);
-            result.invType = "代管物资".equals(mRefData.invType) ? "0" : "1";
+            result.checkLineId = mCheckLineId;
+            result.specialInvFlag = getString(tvSpecialInvFlag);
+            result.specialInvNum = getString(tvSpecialInvNum);
             result.location = getString(etCheckLocation);
-            result.quantity = getString(etCheckQuantity);
+            result.workId = mRefData.workId;
+            result.invId = mRefData.invId;
+            result.voucherDate = mRefData.voucherDate;
             result.userId = Global.USER_ID;
+            result.workId = mWorkId;
+            result.invId = mInvId;
+            result.materialId = CommonUtil.Obj2String(tvMaterialNum.getTag());
+            result.quantity = getString(etCheckQuantity);
             result.modifyFlag = "Y";
             emitter.onNext(result);
             emitter.onComplete();
         }, BackpressureStrategy.BUFFER).compose(TransformerHelper.io2main())
                 .subscribe(result -> mPresenter.uploadCheckDataSingle(result));
     }
+
     @Override
     public void saveCheckDataSuccess() {
         showMessage("修改成功");

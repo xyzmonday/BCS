@@ -21,6 +21,6 @@ public class QingHaiDSWWEditFragment extends BaseDSEditFragment {
 
     @Override
     protected String getInventoryQueryType() {
-        return getString(R.string.inventoryQueryTypePrecise);
+        return getString(R.string.inventoryQueryTypeSAPLocation);
     }
 }

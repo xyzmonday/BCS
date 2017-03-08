@@ -21,7 +21,7 @@ public class QingHaiDSXSCollectFragment extends BaseDSCollectFragment {
 
     @Override
     protected String getInventoryQueryType() {
-        return getString(R.string.inventoryQueryTypePrecise);
+        return getString(R.string.inventoryQueryTypeSAPLocation);
     }
 
     @Override

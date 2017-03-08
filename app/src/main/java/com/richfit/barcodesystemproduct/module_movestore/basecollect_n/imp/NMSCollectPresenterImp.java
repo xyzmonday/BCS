@@ -3,7 +3,7 @@ package com.richfit.barcodesystemproduct.module_movestore.basecollect_n.imp;
 import android.content.Context;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_movestore.basecollect_n.INMSCollectPresenter;
 import com.richfit.barcodesystemproduct.module_movestore.basecollect_n.INMSCollectView;
 import com.richfit.common_lib.rxutils.RxSubscriber;

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_check.qinghai_blind.header.IBlindHeaderPresenter;
 import com.richfit.barcodesystemproduct.module_check.qinghai_blind.header.IBlindHeaderView;
 import com.richfit.common_lib.rxutils.RxSubscriber;
@@ -169,9 +169,9 @@ public class BlindHeaderPresenterImp extends BasePresenter<IBlindHeaderView>
     }
 
     @Override
-    public void deleteCheckData(String storageNum, String workId, String invId, String checkId) {
+    public void deleteCheckData(String storageNum, String workId, String invId, String checkId,String userId,String bizType) {
         mView = getView();
-        mRepository.deleteCheckData(storageNum, workId, invId, checkId, Global.USER_ID)
+        mRepository.deleteCheckData(storageNum, workId, invId, checkId,userId,bizType)
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext, "正在删除历史盘点记录") {
                     @Override

@@ -3,7 +3,7 @@ package com.richfit.barcodesystemproduct.di.module;
 
 import android.content.Context;
 
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.data.net.api.IRequestApi;
 import com.richfit.data.net.http.RetrofitModule;
 import com.richfit.data.repository.server.ServerRepositoryImp;

@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -21,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
+
+import com.richfit.common_lib.utils.AppCompat;
 
 import java.util.HashMap;
 
@@ -137,6 +140,21 @@ public class ViewHolder extends RecyclerView.ViewHolder {
         view.setBackgroundResource(backgroundRes);
         return this;
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    public ViewHolder setBackgroundDrawable(int vieId, int drawableId) {
+        View view =  getView(vieId);
+        view.setBackground(AppCompat.getDrawable(mContext,drawableId));
+        return this;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    public ViewHolder setBackgroundDrawable(int vieId, Drawable drawable) {
+        View view =  getView(vieId);
+        view.setBackground(drawable);
+        return this;
+    }
+
 
     public ViewHolder setTextColor(int viewId, int textColor) {
         TextView view = getView(viewId);

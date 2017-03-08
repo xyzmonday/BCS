@@ -272,13 +272,18 @@ public class BasePresenter<T extends BaseView> implements IPresenter<T> {
         addSubscriber(subscriber);
     }
 
-
-    protected Flowable<RefDetailEntity> getMatchedLineData(String lineId, ReferenceEntity refData) {
-        if (TextUtils.isEmpty(lineId))
+    /**
+     * 通过refLineId将缓存数据关联到原始的单据中去
+     * @param refLineId:单据行Id
+     * @param refData:原始单据信息
+     * @return
+     */
+    protected Flowable<RefDetailEntity> getMatchedLineData(String refLineId, ReferenceEntity refData) {
+        if (TextUtils.isEmpty(refLineId))
             return Flowable.error(new Throwable("该行的行Id不存在,请检查该单据是否正确"));
         List<RefDetailEntity> list = refData.billDetailList;
         for (RefDetailEntity entity : list) {
-            if (lineId.equals(entity.refLineId))
+            if (refLineId.equals(entity.refLineId))
                 return Flowable.just(entity);
         }
         return Flowable.error(new Throwable("未能找到与该行匹配的缓存"));

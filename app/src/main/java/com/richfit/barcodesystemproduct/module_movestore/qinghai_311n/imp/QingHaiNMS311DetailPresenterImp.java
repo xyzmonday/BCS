@@ -3,7 +3,7 @@ package com.richfit.barcodesystemproduct.module_movestore.qinghai_311n.imp;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_movestore.basedetail_n.imp.NMSDetailPresenterImp;
 import com.richfit.common_lib.rxutils.RetryWhenNetworkException;
 import com.richfit.common_lib.rxutils.RxSubscriber;
@@ -34,7 +34,6 @@ public class QingHaiNMS311DetailPresenterImp extends NMSDetailPresenterImp {
         mView = getView();
         RxSubscriber<String> subscriber = Flowable.concat(mRepository.uploadCollectionData("", transId, bizType, refType, -1, voucherDate, "", userId),
                 mRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate, flagMap, extraHeaderMap))
-                .retryWhen(new RetryWhenNetworkException(3, 3000))
                 .doOnError(str -> SPrefUtil.saveData(bizType + refType, "0"))
                 .doOnComplete(() -> SPrefUtil.saveData(bizType + refType, "1"))
                 .compose(TransformerHelper.io2main())

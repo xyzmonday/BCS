@@ -58,6 +58,7 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
     String mTransNum;
     //父子节点的配置信息结合
     ArrayList<RowConfig> mConfigs;
+    ASNDetailAdapter mAdapter;
 
     @Override
     protected int getContentId() {
@@ -166,10 +167,14 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
                 break;
             }
         }
-        ASNDetailAdapter adapter = new ASNDetailAdapter(mActivity, R.layout.item_qingyang_asn_detail, nodes, mConfigs,
-                null, mCompanyCode);
-        mRecycleView.setAdapter(adapter);
-        adapter.setOnItemEditAndDeleteListener(this);
+        if (mAdapter == null) {
+            mAdapter = new ASNDetailAdapter(mActivity, R.layout.item_qingyang_asn_detail, nodes, mConfigs,
+                    null, mCompanyCode);
+            mRecycleView.setAdapter(mAdapter);
+            mAdapter.setOnItemEditAndDeleteListener(this);
+        } else {
+            mAdapter.addAll(nodes);
+        }
     }
 
     @Override
@@ -205,10 +210,8 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
             return;
         }
         //获取与该子节点的物料编码和发出库位一致的发出仓位和接收仓位列表
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && ASNDetailAdapter.class.isInstance(adapter)) {
-            ASNDetailAdapter asnDetailAdapter = (ASNDetailAdapter) adapter;
-            ArrayList<String> Locations = asnDetailAdapter.getLocations(position, 0);
+        if (mAdapter != null) {
+            ArrayList<String> Locations = mAdapter.getLocations(position, 0);
             mPresenter.editNode(Locations, null, node, mCompanyCode, mBizType, mRefType, "其他入库-无参考");
         }
     }
@@ -216,11 +219,9 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
     @Override
     public void deleteNodeSuccess(int position) {
         showMessage("删除成功");
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && ASNDetailAdapter.class.isInstance(adapter)) {
-            ASNDetailAdapter asnDetailAdapter = (ASNDetailAdapter) adapter;
-            asnDetailAdapter.removeItemByPosition(position);
-            int itemCount = asnDetailAdapter.getItemCount();
+        if (mAdapter != null) {
+            mAdapter.removeItemByPosition(position);
+            int itemCount = mAdapter.getItemCount();
             if (itemCount == 0) {
                 mExtraContainer.setVisibility(View.INVISIBLE);
             }
@@ -328,6 +329,9 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
     @Override
     public void submitSAPSuccess() {
         setRefreshing(false, "数据上传成功");
+        if (mAdapter != null) {
+            mAdapter.removeAllVisibleNodes();
+        }
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 

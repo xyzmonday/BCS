@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module.edit.EditActivity;
 import com.richfit.barcodesystemproduct.module_approval.qinghai_ao.detail.IQingHaiAODetailPresenter;
 import com.richfit.barcodesystemproduct.module_approval.qinghai_ao.detail.IQingHaiAODetailView;
@@ -43,34 +43,35 @@ public class QingHaiAODetailPresenterImp extends BasePresenter<IQingHaiAODetailV
 
         mView = getView();
 
-        ResourceSubscriber<ReferenceEntity> subscriber = mRepository.getReference(refNum, refType, bizType, moveType, userId)
-                .filter(refData -> refData != null && refData.billDetailList != null && refData.billDetailList.size() > 0)
-                .map(refData -> addTreeInfo(refData))
-                .compose(TransformerHelper.io2main())
-                .subscribeWith(new ResourceSubscriber<ReferenceEntity>() {
-                    @Override
-                    public void onNext(ReferenceEntity refData) {
-                        if (mView != null) {
-                            mView.showNodes(refData.billDetailList,refData.transId);
-                        }
-                    }
+        ResourceSubscriber<ReferenceEntity> subscriber =
+                mRepository.getReference(refNum, refType, bizType, moveType, userId)
+                        .filter(refData -> refData != null && refData.billDetailList != null && refData.billDetailList.size() > 0)
+                        .map(refData -> addTreeInfo(refData))
+                        .compose(TransformerHelper.io2main())
+                        .subscribeWith(new ResourceSubscriber<ReferenceEntity>() {
+                            @Override
+                            public void onNext(ReferenceEntity refData) {
+                                if (mView != null) {
+                                    mView.showNodes(refData.billDetailList, refData.transId);
+                                }
+                            }
 
-                    @Override
-                    public void onError(Throwable t) {
-                        if (mView != null) {
-                            mView.setRefreshing(false, "获取明细失败" + t.getMessage());
-                            //展示抬头获取的数据，没有缓存
-                            mView.showNodes(data.billDetailList,data.transId);
-                        }
-                    }
+                            @Override
+                            public void onError(Throwable t) {
+                                if (mView != null) {
+                                    mView.setRefreshing(false, "获取明细失败" + t.getMessage());
+                                    //展示抬头获取的数据，没有缓存
+                                    mView.showNodes(data.billDetailList, data.transId);
+                                }
+                            }
 
-                    @Override
-                    public void onComplete() {
-                        if (mView != null) {
-                            mView.setRefreshing(true, "获取明细成功");
-                        }
-                    }
-                });
+                            @Override
+                            public void onComplete() {
+                                if (mView != null) {
+                                    mView.setRefreshing(true, "获取明细成功");
+                                }
+                            }
+                        });
         addSubscriber(subscriber);
     }
 
@@ -180,45 +181,46 @@ public class QingHaiAODetailPresenterImp extends BasePresenter<IQingHaiAODetailV
     public void transferCollectionData(String transId, String bizType, String refType, String userId, String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
         mView = getView();
 
-        RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate,
-                flagMap, extraHeaderMap)
-                .compose(TransformerHelper.io2main())
-                .subscribeWith(new RxSubscriber<String>(mContext, "正在上传数据...") {
-                    @Override
-                    public void _onNext(String message) {
-                        if (mView != null) {
-                            mView.showTransNum(message);
-                        }
-                    }
+        RxSubscriber<String> subscriber =
+                mRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate,
+                        flagMap, extraHeaderMap)
+                        .compose(TransformerHelper.io2main())
+                        .subscribeWith(new RxSubscriber<String>(mContext, "正在上传数据...") {
+                            @Override
+                            public void _onNext(String message) {
+                                if (mView != null) {
+                                    mView.showTransNum(message);
+                                }
+                            }
 
-                    @Override
-                    public void _onNetWorkConnectError(String message) {
-                        if (mView != null) {
-                            mView.submitDataFail(message);
-                        }
-                    }
+                            @Override
+                            public void _onNetWorkConnectError(String message) {
+                                if (mView != null) {
+                                    mView.submitDataFail(message);
+                                }
+                            }
 
-                    @Override
-                    public void _onCommonError(String message) {
-                        if (mView != null) {
-                            mView.submitDataFail(message);
-                        }
-                    }
+                            @Override
+                            public void _onCommonError(String message) {
+                                if (mView != null) {
+                                    mView.submitDataFail(message);
+                                }
+                            }
 
-                    @Override
-                    public void _onServerError(String code, String message) {
-                        if (mView != null) {
-                            mView.submitDataFail(message);
-                        }
-                    }
+                            @Override
+                            public void _onServerError(String code, String message) {
+                                if (mView != null) {
+                                    mView.submitDataFail(message);
+                                }
+                            }
 
-                    @Override
-                    public void _onComplete() {
-                        if (mView != null) {
-                            mView.showSubmitComplete();
-                        }
-                    }
-                });
+                            @Override
+                            public void _onComplete() {
+                                if (mView != null) {
+                                    mView.showSubmitComplete();
+                                }
+                            }
+                        });
         addSubscriber(subscriber);
     }
 

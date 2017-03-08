@@ -2,9 +2,8 @@ package com.richfit.barcodesystemproduct.module_movestore.qingyang_301n.imp;
 
 import android.content.Context;
 
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_movestore.basedetail_n.imp.NMSDetailPresenterImp;
-import com.richfit.common_lib.rxutils.RetryWhenNetworkException;
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
@@ -26,7 +25,6 @@ public class QingYangNMS301DetailPresenterImp extends NMSDetailPresenterImp {
         mView = getView();
         RxSubscriber<String> subscriber =
                 mRepository.uploadCollectionData("", transId, bizType, refType, -1, voucherDate, "", "")
-                        .retryWhen(new RetryWhenNetworkException(3, 3000))
                         .compose(TransformerHelper.io2main())
                         .subscribeWith(new RxSubscriber<String>(mContext) {
                             @Override

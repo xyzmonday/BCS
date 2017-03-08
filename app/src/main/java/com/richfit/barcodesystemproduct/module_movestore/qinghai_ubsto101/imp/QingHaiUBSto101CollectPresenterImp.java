@@ -3,7 +3,7 @@ package com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto101.imp;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_acceptstore.basecollect.imp.ASCollectPresenterImp;
 
 import javax.inject.Inject;

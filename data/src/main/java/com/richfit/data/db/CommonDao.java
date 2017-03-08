@@ -320,6 +320,8 @@ public class CommonDao extends BaseDao {
             tableIndex = 6;
         } else if ("ZZ2".equals(queryType)) {
             tableIndex = 7;
+        } else if ("XM".equals(queryType)) {
+            tableIndex = 8;
         }
         boolean isCWFirst = "0001/01/01".equalsIgnoreCase(queryDate);
         insertData(maps, tableIndex, isFirstPage, isCWFirst);
@@ -389,8 +391,8 @@ public class CommonDao extends BaseDao {
                 //注意对于成本中心和供应商，由于是分页加载数据，所有仅仅是在第一页加载的时候需要删除数据。
                 sql.append("INSERT INTO ")
                         .append(tableName)
-                        .append(" (id,org_id,cost_center,cost_center_desc,creation_date,last_update_date)")
-                        .append(" VALUES (?,?,?,?,?,?)");
+                        .append(" (id,org_id,cost_center_code,cost_center_desc)")
+                        .append(" VALUES (?,?,?,?)");
 
                 break;
             case 4:
@@ -418,27 +420,22 @@ public class CommonDao extends BaseDao {
                         .append(tableName)
                         .append(" (id,code,name,sort,val)")
                         .append(" VALUES (?,?,?,?,?)");
+
+                break;
+            case 8:
+                tableName = "BASE_PROJECT_NUM";
+                if (isFirstPage) {
+                    db.execSQL("delete from " + tableName);
+                }
+                //注意对于成本中心和供应商，由于是分页加载数据，所有仅仅是在第一页加载的时候需要删除数据。
+                sql.append("INSERT INTO ")
+                        .append(tableName)
+                        .append(" (id,org_id,project_num_code,project_num_desc)")
+                        .append(" VALUES (?,?,?,?)");
                 break;
 
         }
         db.close();
-//        int length = source.size() - 1;
-//        //批量插入算法
-//        int count = length / Global.MAX_PATCH_LENGTH;
-//        int residual = length % Global.MAX_PATCH_LENGTH;
-//        int ptr = 0;
-//        if (count == 0) {
-//            // 说明数据长度小于PATCH_MAX_LENGTH，直接写入即可
-//            patchUpdateBaseData(source, residual, ptr, sql.toString(), tableIndex, isCWFirst);
-//        } else if (count > 0) {
-//            for (; ptr < count; ptr++) {
-//                patchUpdateBaseData(source, Global.MAX_PATCH_LENGTH, ptr, sql.toString(), tableIndex, isCWFirst);
-//            }
-//            if (residual > 0) {
-//                // 说明还有剩余的数据
-//                patchUpdateBaseData(source, residual, ptr, sql.toString(), tableIndex, isCWFirst);
-//            }
-//        }
         patchUpdateBaseData(source, 1, source.size(), 0, sql.toString(), tableIndex, isCWFirst);
     }
 
@@ -510,7 +507,7 @@ public class CommonDao extends BaseDao {
                         stmt.clearBindings();
                     }
                     break;
-
+                case 8:
                 case 3:
                     //成本中心
                     for (int i = start; i < end; i++) {
@@ -519,8 +516,6 @@ public class CommonDao extends BaseDao {
                         stmt.bindString(2, item.get(Global.parentId_Key).toString());
                         stmt.bindString(3, item.get(Global.code_Key).toString());
                         stmt.bindString(4, item.get(Global.name_Key).toString());
-//                        stmt.bindString(5, item.get(Global.sapCreationDate_Key).toString());
-//                        stmt.bindString(6, item.get(Global.sapUpdateDate_Key).toString());
                         stmt.execute();
                         stmt.clearBindings();
                     }
@@ -751,7 +746,7 @@ public class CommonDao extends BaseDao {
 
         StringBuffer sb = new StringBuffer();
         final String tableName = flag == 0 ? PAuthOrgKey : PAuthOrg2Key;
-        sb.append("select B.org_id , B.cost_center,B.cost_center_desc from ")
+        sb.append("select B.org_id , B.cost_center_code,B.cost_center_desc from ")
                 .append(tableName)
                 .append("  P,BASE_COST_CENTER B ")
                 .append(" where P.parent_id = B.org_id ")
@@ -782,10 +777,33 @@ public class CommonDao extends BaseDao {
      */
     public ArrayList<SimpleEntity> getProjectNumList(String workCode, String keyWord, int defaultItemNum, int flag) {
         ArrayList<SimpleEntity> list = new ArrayList<>();
-        if (TextUtils.isEmpty(workCode)) {
+        if (TextUtils.isEmpty(workCode))
             return list;
-        }
 
+        SQLiteDatabase db = getReadableDB();
+
+        StringBuffer sb = new StringBuffer();
+        final String tableName = flag == 0 ? PAuthOrgKey : PAuthOrg2Key;
+        sb.append("select B.org_id , B.project_num_code,B.project_num_desc from ")
+                .append(tableName)
+                .append("  P,BASE_PROJECT_NUM B ")
+                .append(" where P.parent_id = B.org_id ")
+                .append(" and P.org_level = 2 and P.org_code = ? ");
+        if (!TextUtils.isEmpty(keyWord)) {
+            sb.append("like ").append("'%").append(keyWord).append("%'");
+        } else if (defaultItemNum > 0) {
+            sb.append(" limit 0, ")
+                    .append(defaultItemNum);
+        }
+        Cursor cursor = db.rawQuery(sb.toString(), new String[]{workCode});
+        while (cursor.moveToNext()) {
+            SimpleEntity entity = new SimpleEntity();
+            entity.id = cursor.getString(0);
+            entity.code = cursor.getString(1);
+            entity.name = cursor.getString(2);
+            list.add(entity);
+        }
+        db.close();
         return list;
     }
 
@@ -852,6 +870,7 @@ public class CommonDao extends BaseDao {
         }
         cursor.close();
         db.close();
+        L.e("storageNum = " + storageNum);
         return storageNum;
     }
 
@@ -867,7 +886,7 @@ public class CommonDao extends BaseDao {
         StringBuffer sb = new StringBuffer();
         final String tableName = flag == 0 ? PAuthOrgKey : PAuthOrg2Key;
         sb.append("select distinct  storage_code from ").append(tableName).append(" where org_level = ? ")
-        .append(" and parent_id IN ( select org_id from ").append(tableName);
+                .append(" and parent_id IN ( select org_id from ").append(tableName);
 
         if (authOrgs.size() > 0 && flag == 0) {
             sb.append(" where org_code IN (");
@@ -879,7 +898,7 @@ public class CommonDao extends BaseDao {
             sb.append(")");
         }
         L.e("查询仓库号列表sql = " + sb.toString());
-        Cursor cursor = db.rawQuery(sb.toString(), new String[]{"3","2"});
+        Cursor cursor = db.rawQuery(sb.toString(), new String[]{"3", "2"});
         list.add("请选择");
         while (cursor.moveToNext()) {
             list.add(cursor.getString(0));

@@ -155,8 +155,12 @@ public class QingHaiRSNCollectFragment extends BaseFragment<QingHaiRSNCollectPre
             showMessage("请先在抬头界面选择工厂");
             return;
         }
-        if (TextUtils.isEmpty(mRefData.costCenter)) {
-            showMessage("请先在抬头界面输入必要字段");
+        if ("46".equals(mBizType) && TextUtils.isEmpty(mRefData.costCenter)) {
+            showMessage("请先在抬头界面输入成本中心");
+            return;
+        }
+        if ("47".equals(mBizType) && TextUtils.isEmpty(mRefData.projectNum)) {
+            showMessage("请现在抬头界面输入项目编号");
             return;
         }
         etMaterialNum.setEnabled(true);

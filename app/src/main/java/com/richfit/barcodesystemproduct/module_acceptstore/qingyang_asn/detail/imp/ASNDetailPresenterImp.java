@@ -7,12 +7,11 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module.edit.EditActivity;
 import com.richfit.barcodesystemproduct.module.main.MainActivity;
 import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.detail.IASNDetailPresenter;
 import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.detail.IASNDetailView;
-import com.richfit.common_lib.rxutils.RetryWhenNetworkException;
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
@@ -170,7 +169,6 @@ public class ASNDetailPresenterImp extends BasePresenter<IASNDetailView>
         mView = getView();
         RxSubscriber<String> subscriber =
                 mRepository.uploadCollectionData("", transId, bizType, refType, -1, voucherDate, "", "")
-                        .retryWhen(new RetryWhenNetworkException(3, 3000))
                         .doOnError(e-> SPrefUtil.saveData(bizType,"0"))
                         .doOnComplete(()->SPrefUtil.saveData(bizType,"1"))
                         .compose(TransformerHelper.io2main())
@@ -218,7 +216,6 @@ public class ASNDetailPresenterImp extends BasePresenter<IASNDetailView>
                                String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
         mView = getView();
         RxSubscriber<String> subscriber = mRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate, flagMap, extraHeaderMap)
-                .retryWhen(new RetryWhenNetworkException(3, 3000))
                 .doOnComplete(()->SPrefUtil.saveData(bizType,"0"))
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext, "正在上传数据...") {

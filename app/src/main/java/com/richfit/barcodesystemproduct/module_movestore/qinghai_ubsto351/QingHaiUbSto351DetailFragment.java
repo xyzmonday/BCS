@@ -1,6 +1,5 @@
 package com.richfit.barcodesystemproduct.module_movestore.qinghai_ubsto351;
 
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.adapter.QingHaiUbSto351DetailAdapter;
@@ -19,6 +18,8 @@ import java.util.List;
 
 public class QingHaiUbSto351DetailFragment extends BaseMSDetailFragment<QingHaiUnSto351DetailPresenterImp> {
 
+    QingHaiUbSto351DetailAdapter mAdapter;
+
     @Override
     public void initInjector() {
         mFragmentComponent.inject(this);
@@ -33,20 +34,23 @@ public class QingHaiUbSto351DetailFragment extends BaseMSDetailFragment<QingHaiU
                 break;
             }
         }
-        QingHaiUbSto351DetailAdapter adapter = new QingHaiUbSto351DetailAdapter(mActivity, allNodes,
-                mSubFunEntity.parentNodeConfigs, mSubFunEntity.childNodeConfigs,
-                mCompanyCode);
-        mRecycleView.setAdapter(adapter);
-        adapter.setOnItemEditAndDeleteListener(this);
+        setRefreshing(true, "加载明细成功");
+        if(mAdapter == null) {
+            mAdapter = new QingHaiUbSto351DetailAdapter(mActivity, allNodes,
+                    mSubFunEntity.parentNodeConfigs, mSubFunEntity.childNodeConfigs,
+                    mCompanyCode);
+            mRecycleView.setAdapter(mAdapter);
+            mAdapter.setOnItemEditAndDeleteListener(this);
+        }else {
+            mAdapter.addAll(allNodes);
+        }
     }
 
     @Override
     public void deleteNodeSuccess(int position) {
         showMessage("删除成功");
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && QingHaiUbSto351DetailAdapter.class.isInstance(adapter)) {
-            QingHaiUbSto351DetailAdapter detailAdapter = (QingHaiUbSto351DetailAdapter) adapter;
-            detailAdapter.removeNodeByPosition(position);
+        if (mAdapter != null) {
+            mAdapter.removeNodeByPosition(position);
         }
     }
 
@@ -66,10 +70,9 @@ public class QingHaiUbSto351DetailFragment extends BaseMSDetailFragment<QingHaiU
     @Override
     public void submitBarcodeSystemFail(String message) {
         if (TextUtils.isEmpty(message)) {
-            showMessage(message);
-        } else {
-            showErrorDialog(message);
+            message += "过账失败";
         }
+        showErrorDialog(message);
         mTransNum = "";
     }
 
@@ -80,6 +83,9 @@ public class QingHaiUbSto351DetailFragment extends BaseMSDetailFragment<QingHaiU
     public void submitSAPSuccess() {
         setRefreshing(false, "数据上传成功");
         showSuccessDialog(mInspectionNum);
+        if(mAdapter != null) {
+            mAdapter.removeAllVisibleNodes();
+        }
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 

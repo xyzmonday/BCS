@@ -164,8 +164,12 @@ public class QingHaiDSNCollectFragment extends BaseFragment<QingHaiDSNCollectPre
             showMessage("请先在抬头界面选择工厂");
             return;
         }
-        if (TextUtils.isEmpty(mRefData.costCenter)) {
-            showMessage("请先在抬头界面输入必要字段");
+        if ("26".equals(mBizType) && TextUtils.isEmpty(mRefData.costCenter)) {
+            showMessage("请先在抬头界面输入成本中心");
+            return;
+        }
+        if ("27".equals(mBizType) && TextUtils.isEmpty(mRefData.projectNum)) {
+            showMessage("请现在抬头界面输入项目编号");
             return;
         }
         etMaterialNum.setEnabled(true);
@@ -397,7 +401,7 @@ public class QingHaiDSNCollectFragment extends BaseFragment<QingHaiDSNCollectPre
      */
     @Override
     public boolean checkCollectedDataBeforeSave() {
-        if(!etMaterialNum.isEnabled()) {
+        if (!etMaterialNum.isEnabled()) {
             showMessage("请先获取物料信息");
             return false;
         }
@@ -491,7 +495,7 @@ public class QingHaiDSNCollectFragment extends BaseFragment<QingHaiDSNCollectPre
     }
 
     private void clearAllUI() {
-        clearCommonUI(tvMaterialDesc,tvMaterialGroup, etBatchFlag,
+        clearCommonUI(tvMaterialDesc, tvMaterialGroup, etBatchFlag,
                 tvInvQuantity, tvLocQuantity, etQuantity);
 
         //库存地点

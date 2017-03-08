@@ -2,7 +2,7 @@ package com.richfit.barcodesystemproduct.module_acceptstore.qinghai_105n.imp;
 
 import android.content.Context;
 
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_acceptstore.baseedit.imp.ASEditPresenterImp;
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;

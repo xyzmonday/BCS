@@ -10,7 +10,6 @@ import com.richfit.barcodesystemproduct.module.login.LoginActivity;
 import com.richfit.barcodesystemproduct.module.splash.imp.SplashPresenterImp;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 
@@ -77,8 +76,6 @@ public class SplashActivity extends BaseActivity<SplashPresenterImp>
 
     @Override
     public void unRegister(String message) {
-        L.e("mac = " + Global.macAddress + "; serial = " + Global.serialNum);
-
         new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE)
                 .setTitleText("提示")
                 .setContentText(message + "。请点击立即注册获取手持MAC和序列号进行注册")
@@ -96,7 +93,6 @@ public class SplashActivity extends BaseActivity<SplashPresenterImp>
 
     @Override
     public void registered() {
-        L.d("mac = " + Global.macAddress + "; serial = " + Global.serialNum);
         mPresenter.syncDate();
     }
 

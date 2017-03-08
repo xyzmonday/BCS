@@ -1,7 +1,7 @@
 package com.richfit.barcodesystemproduct.di.module;
 
 import android.content.Context;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.data.db.ApprovalDao;
 import com.richfit.data.db.CommonDao;
 import com.richfit.data.repository.local.LocalRepositoryImp;

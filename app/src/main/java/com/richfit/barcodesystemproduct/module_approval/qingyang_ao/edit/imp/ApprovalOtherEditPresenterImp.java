@@ -3,7 +3,7 @@ package com.richfit.barcodesystemproduct.module_approval.qingyang_ao.edit.imp;
 import android.content.Context;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_approval.qingyang_ao.edit.IApprovalOtherEditPresenter;
 import com.richfit.barcodesystemproduct.module_approval.qingyang_ao.edit.IApprovalOtherEditView;
 import com.richfit.common_lib.rxutils.RxSubscriber;

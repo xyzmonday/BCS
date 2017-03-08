@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -16,11 +17,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.richfit.barcodesystemproduct.R;
-import com.richfit.barcodesystemproduct.adapter.CNDetailAdapter;
+import com.richfit.barcodesystemproduct.adapter.BlindDetailAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.barcodesystemproduct.module_check.qinghai_blind.detail.imp.BlindDetailPresenterImp;
-import com.richfit.barcodesystemproduct.module_check.qinghai_cn.detail.ICNDetailView;
-import com.richfit.common_lib.basetreerv.MultiItemTypeTreeAdapter;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.AdvancedEditText;
@@ -38,8 +37,7 @@ import butterknife.BindView;
  */
 
 public class QingHaiBlindDetailFragment extends BaseFragment<BlindDetailPresenterImp, InventoryEntity>
-        implements ICNDetailView, SwipeRefreshLayout.OnRefreshListener, View.OnClickListener,
-        MultiItemTypeTreeAdapter.OnItemClickListener{
+        implements IBlindDetailView, SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
 
 
     /*每一页展示的title个数*/
@@ -65,8 +63,9 @@ public class QingHaiBlindDetailFragment extends BaseFragment<BlindDetailPresente
     List<String> mTitles;
     SparseArray<TextView> mTextViews;
     SparseArray<View> mDividers;
-    CNDetailAdapter mAdapter;
+    BlindDetailAdapter mAdapter;
     int mCurrentPageNum = 0;
+    String mTransNum;
 
     @Override
     public void handleBarCodeScanResult(String type, String[] list) {
@@ -85,7 +84,7 @@ public class QingHaiBlindDetailFragment extends BaseFragment<BlindDetailPresente
 
     @Override
     protected int getContentId() {
-        return R.layout.fragment_cn_detail;
+        return R.layout.fragment_blind_detail;
     }
 
     @Override
@@ -299,7 +298,7 @@ public class QingHaiBlindDetailFragment extends BaseFragment<BlindDetailPresente
         String location = getString(mLocationCondition);
         int pageNum = number;
         mPresenter.getCheckTransferInfo(checkId, materialNum, location,
-                "queryPage", pageNum, PAGE_SIZE);
+                "queryPage", pageNum, PAGE_SIZE, mBizType);
     }
 
     private void setRefreshing(boolean isSuccess) {
@@ -322,11 +321,10 @@ public class QingHaiBlindDetailFragment extends BaseFragment<BlindDetailPresente
         setupBottomBar(tempTotalPage);
         setRefreshing(true);
         if (mAdapter == null) {
-            mAdapter = new CNDetailAdapter(mActivity, R.layout.item_cn_detail, refData.checkList,
+            mAdapter = new BlindDetailAdapter(mActivity, R.layout.item_blind_detail, refData.checkList,
                     mSubFunEntity.parentNodeConfigs, mSubFunEntity.childNodeConfigs, mCompanyCode);
             mRecycleView.setAdapter(mAdapter);
             mAdapter.setOnItemEditAndDeleteListener(this);
-            mAdapter.setOnItemClickListener(this);
         } else {
             mAdapter.addAll(refData.checkList);
         }
@@ -347,7 +345,7 @@ public class QingHaiBlindDetailFragment extends BaseFragment<BlindDetailPresente
             showMessage("该行还未盘点");
             return;
         }
-        mPresenter.deleteNode(mRefData.checkId, node.checkLineId, Global.USER_ID, position);
+        mPresenter.deleteNode(mRefData.checkId, node.checkLineId, Global.USER_ID, position, mBizType);
     }
 
     @Override
@@ -356,21 +354,19 @@ public class QingHaiBlindDetailFragment extends BaseFragment<BlindDetailPresente
             showMessage("该行还未盘点");
             return;
         }
-        mPresenter.editNode(node, mCompanyCode, mBizType, mRefType, "明盘-无参考");
+        mPresenter.editNode(node, mCompanyCode, mBizType, mRefType, "盲盘-无参考");
     }
 
+    /**
+     * 删除成功后将该行移除。
+     *
+     * @param position：节点在明细列表的位置
+     */
     @Override
     public void deleteNodeSuccess(int position) {
         showMessage("删除成功");
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && CNDetailAdapter.class.isInstance(adapter)) {
-            CNDetailAdapter cyDetailAdapter = (CNDetailAdapter) adapter;
-            InventoryEntity item = cyDetailAdapter.getItem(position);
-            if (item != null) {
-                item.totalQuantity = "";
-                item.isChecked = false;
-                cyDetailAdapter.notifyItemChanged(position);
-            }
+        if (mAdapter != null) {
+            mAdapter.removeItemByPosition(position);
         }
     }
 
@@ -379,31 +375,58 @@ public class QingHaiBlindDetailFragment extends BaseFragment<BlindDetailPresente
         showMessage("删除失败" + message);
     }
 
+    /**
+     * 显示过账，数据上传等菜单对话框
+     *
+     * @param companyCode
+     */
     @Override
-    public void networkConnectError(String retryAction) {
-
+    public void showOperationMenuOnDetail(final String companyCode) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+        builder.setTitle("提示");
+        builder.setMessage("您真的要过账本次盘点?");
+        builder.setNegativeButton("取消", (dialog, which) -> dialog.dismiss());
+        builder.setPositiveButton("确定", (dialog, which) -> {
+            dialog.dismiss();
+            transferCheckData();
+        });
+        builder.show();
     }
 
     /**
-     * RecyclerView的Item点击事件
-     * @param view
-     * @param holder
-     * @param position
+     * 过账
      */
-    @Override
-    public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
-
+    private void transferCheckData() {
+        if (!checkDataBeforeOperationOnDetail()) {
+            return;
+        }
+        mTransNum = "";
+        mPresenter.transferCheckData(mRefData.checkId, Global.USER_ID, mBizType);
     }
 
-    /**
-     * RecyclerView的Item长按事件
-     * @param view
-     * @param holder
-     * @param position
-     * @return
-     */
     @Override
-    public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
-        return false;
+    public void transferCheckDataSuccess() {
+        showSuccessDialog(mTransNum);
+        mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
+    }
+
+    @Override
+    public void showTransferedNum(String transNum) {
+        mTransNum = transNum;
+    }
+
+    @Override
+    public void transferCheckDataFail(String message) {
+        showMessage(message);
+    }
+
+    @Override
+    public void retry(String retryAction) {
+        switch (retryAction) {
+            case Global.RETRY_TRANSFER_DATA_ACTION:
+                mPresenter.transferCheckData(mRefData.checkId, Global.USER_ID, mBizType);
+                break;
+        }
+        super.retry(retryAction);
     }
 }

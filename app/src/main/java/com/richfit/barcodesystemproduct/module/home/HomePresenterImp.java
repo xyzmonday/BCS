@@ -5,7 +5,7 @@ import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.MenuTreeHelper;

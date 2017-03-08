@@ -17,7 +17,7 @@ public class QingHaiDSWWHeaderFragment extends BaseDSHeaderFragment {
 
     @Override
     public void initInjector() {
-
+        mFragmentComponent.inject(this);
     }
 
     @Override

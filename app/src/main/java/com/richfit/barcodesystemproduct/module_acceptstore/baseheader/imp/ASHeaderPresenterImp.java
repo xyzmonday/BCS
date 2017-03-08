@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_acceptstore.baseheader.IASHeaderPresenter;
 import com.richfit.barcodesystemproduct.module_acceptstore.baseheader.IASHeaderView;
 import com.richfit.common_lib.rxutils.RxSubscriber;
@@ -37,12 +37,9 @@ public class ASHeaderPresenterImp extends BasePresenter<IASHeaderView>
     protected void onStart() {
         super.onStart();
         mView = getView();
-        mRxManager.register(Global.CLEAR_HEADER_UI, new Consumer<Boolean>() {
-            @Override
-            public void accept(Boolean aBoolean) throws Exception {
-                if (aBoolean.booleanValue() && mView != null) {
-                    mView.clearAllUIAfterSubmitSuccess();
-                }
+        mRxManager.register(Global.CLEAR_HEADER_UI, (Consumer<Boolean>) aBoolean -> {
+            if (aBoolean.booleanValue() && mView != null) {
+                mView.clearAllUIAfterSubmitSuccess();
             }
         });
     }

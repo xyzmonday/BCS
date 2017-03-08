@@ -324,27 +324,27 @@ public class Repository implements ILocalRepository, IServerRepository {
     }
 
     @Override
-    public Flowable<String> deleteCheckData(String storageNum, String workId, String invId, String checkId, String userId) {
-        return isLocal ? mLocalRepository.deleteCheckData(storageNum, workId, invId, checkId, userId) :
-                mServerRepository.deleteCheckData(storageNum, workId, invId, checkId, userId);
+    public Flowable<String> deleteCheckData(String storageNum, String workId, String invId, String checkId, String userId, String bizType) {
+        return isLocal ? mLocalRepository.deleteCheckData(storageNum, workId, invId, checkId, userId, bizType) :
+                mServerRepository.deleteCheckData(storageNum, workId, invId, checkId, userId, bizType);
     }
 
     @Override
-    public Flowable<List<InventoryEntity>> getCheckTransferInfoSingle(String checkId, String materialId, String materialNum, String location) {
-        return isLocal ? mLocalRepository.getCheckTransferInfoSingle(checkId, materialId, materialNum, location)
-                : mServerRepository.getCheckTransferInfoSingle(checkId, materialId, materialNum, location);
+    public Flowable<List<InventoryEntity>> getCheckTransferInfoSingle(String checkId, String materialId, String materialNum, String location, String bizType) {
+        return isLocal ? mLocalRepository.getCheckTransferInfoSingle(checkId, materialId, materialNum, location, bizType)
+                : mServerRepository.getCheckTransferInfoSingle(checkId, materialId, materialNum, location, bizType);
     }
 
     @Override
-    public Flowable<ReferenceEntity> getCheckTransferInfo(String checkId, String materialNum, String location, String isPageQuery, int pageNum, int pageSize) {
-        return isLocal ? mLocalRepository.getCheckTransferInfo(checkId, materialNum, location, isPageQuery, pageNum, pageSize)
-                : mServerRepository.getCheckTransferInfo(checkId, materialNum, location, isPageQuery, pageNum, pageSize);
+    public Flowable<ReferenceEntity> getCheckTransferInfo(String checkId, String materialNum, String location, String isPageQuery, int pageNum, int pageSize, String bizType) {
+        return isLocal ? mLocalRepository.getCheckTransferInfo(checkId, materialNum, location, isPageQuery, pageNum, pageSize, bizType)
+                : mServerRepository.getCheckTransferInfo(checkId, materialNum, location, isPageQuery, pageNum, pageSize, bizType);
     }
 
     @Override
-    public Flowable<String> deleteCheckDataSingle(String checkId, String checkLineId, String userId) {
-        return isLocal ? mLocalRepository.deleteCheckDataSingle(checkId, checkLineId, userId)
-                : mServerRepository.deleteCheckDataSingle(checkId, checkLineId, userId);
+    public Flowable<String> deleteCheckDataSingle(String checkId, String checkLineId, String userId, String bizType) {
+        return isLocal ? mLocalRepository.deleteCheckDataSingle(checkId, checkLineId, userId, bizType)
+                : mServerRepository.deleteCheckDataSingle(checkId, checkLineId, userId, bizType);
     }
 
     /**
@@ -462,8 +462,9 @@ public class Repository implements ILocalRepository, IServerRepository {
     }
 
     @Override
-    public Flowable<String> transferCheckData(String checkId) {
-        return isLocal ? mLocalRepository.transferCheckData(checkId) : mServerRepository.transferCheckData(checkId);
+    public Flowable<String> transferCheckData(String checkId, String userId, String bizType) {
+        return isLocal ? mLocalRepository.transferCheckData(checkId, userId, bizType) :
+                mServerRepository.transferCheckData(checkId, userId, bizType);
     }
 
     @Override

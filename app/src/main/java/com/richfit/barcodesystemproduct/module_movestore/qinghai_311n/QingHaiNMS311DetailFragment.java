@@ -1,6 +1,5 @@
 package com.richfit.barcodesystemproduct.module_movestore.qinghai_311n;
 
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -22,7 +21,9 @@ import java.util.List;
  * Created by monday on 2017/2/16.
  */
 
-public class QingHaiNMS311DetailFragment extends BaseNMSDetailFragment<QingHaiNMS311DetailPresenterImp>{
+public class QingHaiNMS311DetailFragment extends BaseNMSDetailFragment<QingHaiNMS311DetailPresenterImp> {
+
+    QingHaiNMS311DetailAdapter mAdapter;
 
     @Override
     public void initInjector() {
@@ -44,25 +45,27 @@ public class QingHaiNMS311DetailFragment extends BaseNMSDetailFragment<QingHaiNM
                 break;
             }
         }
-        QingHaiNMS311DetailAdapter adapter = new QingHaiNMS311DetailAdapter(mActivity,
-                R.layout.base_nms_detail_item, allNodes, mConfigs, null, mCompanyCode);
-        mRecycleView.setAdapter(adapter);
-        adapter.setOnItemEditAndDeleteListener(this);
+        if (mAdapter == null) {
+            mAdapter = new QingHaiNMS311DetailAdapter(mActivity,
+                    R.layout.base_nms_detail_item, allNodes, mConfigs, null, mCompanyCode);
+            mRecycleView.setAdapter(mAdapter);
+            mAdapter.setOnItemEditAndDeleteListener(this);
+        } else {
+            mAdapter.addAll(allNodes);
+        }
     }
 
     @Override
     public void editNode(final RefDetailEntity node, int position) {
-        String state = (String) SPrefUtil.getData(mBizType,"0");
+        String state = (String) SPrefUtil.getData(mBizType, "0");
         if (!"0".equals(state)) {
             showMessage("已经过账,不允许删除");
             return;
         }
         //获取与该子节点的物料编码和发出库位一致的发出仓位和接收仓位列表
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && QingHaiNMS311DetailAdapter.class.isInstance(adapter)) {
-            QingHaiNMS311DetailAdapter detailAdapter = (QingHaiNMS311DetailAdapter) adapter;
-            ArrayList<String> sendLocations = detailAdapter.getLocations(node.materialNum, node.invId, position, 0);
-            ArrayList<String> recLocations = detailAdapter.getLocations(node.materialNum, node.invId, position, 1);
+        if (mAdapter != null) {
+            ArrayList<String> sendLocations = mAdapter.getLocations(node.materialNum, node.invId, position, 0);
+            ArrayList<String> recLocations = mAdapter.getLocations(node.materialNum, node.invId, position, 1);
             mPresenter.editNode(sendLocations, recLocations, node, EditActivity.class, mCompanyCode,
                     mBizType, mRefType, getSubFunName());
         }
@@ -71,11 +74,9 @@ public class QingHaiNMS311DetailFragment extends BaseNMSDetailFragment<QingHaiNM
     @Override
     public void deleteNodeSuccess(int position) {
         showMessage("删除成功");
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && QingHaiNMS311DetailAdapter.class.isInstance(adapter)) {
-            QingHaiNMS311DetailAdapter detailAdapter = (QingHaiNMS311DetailAdapter) adapter;
-            detailAdapter.removeItemByPosition(position);
-            int itemCount = detailAdapter.getItemCount();
+        if (mAdapter != null) {
+            mAdapter.removeItemByPosition(position);
+            int itemCount = mAdapter.getItemCount();
             if (itemCount == 0) {
                 mExtraContainer.setVisibility(View.INVISIBLE);
             }
@@ -93,15 +94,15 @@ public class QingHaiNMS311DetailFragment extends BaseNMSDetailFragment<QingHaiNM
 
     /**
      * 第一步的过账(Transfer 01)失败后，必须清除状态标识。
+     *
      * @param message
      */
     @Override
     public void submitBarcodeSystemFail(String message) {
         if (TextUtils.isEmpty(message)) {
-            showMessage(message);
-        } else {
-            showErrorDialog(message);
+            message += "过账失败";
         }
+        showErrorDialog(message);
         mTransNum = "";
     }
 
@@ -112,11 +113,15 @@ public class QingHaiNMS311DetailFragment extends BaseNMSDetailFragment<QingHaiNM
     public void submitSAPSuccess() {
         setRefreshing(false, "数据上传成功");
         showSuccessDialog(mInspectionNum);
+        if (mAdapter != null) {
+            mAdapter.removeAllVisibleNodes();
+        }
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 
     /**
      * 第二步(Transfer 05)失败后显示错误列表
+     *
      * @param messages
      */
     @Override
@@ -135,7 +140,7 @@ public class QingHaiNMS311DetailFragment extends BaseNMSDetailFragment<QingHaiNM
         List<BottomMenuEntity> menus = super.provideDefaultBottomMenu();
         menus.get(0).transToSapFlag = "01";
         menus.get(1).transToSapFlag = "05";
-        return menus.subList(0,2);
+        return menus.subList(0, 2);
     }
 
     @Override

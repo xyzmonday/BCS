@@ -4,7 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_delivery.baseheader.IDSHeaderPresenter;
 import com.richfit.barcodesystemproduct.module_delivery.baseheader.IDSHeaderView;
 import com.richfit.common_lib.rxutils.RxSubscriber;

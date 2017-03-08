@@ -4,7 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_locationadjust.header.ILAHeaderPresenter;
 import com.richfit.barcodesystemproduct.module_locationadjust.header.ILAHeaderView;
 import com.richfit.common_lib.rxutils.TransformerHelper;

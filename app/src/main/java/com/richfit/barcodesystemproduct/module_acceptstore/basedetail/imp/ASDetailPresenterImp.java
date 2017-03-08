@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module.edit.EditActivity;
 import com.richfit.barcodesystemproduct.module.main.MainActivity;
 import com.richfit.barcodesystemproduct.module_acceptstore.basedetail.IASDetailPresenter;
@@ -51,35 +51,36 @@ public class ASDetailPresenterImp extends BasePresenter<IASDetailView>
     @Override
     public void getTransferInfo(final ReferenceEntity refData, String refCodeId, String bizType, String refType) {
         mView = getView();
-        ResourceSubscriber<ArrayList<RefDetailEntity>> subscriber = mRepository.getTransferInfo("", refCodeId, bizType, refType,
-                "", "", "", "", "")
-                .zipWith(Flowable.just(refData), (cache, data) -> createNodesByCache(data, cache))
-                .flatMap(nodes -> sortNodes(nodes))
-                .compose(TransformerHelper.io2main())
-                .subscribeWith(new ResourceSubscriber<ArrayList<RefDetailEntity>>() {
-                    @Override
-                    public void onNext(ArrayList<RefDetailEntity> nodes) {
-                        if (mView != null) {
-                            mView.showNodes(nodes);
-                        }
-                    }
+        ResourceSubscriber<ArrayList<RefDetailEntity>> subscriber =
+                mRepository.getTransferInfo("", refCodeId, bizType, refType,
+                        "", "", "", "", "")
+                        .zipWith(Flowable.just(refData), (cache, data) -> createNodesByCache(data, cache))
+                        .flatMap(nodes -> sortNodes(nodes))
+                        .compose(TransformerHelper.io2main())
+                        .subscribeWith(new ResourceSubscriber<ArrayList<RefDetailEntity>>() {
+                            @Override
+                            public void onNext(ArrayList<RefDetailEntity> nodes) {
+                                if (mView != null) {
+                                    mView.showNodes(nodes);
+                                }
+                            }
 
-                    @Override
-                    public void onError(Throwable t) {
-                        if (mView != null) {
-                            mView.setRefreshing(true, t.getMessage());
-                            //展示抬头获取的数据，没有缓存
-                            mView.showNodes(refData.billDetailList);
-                        }
-                    }
+                            @Override
+                            public void onError(Throwable t) {
+                                if (mView != null) {
+                                    mView.setRefreshing(true, t.getMessage());
+                                    //展示抬头获取的数据，没有缓存
+                                    mView.showNodes(refData.billDetailList);
+                                }
+                            }
 
-                    @Override
-                    public void onComplete() {
-                        if (mView != null) {
-                            mView.setRefreshing(true, "获取明细缓存成功");
-                        }
-                    }
-                });
+                            @Override
+                            public void onComplete() {
+                                if (mView != null) {
+                                    mView.setRefreshing(true, "获取明细缓存成功");
+                                }
+                            }
+                        });
         addSubscriber(subscriber);
     }
 
@@ -126,12 +127,15 @@ public class ASDetailPresenterImp extends BasePresenter<IASDetailView>
 
     @Override
     public void editNode(ArrayList<String> locations, ReferenceEntity refData, RefDetailEntity node, String companyCode,
-                         String bizType, String refType, String subFunName,int position) {
+                         String bizType, String refType, String subFunName, int position) {
         if (refData != null) {
             TreeNode treeNode = node.getParent();
             if (treeNode != null && RefDetailEntity.class.isInstance(treeNode)) {
+
                 final RefDetailEntity parentNode = (RefDetailEntity) treeNode;
+
                 int indexOf = getParentNodePosition(refData, parentNode.refLineId);
+
                 if (indexOf < 0) {
                     return;
                 }
@@ -155,11 +159,26 @@ public class ASDetailPresenterImp extends BasePresenter<IASDetailView>
                     //该子节点的id
                     bundle.putString(Global.EXTRA_REF_LINE_ID_KEY, parentNode.refLineId);
                     bundle.putString(Global.EXTRA_LOCATION_ID_KEY, node.locationId);
+
                     //入库子菜单类型
                     bundle.putString(Global.EXTRA_BIZ_TYPE_KEY, bizType);
                     bundle.putString(Global.EXTRA_REF_TYPE_KEY, refType);
+
                     //父节点的位置
                     bundle.putInt(Global.EXTRA_POSITION_KEY, indexOf);
+
+                    //父节点的扩展字段
+                    bundle.putSerializable(Global.COLLECT_EXTRA_MAP_KEY, (Serializable) parentNode.mapExt);
+
+                    //父节点的退货交货数量
+                    bundle.putString(Global.EXTRA_RETURN_QUANTITY_KEY, parentNode.returnQuantity);
+
+                    //父节点的项目文本
+                    bundle.putString(Global.EXTRA_PROJECT_TEXT_KEY, parentNode.projectText);
+
+                    //移动原因说明
+                    bundle.putString(Global.EXTRA_MOVE_CAUSE_DESC_KEY, parentNode.moveCauseDesc);
+
                     //入库的子菜单的名称
                     bundle.putString(Global.EXTRA_TITLE_KEY, subFunName + "-明细修改");
 
@@ -175,9 +194,10 @@ public class ASDetailPresenterImp extends BasePresenter<IASDetailView>
 
                     //批次
                     bundle.putString(Global.EXTRA_BATCH_FLAG_KEY, node.batchFlag);
-                    //需要修改的字段
+
                     //上架仓位
                     bundle.putString(Global.EXTRA_LOCATION_KEY, node.location);
+
                     //实收数量
                     bundle.putString(Global.EXTRA_QUANTITY_KEY, node.quantity);
 
@@ -314,17 +334,20 @@ public class ASDetailPresenterImp extends BasePresenter<IASDetailView>
         List<RefDetailEntity> list = refData.billDetailList;
         for (RefDetailEntity node : list) {
             //获取缓存中的明细，如果该行明细没有缓存，那么该行明细仅仅赋值原始单据信息
-            RefDetailEntity entity = getLineDataByLineId(node.refLineId, cache);
+            RefDetailEntity entity = getLineDataByRefLineId(node.insLot, cache);
             if (entity == null)
                 entity = new RefDetailEntity();
 
+            //将原始单据的物料信息赋值给缓存
             entity.lineNum = node.lineNum;
             entity.materialNum = node.materialNum;
             entity.materialId = node.materialId;
             entity.materialDesc = node.materialDesc;
             entity.materialGroup = node.materialGroup;
+            entity.unit = node.unit;
             entity.actQuantity = node.actQuantity;
-            entity.workCode = node.workCode;
+            entity.refDoc = node.refDoc;
+            entity.refDocItem = node.refDocItem;
             //处理父节点的缓存
             entity.mapExt = UiUtil.copyMap(node.mapExt, entity.mapExt);
             nodes.add(entity);
@@ -368,14 +391,14 @@ public class ASDetailPresenterImp extends BasePresenter<IASDetailView>
     }
 
     /**
-     * 通过行id获取到该行
+     * 通过refLineId将缓存和原始单据行关联起来
      */
-    protected RefDetailEntity getLineDataByLineId(String lineId, ReferenceEntity refData) {
-        if (TextUtils.isEmpty(lineId))
+    protected RefDetailEntity getLineDataByRefLineId(String refLineId, ReferenceEntity refData) {
+        if (TextUtils.isEmpty(refLineId))
             return null;
         List<RefDetailEntity> detail = refData.billDetailList;
         for (RefDetailEntity entity : detail) {
-            if (lineId.equals(entity.refLineId)) {
+            if (refLineId.equals(entity.refLineId)) {
                 return entity;
             }
         }

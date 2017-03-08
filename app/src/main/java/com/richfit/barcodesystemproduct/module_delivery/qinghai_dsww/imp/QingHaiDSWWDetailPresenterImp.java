@@ -3,7 +3,7 @@ package com.richfit.barcodesystemproduct.module_delivery.qinghai_dsww.imp;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_delivery.basedetail.imp.DSDetailPresenterImp;
 import com.richfit.common_lib.rxutils.RetryWhenNetworkException;
 import com.richfit.common_lib.rxutils.RxSubscriber;

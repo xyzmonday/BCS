@@ -3,7 +3,7 @@ package com.richfit.barcodesystemproduct.module.splash.imp;
 import android.content.Context;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module.splash.ISplashPresenter;
 import com.richfit.barcodesystemproduct.module.splash.ISplashView;
 import com.richfit.barcodesystemproduct.service.LoadBasicDataService;
@@ -67,8 +67,8 @@ public class SplashPresenterImp extends BasePresenter<ISplashView>
     @Override
     public void register() {
         mView = getView();
-
-        ResourceSubscriber<String> subscriber = mRepository.getMappingInfo()
+        ResourceSubscriber<String> subscriber =
+                mRepository.getMappingInfo()
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<String>(mContext,"正在初始化系统...") {
                     @Override

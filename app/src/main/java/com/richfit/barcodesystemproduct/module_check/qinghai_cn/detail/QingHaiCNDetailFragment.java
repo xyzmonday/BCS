@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -19,7 +20,6 @@ import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.CNDetailAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.barcodesystemproduct.module_check.qinghai_cn.detail.imp.CNDetailPresenterImp;
-import com.richfit.common_lib.basetreerv.MultiItemTypeTreeAdapter;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.AdvancedEditText;
@@ -37,8 +37,7 @@ import butterknife.BindView;
  */
 
 public class QingHaiCNDetailFragment extends BaseFragment<CNDetailPresenterImp, InventoryEntity>
-        implements ICNDetailView, SwipeRefreshLayout.OnRefreshListener, View.OnClickListener,
-        MultiItemTypeTreeAdapter.OnItemClickListener{
+        implements ICNDetailView, SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
 
 
     /*每一页展示的title个数*/
@@ -66,6 +65,7 @@ public class QingHaiCNDetailFragment extends BaseFragment<CNDetailPresenterImp, 
     SparseArray<View> mDividers;
     CNDetailAdapter mAdapter;
     int mCurrentPageNum = 0;
+    String mTransNum;
 
     @Override
     public void handleBarCodeScanResult(String type, String[] list) {
@@ -121,6 +121,7 @@ public class QingHaiCNDetailFragment extends BaseFragment<CNDetailPresenterImp, 
             @Override
             public void onTouchPrefixIcon(View view, String text) {
                 //请求
+                hideKeyboard(view);
                 startLoadInventory(mCurrentPageNum + 1);
             }
         });
@@ -135,6 +136,7 @@ public class QingHaiCNDetailFragment extends BaseFragment<CNDetailPresenterImp, 
             @Override
             public void onTouchPrefixIcon(View view, String text) {
                 //请求
+                hideKeyboard(view);
                 startLoadInventory(mCurrentPageNum + 1);
             }
         });
@@ -298,7 +300,7 @@ public class QingHaiCNDetailFragment extends BaseFragment<CNDetailPresenterImp, 
         String location = getString(mLocationCondition);
         int pageNum = number;
         mPresenter.getCheckTransferInfo(checkId, materialNum, location,
-                "queryPage", pageNum, PAGE_SIZE);
+                "queryPage", pageNum, PAGE_SIZE, mBizType);
     }
 
     private void setRefreshing(boolean isSuccess) {
@@ -325,7 +327,6 @@ public class QingHaiCNDetailFragment extends BaseFragment<CNDetailPresenterImp, 
                     mSubFunEntity.parentNodeConfigs, mSubFunEntity.childNodeConfigs, mCompanyCode);
             mRecycleView.setAdapter(mAdapter);
             mAdapter.setOnItemEditAndDeleteListener(this);
-            mAdapter.setOnItemClickListener(this);
         } else {
             mAdapter.addAll(refData.checkList);
         }
@@ -346,7 +347,7 @@ public class QingHaiCNDetailFragment extends BaseFragment<CNDetailPresenterImp, 
             showMessage("该行还未盘点");
             return;
         }
-        mPresenter.deleteNode(mRefData.checkId, node.checkLineId, Global.USER_ID, position);
+        mPresenter.deleteNode(mRefData.checkId, node.checkLineId, Global.USER_ID, position, mBizType);
     }
 
     @Override
@@ -361,14 +362,12 @@ public class QingHaiCNDetailFragment extends BaseFragment<CNDetailPresenterImp, 
     @Override
     public void deleteNodeSuccess(int position) {
         showMessage("删除成功");
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && CNDetailAdapter.class.isInstance(adapter)) {
-            CNDetailAdapter cyDetailAdapter = (CNDetailAdapter) adapter;
-            InventoryEntity item = cyDetailAdapter.getItem(position);
+        if (mAdapter != null) {
+            InventoryEntity item = mAdapter.getItem(position);
             if (item != null) {
-                item.totalQuantity = "";
+                item.totalQuantity = "0 ";
                 item.isChecked = false;
-                cyDetailAdapter.notifyItemChanged(position);
+                mAdapter.notifyItemChanged(position);
             }
         }
     }
@@ -379,30 +378,77 @@ public class QingHaiCNDetailFragment extends BaseFragment<CNDetailPresenterImp, 
     }
 
     @Override
-    public void networkConnectError(String retryAction) {
+    public boolean checkDataBeforeOperationOnDetail() {
+        if (mRefData == null) {
+            showMessage("请先获取单据数据");
+            return false;
+        }
+        if (TextUtils.isEmpty(mRefData.checkId)) {
+            showMessage("未获取缓存标识");
+            return false;
+        }
 
+        if (TextUtils.isEmpty(mRefData.voucherDate)) {
+            showMessage("请先选择过账日期");
+            return false;
+        }
+        return true;
     }
 
     /**
-     * RecyclerView的Item点击事件
-     * @param view
-     * @param holder
-     * @param position
+     * 显示过账，数据上传等菜单对话框
+     *
+     * @param companyCode
      */
     @Override
-    public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
-
+    public void showOperationMenuOnDetail(final String companyCode) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+        builder.setTitle("提示");
+        builder.setMessage("您真的要过账本次盘点?");
+        builder.setNegativeButton("取消", (dialog, which) -> dialog.dismiss());
+        builder.setPositiveButton("确定", (dialog, which) -> {
+            dialog.dismiss();
+            transferCheckData();
+        });
+        builder.show();
     }
 
     /**
-     * RecyclerView的Item长按事件
-     * @param view
-     * @param holder
-     * @param position
-     * @return
+     * 过账
      */
-    @Override
-    public boolean onItemLongClick(View view, RecyclerView.ViewHolder holder, int position) {
-        return false;
+    private void transferCheckData() {
+        if (!checkDataBeforeOperationOnDetail()) {
+            return;
+        }
+        mTransNum = "";
+        mPresenter.transferCheckData(mRefData.checkId, Global.USER_ID, mBizType);
     }
+
+    @Override
+    public void transferCheckDataSuccess() {
+        showSuccessDialog(mTransNum);
+        mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
+    }
+
+    @Override
+    public void showTransferedNum(String transNum) {
+        mTransNum = transNum;
+    }
+
+    @Override
+    public void transferCheckDataFail(String message) {
+        showMessage(message);
+    }
+
+    @Override
+    public void retry(String retryAction) {
+        switch (retryAction) {
+            case Global.RETRY_TRANSFER_DATA_ACTION:
+                mPresenter.transferCheckData(mRefData.checkId, Global.USER_ID, mBizType);
+                break;
+        }
+        super.retry(retryAction);
+    }
+
+
 }

@@ -85,22 +85,23 @@ public class LocalRepositoryImp implements ILocalRepository {
     }
 
     @Override
-    public Flowable<String> deleteCheckData(String storageNum, String workId, String invId,String checkId, String userId) {
+    public Flowable<String> deleteCheckData(String storageNum, String workId, String invId,String checkId,
+                                            String userId,String bizType) {
         return null;
     }
 
     @Override
-    public Flowable<List<InventoryEntity>> getCheckTransferInfoSingle(String checkId,String materialId, String materialNum, String location) {
+    public Flowable<List<InventoryEntity>> getCheckTransferInfoSingle(String checkId,String materialId, String materialNum, String location,String bizType) {
         return null;
     }
 
     @Override
-    public Flowable<ReferenceEntity> getCheckTransferInfo(String checkId, String materialNum, String location, String isPageQuery, int pageNum, int pageSize) {
+    public Flowable<ReferenceEntity> getCheckTransferInfo(String checkId, String materialNum, String location, String isPageQuery, int pageNum, int pageSize,String bizType) {
         return null;
     }
 
     @Override
-    public Flowable<String> deleteCheckDataSingle(String checkId, String checkLineId, String userId) {
+    public Flowable<String> deleteCheckDataSingle(String checkId, String checkLineId, String userId,String bizType) {
         return null;
     }
 
@@ -110,7 +111,7 @@ public class LocalRepositoryImp implements ILocalRepository {
     }
 
     @Override
-    public Flowable<String> transferCheckData(String checkId) {
+    public Flowable<String> transferCheckData(String checkId,String userId,String bizType) {
         return null;
     }
 

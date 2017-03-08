@@ -3,7 +3,7 @@ package com.richfit.barcodesystemproduct.module_locationadjust.collect.imp;
 import android.content.Context;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module_locationadjust.collect.ILACollectPresenter;
 import com.richfit.barcodesystemproduct.module_locationadjust.collect.ILACollectView;
 import com.richfit.common_lib.rxutils.RxSubscriber;

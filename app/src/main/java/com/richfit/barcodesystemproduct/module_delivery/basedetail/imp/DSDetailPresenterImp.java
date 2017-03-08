@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module.edit.EditActivity;
 import com.richfit.barcodesystemproduct.module.main.MainActivity;
 import com.richfit.barcodesystemproduct.module_delivery.basedetail.IDSDetailPresenter;
@@ -33,8 +33,6 @@ import javax.inject.Inject;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.FlowableEmitter;
-import io.reactivex.FlowableOnSubscribe;
 import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
@@ -91,41 +89,42 @@ public class DSDetailPresenterImp extends BasePresenter<IDSDetailView>
     @Override
     public void deleteNode(String lineDeleteFlag, String transId, String transLineId, String locationId,
                            String refType, String bizType, int position, String companyCode) {
-        RxSubscriber<String> subscriber = mRepository.deleteCollectionDataSingle(lineDeleteFlag, transId, transLineId,
-                locationId, refType, bizType, "", "", position, companyCode)
-                .compose(TransformerHelper.io2main())
-                .subscribeWith(new RxSubscriber<String>(mContext) {
-                    @Override
-                    public void _onNext(String s) {
+        RxSubscriber<String> subscriber =
+                mRepository.deleteCollectionDataSingle(lineDeleteFlag, transId, transLineId,
+                        locationId, refType, bizType, "", "", position, companyCode)
+                        .compose(TransformerHelper.io2main())
+                        .subscribeWith(new RxSubscriber<String>(mContext) {
+                            @Override
+                            public void _onNext(String s) {
 
-                    }
+                            }
 
-                    @Override
-                    public void _onNetWorkConnectError(String message) {
+                            @Override
+                            public void _onNetWorkConnectError(String message) {
 
-                    }
+                            }
 
-                    @Override
-                    public void _onCommonError(String message) {
-                        if (mView != null) {
-                            mView.deleteNodeFail(message);
-                        }
-                    }
+                            @Override
+                            public void _onCommonError(String message) {
+                                if (mView != null) {
+                                    mView.deleteNodeFail(message);
+                                }
+                            }
 
-                    @Override
-                    public void _onServerError(String code, String message) {
-                        if (mView != null) {
-                            mView.deleteNodeFail(message);
-                        }
-                    }
+                            @Override
+                            public void _onServerError(String code, String message) {
+                                if (mView != null) {
+                                    mView.deleteNodeFail(message);
+                                }
+                            }
 
-                    @Override
-                    public void _onComplete() {
-                        if (mView != null) {
-                            mView.deleteNodeSuccess(position);
-                        }
-                    }
-                });
+                            @Override
+                            public void _onComplete() {
+                                if (mView != null) {
+                                    mView.deleteNodeSuccess(position);
+                                }
+                            }
+                        });
         addSubscriber(subscriber);
     }
 
@@ -161,8 +160,6 @@ public class DSDetailPresenterImp extends BasePresenter<IDSDetailView>
                     bundle.putString(Global.EXTRA_REF_LINE_ID_KEY, node.refLineId);
                     //该子节点的LocationId
                     bundle.putString(Global.EXTRA_LOCATION_KEY, node.locationId);
-
-
                     //入库子菜单类型
                     bundle.putString(Global.EXTRA_BIZ_TYPE_KEY, bizType);
                     bundle.putString(Global.EXTRA_REF_TYPE_KEY, refType);
@@ -170,17 +167,13 @@ public class DSDetailPresenterImp extends BasePresenter<IDSDetailView>
                     bundle.putInt(Global.EXTRA_POSITION_KEY, indexOf);
                     //入库的子菜单的名称
                     bundle.putString(Global.EXTRA_TITLE_KEY, subFunName + "-明细修改");
-
                     //该父节点所有的已经入库的仓位
                     bundle.putStringArrayList(Global.EXTRA_LOCATION_LIST_KEY, locations);
-
                     //库存地点
                     bundle.putString(Global.EXTRA_INV_CODE_KEY, node.invCode);
                     bundle.putString(Global.EXTRA_INV_ID_KEY, node.invId);
-
                     //累计数量
                     bundle.putString(Global.EXTRA_TOTAL_QUANTITY_KEY, parentNode.totalQuantity);
-
                     //批次
                     bundle.putString(Global.EXTRA_BATCH_FLAG_KEY, node.batchFlag);
 
@@ -398,17 +391,14 @@ public class DSDetailPresenterImp extends BasePresenter<IDSDetailView>
      * @return
      */
     protected Flowable<ArrayList<RefDetailEntity>> sortNodes(final ArrayList<RefDetailEntity> nodes) {
-        return Flowable.create(new FlowableOnSubscribe<ArrayList<RefDetailEntity>>() {
-            @Override
-            public void subscribe(FlowableEmitter<ArrayList<RefDetailEntity>> emitter) throws Exception {
-                try {
-                    ArrayList<RefDetailEntity> allNodes = RecycleTreeViewHelper.getSortedNodes(nodes, 1);
-                    emitter.onNext(allNodes);
-                    emitter.onComplete();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    emitter.onError(new Throwable(e.getMessage()));
-                }
+        return Flowable.create(emitter -> {
+            try {
+                ArrayList<RefDetailEntity> allNodes = RecycleTreeViewHelper.getSortedNodes(nodes, 1);
+                emitter.onNext(allNodes);
+                emitter.onComplete();
+            } catch (Exception e) {
+                e.printStackTrace();
+                emitter.onError(new Throwable(e.getMessage()));
             }
         }, BackpressureStrategy.BUFFER);
     }

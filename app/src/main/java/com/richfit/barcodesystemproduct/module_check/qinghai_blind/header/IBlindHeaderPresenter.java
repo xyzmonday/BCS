@@ -41,5 +41,5 @@ public interface IBlindHeaderPresenter extends IPresenter<IBlindHeaderView> {
                       String storageNum, String workId, String invId);
 
 
-    void deleteCheckData(String storageNum, String workId, String invId, String checkId);
+    void deleteCheckData(String storageNum, String workId, String invId, String checkId,String userId,String bizType);
 }

@@ -123,7 +123,7 @@ public interface IRepository {
      * @param userId：用户id
      * @return
      */
-    Flowable<String> deleteCheckData(String storageNum, String workId, String invId,String checkId, String userId);
+    Flowable<String> deleteCheckData(String storageNum, String workId, String invId,String checkId, String userId,String bizType);
 
     /**
      * 盘点数据采集界面获取单条缓存
@@ -133,7 +133,8 @@ public interface IRepository {
      * @param location：仓位
      * @return
      */
-    Flowable<List<InventoryEntity>> getCheckTransferInfoSingle(String checkId,String materialId, String materialNum, String location);
+    Flowable<List<InventoryEntity>> getCheckTransferInfoSingle(String checkId,String materialId,
+                                                               String materialNum, String location,String bizType);
 
     /**
      * 获取整单盘点缓存
@@ -146,7 +147,8 @@ public interface IRepository {
      * @param pageSize：每页多少行
      * @return
      */
-    Flowable<ReferenceEntity> getCheckTransferInfo(String checkId, String materialNum, String location, String isPageQuery, int pageNum, int pageSize);
+    Flowable<ReferenceEntity> getCheckTransferInfo(String checkId, String materialNum, String location,
+                                                   String isPageQuery, int pageNum, int pageSize,String bizType);
 
     /**
      * 删除单条盘点数据
@@ -156,7 +158,7 @@ public interface IRepository {
      * @param userId：用户id
      * @return
      */
-    Flowable<String> deleteCheckDataSingle(String checkId, String checkLineId, String userId);
+    Flowable<String> deleteCheckDataSingle(String checkId, String checkLineId, String userId,String bizType);
 
     /**
      * 获取物料信息
@@ -171,5 +173,5 @@ public interface IRepository {
      * @param checkId
      * @return
      */
-    Flowable<String> transferCheckData(String checkId);
+    Flowable<String> transferCheckData(String checkId,String userId,String bizType);
 }

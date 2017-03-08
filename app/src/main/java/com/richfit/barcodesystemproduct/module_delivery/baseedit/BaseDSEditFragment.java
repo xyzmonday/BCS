@@ -12,6 +12,7 @@ import com.richfit.barcodesystemproduct.adapter.LocationAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.barcodesystemproduct.module_delivery.baseedit.imp.DSEditPresenterImp;
 import com.richfit.common_lib.rxutils.TransformerHelper;
+import com.richfit.common_lib.utils.CommonUtil;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.domain.bean.InventoryEntity;
@@ -152,8 +153,8 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
             bindExtraUI(mSubFunEntity.collectionConfigs, lineData.mapExt, false);
             bindExtraUI(mSubFunEntity.locationConfigs, mExtraLocationMap, false);
 
-            //初始化库存地点
-            loadInventoryInfo(lineData.workId, invId, lineData.materialId, "", batchFlag);
+            //下载库存
+            loadInventoryInfo(lineData.workId, lineData.workCode, invId, invCode, lineData.materialId, "", batchFlag);
         }
     }
 
@@ -166,8 +167,9 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
      * @param location
      * @param batchFlag
      */
-    protected void loadInventoryInfo(String workId, String invId, String materialId, String
-            location, String batchFlag) {
+    protected void loadInventoryInfo(String workId, String workCode, String invId, String invCode,
+                                     String materialId, String
+                                             location, String batchFlag) {
         //检查批次，库存地点等字段
         if (TextUtils.isEmpty(workId)) {
             showMessage("工厂为空");
@@ -178,9 +180,9 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
             return;
         }
         final RefDetailEntity lineData = mRefData.billDetailList.get(mPosition);
-        mPresenter.getInventoryInfo(getInventoryQueryType(), workId, invId, "", "", "",
-                getString(tvMaterialNum), materialId, location, batchFlag,lineData.specialInvFlag,
-                mRefData.supplierNum,getInvType());
+        mPresenter.getInventoryInfo(getInventoryQueryType(), workId, invId, workCode, invCode, "",
+                getString(tvMaterialNum), materialId, location, batchFlag, lineData.specialInvFlag,
+                mRefData.supplierNum, getInvType());
     }
 
     @Override
@@ -335,7 +337,7 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
         switch (retryAction) {
             case Global.RETRY_LOAD_INVENTORY_ACTION:
                 final RefDetailEntity lineData = mRefData.billDetailList.get(mPosition);
-                loadInventoryInfo(lineData.workId, tvInv.getTag().toString(), lineData.materialId, "", getString(tvBatchFlag));
+                loadInventoryInfo(lineData.workId, lineData.workCode, getString(tvInv), CommonUtil.Obj2String(tvInv.getTag()), lineData.materialId, "", getString(tvBatchFlag));
                 break;
         }
         super.retry(retryAction);
@@ -347,5 +349,6 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
      * @return
      */
     protected abstract String getInvType();
+
     protected abstract String getInventoryQueryType();
 }

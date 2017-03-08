@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/root_id"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/parent_node_bg"
+    android:orientation="horizontal">
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/rowNum"
+        style="@style/TableHeaderStyle"
+        android:layout_width="60dp"
+        android:text="@string/row_num" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/lineNum"
+        style="@style/TableHeaderStyle"
+        android:layout_width="60dp"
+        android:text="@string/ref_line_num" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/insLot"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/insLot" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+
+    <TextView
+        android:id="@+id/materialNum"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/material_num" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/materialDesc"
+        style="@style/TableHeaderStyle"
+        android:layout_width="240dp"
+        android:text="@string/material_desc" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+
+    <TextView
+        android:id="@+id/materialGroup"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/material_group" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+
+    <TextView
+        android:id="@+id/materialUnit"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/material_unit" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/work"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/work" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/inv"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/inv" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/refDoc"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/refDoc" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+
+    <TextView
+        android:id="@+id/refDocItem"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/refDocItem" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+
+    <TextView
+        android:id="@+id/actQuantity"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/act_quantity" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/totalQuantity"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/total_quantity" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+
+    <TextView
+        android:id="@+id/returnDeliveryQuantity"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/return_delivery_quantity" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+
+    <TextView
+        android:id="@+id/projectText"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/project_text" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+    <TextView
+        android:id="@+id/moveCauseDesc"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/move_cause_desc" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+
+</LinearLayout>

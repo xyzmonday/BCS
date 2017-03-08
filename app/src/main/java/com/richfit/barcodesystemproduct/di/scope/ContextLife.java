@@ -1,4 +1,4 @@
-package com.richfit.barcodesystemproduct.di;
+package com.richfit.barcodesystemproduct.di.scope;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

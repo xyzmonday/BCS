@@ -1,10 +1,14 @@
 package com.richfit.barcodesystemproduct.module_check.qinghai_cn.header;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
@@ -13,6 +17,7 @@ import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxAdapterView;
 import com.richfit.barcodesystemproduct.R;
+import com.richfit.barcodesystemproduct.adapter.BottomMenuAdapter;
 import com.richfit.barcodesystemproduct.adapter.InvAdapter;
 import com.richfit.barcodesystemproduct.adapter.WorkAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
@@ -23,6 +28,7 @@ import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.RichEditText;
+import com.richfit.domain.bean.BottomMenuEntity;
 import com.richfit.domain.bean.InvEntity;
 import com.richfit.domain.bean.ReferenceEntity;
 import com.richfit.domain.bean.RowConfig;
@@ -287,8 +293,46 @@ public class QingHaiCNHeaderFragment extends BaseFragment<CNHeaderPresenterImp, 
         return true;
     }
 
+    /**
+     * 显示开始盘点和重新盘点两个菜单
+     *
+     * @param companyCode
+     */
     @Override
     public void operationOnHeader(String companyCode) {
+
+        View rootView = LayoutInflater.from(mActivity).inflate(R.layout.menu_bottom, null);
+        GridView menu = (GridView) rootView.findViewById(R.id.gridview);
+        BottomMenuAdapter adapter = new BottomMenuAdapter(mActivity, R.layout.item_bottom_menu, provideDefaultBottomMenu());
+        menu.setAdapter(adapter);
+
+        final Dialog dialog = new Dialog(mActivity, R.style.MaterialDialogSheet);
+        dialog.setContentView(rootView);
+        dialog.setCancelable(true);
+        dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+        dialog.show();
+
+        menu.setOnItemClickListener((adapterView, view, position, id) -> {
+            switch (position) {
+                case 0:
+                    //1.开始盘点
+                    startCheck();
+                    break;
+                case 1:
+                    //2.重新盘点
+                    restartCheck();
+                    break;
+            }
+            dialog.dismiss();
+        });
+
+    }
+
+    /**
+     * 开始盘点
+     */
+    private void startCheck() {
         //请求抬头信息
         mRefData = null;
         if (rbStorageNumLevel.isChecked()) {
@@ -304,6 +348,46 @@ public class QingHaiCNHeaderFragment extends BaseFragment<CNHeaderPresenterImp, 
         }
     }
 
+    /**
+     * 重新开始盘点。先调用删除整单的接口删除历史的盘点数据，然后调用getCheckInfo获取新的盘点数据
+     */
+    private void restartCheck() {
+
+        if (mRefData == null) {
+            showMessage("请先点击开始盘点");
+            return;
+        }
+        if (TextUtils.isEmpty(mRefData.checkId)) {
+            showMessage("请先点击开始盘点");
+            return;
+        }
+
+        if (rbStorageNumLevel.isChecked()) {
+            //仓位级别
+            mPresenter.deleteCheckData(mStorageNums.get(spStorageNum.getSelectedItemPosition()),
+                    "", "", mRefData.checkId, Global.USER_ID, mBizType);
+        } else if (rbWarehouseLevel.isChecked()) {
+            mPresenter.deleteCheckData("", mWorkDatas.get(spWork.getSelectedItemPosition()).workId,
+                    mInvDatas.get(spInv.getSelectedItemPosition()).invId,
+                    mRefData.checkId, Global.USER_ID, mBizType);
+        }
+    }
+
+    @Override
+    public List<BottomMenuEntity> provideDefaultBottomMenu() {
+        ArrayList<BottomMenuEntity> menus = new ArrayList<>();
+        BottomMenuEntity menu = new BottomMenuEntity();
+        menu.menuName = "开始盘点";
+        menu.menuImageRes = R.mipmap.icon_start_check;
+        menus.add(menu);
+
+        menu = new BottomMenuEntity();
+        menu.menuName = "重新盘点";
+        menu.menuImageRes = R.mipmap.icon_restart_check;
+        menus.add(menu);
+        return menus;
+    }
+
     @Override
     public void getCheckInfoSuccess(ReferenceEntity refData) {
         SPrefUtil.saveData(mBizType, "0");
@@ -311,34 +395,13 @@ public class QingHaiCNHeaderFragment extends BaseFragment<CNHeaderPresenterImp, 
         refData.refType = mRefType;
         mRefData = refData;
         showMessage("成功获取到盘点列表");
-        cacheProcessor(mRefData.checkFlag, mRefData.checkId, mRefData.recordNum,
-                mRefData.refCodeId, mRefData.refType, mRefData.bizType);
+
     }
 
     @Override
     public void getCheckInfoFail(String message) {
         mRefData = null;
         showMessage(message);
-    }
-
-    @Override
-    public void cacheProcessor(String cacheFlag, String transId, String refNum, String refCodeId, String refType, String bizType) {
-        if (!TextUtils.isEmpty(cacheFlag) && "Y".equalsIgnoreCase(cacheFlag)) {
-            android.support.v7.app.AlertDialog.Builder dialog = new android.support.v7.app.AlertDialog.Builder(mActivity);
-            dialog.setTitle("提示");
-            dialog.setIcon(R.mipmap.icon_tips);
-            dialog.setMessage("检测到有历史盘点记录,是否删除。点击确定，将删除历史盘点记录,并重新开始新的盘点。点击取消继续上传的盘点");
-            dialog.setPositiveButton("确定", (dia, which) -> {
-                dia.dismiss();
-                deleteCheckData();
-            });
-            dialog.setNegativeButton("取消", (dia, which) -> {
-                dia.dismiss();
-            });
-            dialog.show();
-        } else {
-            bindCommonHeaderUI();
-        }
     }
 
     @Override
@@ -349,29 +412,15 @@ public class QingHaiCNHeaderFragment extends BaseFragment<CNHeaderPresenterImp, 
         }
     }
 
-    private void deleteCheckData() {
-        if (rbStorageNumLevel.isChecked()) {
-            //仓位级别
-            mPresenter.deleteCheckData(mStorageNums.get(spStorageNum.getSelectedItemPosition()),
-                    "", "", mRefData.checkId);
-        } else if (rbWarehouseLevel.isChecked()) {
-            mPresenter.deleteCheckData("", mWorkDatas.get(spWork.getSelectedItemPosition()).workId,
-                    mInvDatas.get(spInv.getSelectedItemPosition()).invId,
-                    mRefData.checkId);
-        }
-    }
-
     @Override
     public void deleteCacheSuccess() {
         showMessage("删除盘点历史成功");
-        //如果删除成功了，那么再一次获取一次盘点抬头数据
-        operationOnHeader(mCompanyCode);
+        startCheck();
     }
 
     @Override
     public void deleteCacheFail(String message) {
         showMessage(message);
-        bindCommonHeaderUI();
     }
 
     @Override
@@ -384,10 +433,16 @@ public class QingHaiCNHeaderFragment extends BaseFragment<CNHeaderPresenterImp, 
                 mRefData.storageNum = mStorageNums.get(spStorageNum.getSelectedItemPosition());
                 mRefData.checkLevel = "01";
             } else if (rbWarehouseLevel.isChecked()) {
-                mRefData.workId = mWorkDatas.get(spWork.getSelectedItemPosition()).workId;
-                mRefData.workCode = mWorkDatas.get(spWork.getSelectedItemPosition()).workCode;
-                mRefData.invId = mInvDatas.get(spInv.getSelectedItemPosition()).invId;
-                mRefData.invCode = mInvDatas.get(spInv.getSelectedItemPosition()).invCode;
+                final int selectedWorkPosition = spWork.getSelectedItemPosition();
+                if (selectedWorkPosition > 0) {
+                    mRefData.workId = mWorkDatas.get(selectedWorkPosition).workId;
+                    mRefData.workCode = mWorkDatas.get(selectedWorkPosition).workCode;
+                }
+                final int selectedInvPosition = spInv.getSelectedItemPosition();
+                if (selectedInvPosition > 0) {
+                    mRefData.invId = mInvDatas.get(selectedInvPosition).invId;
+                    mRefData.invCode = mInvDatas.get(selectedInvPosition).invCode;
+                }
                 mRefData.checkLevel = "02";
             }
             mRefData.specialFlag = DEFAULT_SPECIAL_FLAG;
@@ -397,13 +452,19 @@ public class QingHaiCNHeaderFragment extends BaseFragment<CNHeaderPresenterImp, 
     }
 
     @Override
+    public void clearAllUIAfterSubmitSuccess() {
+
+    }
+
+
+    @Override
     public void retry(String action) {
         switch (action) {
             case Global.RETRY_LOAD_REFERENCE_ACTION:
-                operationOnHeader(mCompanyCode);
+                startCheck();
                 break;
             case Global.RETRY_DELETE_TRANSFERED_CACHE_ACTION:
-                deleteCheckData();
+                restartCheck();
                 break;
         }
         super.retry(action);

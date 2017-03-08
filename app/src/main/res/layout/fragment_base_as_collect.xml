@@ -233,31 +233,14 @@
                 android:layout_weight="2.0"
                 android:background="@drawable/edit_selector"
                 android:gravity="center_horizontal"
-
                 android:padding="5dp" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/ll_return_quantity"
+        <ViewStub
+            android:id="@+id/viewstub_as_collect"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <TextView
-                style="@style/LeftTextViewItemStyle"
-                android:text="@string/return_delivery_quantity" />
-
-            <EditText
-                android:id="@+id/et_return_quantity"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2.0"
-                android:background="@drawable/edit_selector"
-                android:gravity="center_horizontal"
-                android:padding="5dp" />
-        </LinearLayout>
+            android:layout="@layout/viewstub_as_collect"/>
     </LinearLayout>
 
 

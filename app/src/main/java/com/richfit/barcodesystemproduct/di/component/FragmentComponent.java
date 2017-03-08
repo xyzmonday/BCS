@@ -4,14 +4,16 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.richfit.barcodesystemproduct.camera.ShowAndTakePhotoFragment;
-import com.richfit.barcodesystemproduct.di.ContextLife;
-import com.richfit.barcodesystemproduct.di.FragmentScope;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.FragmentScope;
 import com.richfit.barcodesystemproduct.di.module.FragmentModule;
 import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_103.QingHaiAS103CollectFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_103.QingHaiAS103DetailFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_103.QingHaiAS103EditFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_103.QingHaiAS103HeaderFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_105.QingHaiAS105CollectFragment;
+import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_105.QingHaiAS105DetailFragment;
+import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_105.QingHaiAS105EditFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_105.QingHaiAS105HeaderFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_105n.QingHaiAS105NCollectFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_105n.QingHaiAS105NDetailFragment;
@@ -226,9 +228,9 @@ public interface FragmentComponent {
     void inject(QingHaiAOEditFragment fragment);
 
     void inject(QingHaiAS105HeaderFragment fragment);
-
+    void inject(QingHaiAS105DetailFragment fragment);
     void inject(QingHaiAS105CollectFragment fragment);
-
+    void inject(QingHaiAS105EditFragment fragment);
 
     void inject(QingHaiRSNHeaderFragment fragment);
 

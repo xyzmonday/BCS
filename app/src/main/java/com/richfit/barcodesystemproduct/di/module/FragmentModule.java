@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 
-import com.richfit.barcodesystemproduct.di.ContextLife;
-import com.richfit.barcodesystemproduct.di.FragmentScope;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.FragmentScope;
 
 import dagger.Module;
 import dagger.Provides;

@@ -315,6 +315,8 @@ public abstract class MultiItemTypeTreeAdapter<T extends TreeNode> extends Recyc
         final TreeNode parentNode = node.getParent();
         if (parentNode != null) {
             int parentPos = mVisibleNodes.indexOf(parentNode);
+            //修改父节点的相关数据(注意这里需要先刷新父节点的某些数据，因为如果先删除子节点，那么子节点的数据再也不能拿到)
+            notifyParentNodeChanged(position, parentPos);
             //移除子节点的抬头节点
             if (parentNode.getChildren().size() == 2 &&
                     parentNode.getChildren().get(0).getViewType() == Global.CHILD_NODE_HEADER_TYPE) {
@@ -329,9 +331,8 @@ public abstract class MultiItemTypeTreeAdapter<T extends TreeNode> extends Recyc
             //移除需要删除的节点
             mAllNodes.remove(node);
             mVisibleNodes.remove(node);
+            //刷新子节点删除
             notifyItemRemoved(position);
-            //修改父节点的相关数据
-            notifyParentNodeChanged(position, parentPos);
         }
         //修改本节点
         notifyNodeChanged(position);

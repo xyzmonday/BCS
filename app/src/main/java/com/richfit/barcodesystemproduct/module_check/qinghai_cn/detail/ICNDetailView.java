@@ -35,4 +35,8 @@ public interface ICNDetailView extends BaseView {
      */
     void deleteNodeFail(String message);
 
+    void transferCheckDataSuccess();
+    void showTransferedNum(String transNum);
+    void transferCheckDataFail(String message);
+
 }

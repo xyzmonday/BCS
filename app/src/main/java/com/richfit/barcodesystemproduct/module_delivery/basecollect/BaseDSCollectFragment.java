@@ -673,7 +673,7 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
         }
 
         if (!refreshQuantity(cbSingle.isChecked() ? "1" : getString(etQuantity))) {
-            showMessage("实收数量有误");
+//            showMessage("实收数量有误");
             return false;
         }
 

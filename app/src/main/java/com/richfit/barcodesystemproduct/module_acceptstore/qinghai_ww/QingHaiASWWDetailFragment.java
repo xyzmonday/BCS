@@ -1,15 +1,12 @@
 package com.richfit.barcodesystemproduct.module_acceptstore.qinghai_ww;
 
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 
-import com.richfit.barcodesystemproduct.adapter.ASYDetailAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.basedetail.BaseASDetailFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_ww.imp.QingHaiASWWDetialPresenterImp;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.domain.bean.BottomMenuEntity;
-import com.richfit.domain.bean.RefDetailEntity;
 
 import java.util.List;
 
@@ -25,26 +22,10 @@ public class QingHaiASWWDetailFragment extends BaseASDetailFragment<QingHaiASWWD
     }
 
     @Override
-    public void showNodes(List<RefDetailEntity> allNodes) {
-        for (RefDetailEntity node : allNodes) {
-            if (!TextUtils.isEmpty(node.transId)) {
-                mTransId = node.transId;
-                break;
-            }
-        }
-        ASYDetailAdapter detailAdapter = new ASYDetailAdapter(mActivity,allNodes,mSubFunEntity.parentNodeConfigs,
-                mSubFunEntity.childNodeConfigs,mCompanyCode);
-        mRecycleView.setAdapter(detailAdapter);
-        detailAdapter.setOnItemEditAndDeleteListener(this);
-    }
-
-    @Override
     public void deleteNodeSuccess(int position) {
         showMessage("删除成功");
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && ASYDetailAdapter.class.isInstance(adapter)) {
-            ASYDetailAdapter detailAdapter = (ASYDetailAdapter) adapter;
-            detailAdapter.removeNodeByPosition(position);
+        if (mAdapter != null) {
+            mAdapter.removeNodeByPosition(position);
         }
     }
 
@@ -52,13 +33,13 @@ public class QingHaiASWWDetailFragment extends BaseASDetailFragment<QingHaiASWWD
     public void submitBarcodeSystemSuccess() {
         showSuccessDialog(mTransNum);
     }
+
     @Override
     public void submitBarcodeSystemFail(String message) {
         if (TextUtils.isEmpty(message)) {
-            showMessage(message);
-        } else {
-            showErrorDialog(message);
+            message += "过账失败";
         }
+        showErrorDialog(message);
         mTransNum = "";
     }
 
@@ -66,6 +47,9 @@ public class QingHaiASWWDetailFragment extends BaseASDetailFragment<QingHaiASWWD
     public void submitSAPSuccess() {
         setRefreshing(false, "数据上传成功");
         showSuccessDialog(mInspectionNum);
+        if (mAdapter != null) {
+            mAdapter.removeAllVisibleNodes();
+        }
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 
@@ -96,7 +80,7 @@ public class QingHaiASWWDetailFragment extends BaseASDetailFragment<QingHaiASWWD
         List<BottomMenuEntity> menus = super.provideDefaultBottomMenu();
         menus.get(0).transToSapFlag = "01";
         menus.get(1).transToSapFlag = "05";
-        return menus.subList(0,2);
+        return menus.subList(0, 2);
     }
 
     @Override

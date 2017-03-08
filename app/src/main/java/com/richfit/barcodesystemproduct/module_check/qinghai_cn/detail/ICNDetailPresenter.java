@@ -21,7 +21,7 @@ public interface ICNDetailPresenter extends IPresenter<ICNDetailView> {
      * @param pageSize:每页多少行
      */
     void getCheckTransferInfo(String checkId, String materialNum, String location,
-                              String isPageQuery, int pageNum, int pageSize);
+                              String isPageQuery, int pageNum, int pageSize,String bizType);
 
     /**
      * 删除单条缓存数据
@@ -31,7 +31,7 @@ public interface ICNDetailPresenter extends IPresenter<ICNDetailView> {
      * @param userId：用户id
      * @param position：节点在列表的位置
      */
-    void deleteNode(String checkId, String checkLineId, String userId, int position);
+    void deleteNode(String checkId, String checkLineId, String userId, int position,String bizType);
 
     /**
      * 修改子节点
@@ -41,4 +41,16 @@ public interface ICNDetailPresenter extends IPresenter<ICNDetailView> {
      */
     void editNode(InventoryEntity node, String companyCode, String moduleCode,
                   String subFunCode, String subFunName);
+
+    /**
+     * 过账本次盘点
+     * @param checkId
+     */
+    void transferCheckData(String checkId,String userId,String bizType);
+    /**
+     * 数据提交到sap后，从数据明细界面跳转到抬头界面
+     *
+     * @param position
+     */
+    void showHeadFragmentByPosition(int position);
 }

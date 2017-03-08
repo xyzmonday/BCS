@@ -40,6 +40,14 @@ public interface ICNHeaderPresenter extends IPresenter<ICNHeaderView> {
     void getCheckInfo(String userId, String bizType, String checkLevel, String checkSpecial,
                       String storageNum, String workId, String invId);
 
-
-    void deleteCheckData(String storageNum, String workId, String invId, String checkId);
+    /**
+     * 删除整单盘点数据
+     * @param storageNum
+     * @param workId
+     * @param invId
+     * @param checkId
+     * @param bizType
+     */
+    void deleteCheckData(String storageNum, String workId, String invId,
+                         String checkId,String userId,String bizType);
 }

@@ -8,6 +8,7 @@ import com.richfit.barcodesystemproduct.adapter.itemdelegate.DSYChildItemDelegat
 import com.richfit.barcodesystemproduct.adapter.itemdelegate.DSYParentHeaderItemDelegate;
 import com.richfit.common_lib.basetreerv.MultiItemTypeTreeAdapter;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.common_lib.utils.L;
 import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.RowConfig;
 
@@ -49,8 +50,9 @@ public class DSYDetailAdapter extends MultiItemTypeTreeAdapter<RefDetailEntity> 
     public boolean isTransferValide() {
         if (mVisibleNodes != null) {
             for (RefDetailEntity item : mVisibleNodes) {
-                //如果累计数量为空或者等于0，那么认为该明细没有采集过数据
-                if (TextUtils.isEmpty(item.totalQuantity) || "0".equals(item.toString())) {
+                //如果累计数量为空或者等于0，那么认为该明细没有采集过数据(注意必须仅检查父节点的totalQuantity)
+                if (item.isRoot() && (TextUtils.isEmpty(item.totalQuantity) || "0".equals(item.totalQuantity))) {
+                    L.e("totalQuantity = " + item.totalQuantity);
                     return false;
                 }
             }

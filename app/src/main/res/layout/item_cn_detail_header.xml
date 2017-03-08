@@ -4,7 +4,6 @@
     android:id="@id/root_id"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/parent_node_bg"
     android:orientation="horizontal">
 
     <View style="@style/ItemSeperatorLayout"/>

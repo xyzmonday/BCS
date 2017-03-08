@@ -50,6 +50,15 @@
 
     <View style="@style/ItemSeperatorLayout"/>
 
+
+    <TextView
+        android:id="@+id/materialUnit"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/material_unit" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
     <TextView
         android:id="@+id/specailInventoryFlag"
         style="@style/TableHeaderStyle"

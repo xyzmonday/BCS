@@ -5,10 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.richfit.barcodesystemproduct.di.ContextLife;
+import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module.edit.EditActivity;
 import com.richfit.barcodesystemproduct.module_acceptstore.basedetail.imp.ASDetailPresenterImp;
-import com.richfit.common_lib.rxutils.RetryWhenNetworkException;
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
@@ -93,7 +92,6 @@ public class QingHaiAS103DetailPresenterImp extends ASDetailPresenterImp {
         RxSubscriber<String> subscriber =
                 Flowable.concat(mRepository.uploadCollectionData("", transId, bizType, refType, -1, voucherDate, "", ""),
                         mRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate, flagMap, extraHeaderMap))
-                        .retryWhen(new RetryWhenNetworkException(3, 3000))
                         .compose(TransformerHelper.io2main())
                         .subscribeWith(new RxSubscriber<String>(mContext, "正在过账数据...") {
                             @Override
@@ -184,7 +182,7 @@ public class QingHaiAS103DetailPresenterImp extends ASDetailPresenterImp {
         List<RefDetailEntity> list = refData.billDetailList;
         for (RefDetailEntity node : list) {
             //获取缓存中的明细，如果该行明细没有缓存，那么该行明细仅仅赋值原始单据信息
-            RefDetailEntity cacheEntity = getLineDataByLineId(node.refLineId, cache);
+            RefDetailEntity cacheEntity = getLineDataByRefLineId(node.refLineId, cache);
             if (cacheEntity == null)
                 cacheEntity = new RefDetailEntity();
 
