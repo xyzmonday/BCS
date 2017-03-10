@@ -334,23 +334,23 @@ public class ASDetailPresenterImp extends BasePresenter<IASDetailView>
         List<RefDetailEntity> list = refData.billDetailList;
         for (RefDetailEntity node : list) {
             //获取缓存中的明细，如果该行明细没有缓存，那么该行明细仅仅赋值原始单据信息
-            RefDetailEntity entity = getLineDataByRefLineId(node.insLot, cache);
-            if (entity == null)
-                entity = new RefDetailEntity();
+            RefDetailEntity cachedEntity = getLineDataByRefLineId(node, cache);
+            if (cachedEntity == null)
+                cachedEntity = new RefDetailEntity();
 
             //将原始单据的物料信息赋值给缓存
-            entity.lineNum = node.lineNum;
-            entity.materialNum = node.materialNum;
-            entity.materialId = node.materialId;
-            entity.materialDesc = node.materialDesc;
-            entity.materialGroup = node.materialGroup;
-            entity.unit = node.unit;
-            entity.actQuantity = node.actQuantity;
-            entity.refDoc = node.refDoc;
-            entity.refDocItem = node.refDocItem;
+            cachedEntity.lineNum = node.lineNum;
+            cachedEntity.materialNum = node.materialNum;
+            cachedEntity.materialId = node.materialId;
+            cachedEntity.materialDesc = node.materialDesc;
+            cachedEntity.materialGroup = node.materialGroup;
+            cachedEntity.unit = node.unit;
+            cachedEntity.actQuantity = node.actQuantity;
+            cachedEntity.refDoc = node.refDoc;
+            cachedEntity.refDocItem = node.refDocItem;
             //处理父节点的缓存
-            entity.mapExt = UiUtil.copyMap(node.mapExt, entity.mapExt);
-            nodes.add(entity);
+            cachedEntity.mapExt = UiUtil.copyMap(node.mapExt, cachedEntity.mapExt);
+            nodes.add(cachedEntity);
         }
 
         //生成父节点
@@ -390,38 +390,5 @@ public class ASDetailPresenterImp extends BasePresenter<IASDetailView>
         return nodes;
     }
 
-    /**
-     * 通过refLineId将缓存和原始单据行关联起来
-     */
-    protected RefDetailEntity getLineDataByRefLineId(String refLineId, ReferenceEntity refData) {
-        if (TextUtils.isEmpty(refLineId))
-            return null;
-        List<RefDetailEntity> detail = refData.billDetailList;
-        for (RefDetailEntity entity : detail) {
-            if (refLineId.equals(entity.refLineId)) {
-                return entity;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 展示之前的节点排序
-     *
-     * @param nodes
-     * @return
-     */
-    protected Flowable<ArrayList<RefDetailEntity>> sortNodes(final ArrayList<RefDetailEntity> nodes) {
-        return Flowable.create(emitter -> {
-            try {
-                ArrayList<RefDetailEntity> allNodes = RecycleTreeViewHelper.getSortedNodes(nodes, 1);
-                emitter.onNext(allNodes);
-                emitter.onComplete();
-            } catch (Exception e) {
-                e.printStackTrace();
-                emitter.onError(new Throwable(e.getMessage()));
-            }
-        }, BackpressureStrategy.BUFFER);
-    }
 
 }

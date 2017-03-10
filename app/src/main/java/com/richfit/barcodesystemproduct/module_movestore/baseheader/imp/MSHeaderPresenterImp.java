@@ -50,7 +50,7 @@ public class MSHeaderPresenterImp extends BasePresenter<IMSHeaderView>
     }
 
     @Override
-    public void getReference(String refNum, String refType, String bizType, String moveType, String userId) {
+    public void getReference(String refNum, String refType, String bizType, String moveType,String refLineId, String userId) {
         mView = getView();
 
         if (TextUtils.isEmpty(refNum) && mView != null) {
@@ -63,7 +63,7 @@ public class MSHeaderPresenterImp extends BasePresenter<IMSHeaderView>
             return;
         }
 
-        RxSubscriber<ReferenceEntity> subscriber = mRepository.getReference(refNum, refType, bizType, moveType, userId)
+        RxSubscriber<ReferenceEntity> subscriber = mRepository.getReference(refNum, refType, bizType, moveType,refLineId, userId)
                 .filter(refData -> refData != null && refData.billDetailList != null && refData.billDetailList.size() > 0)
                 .map(refData -> addTreeInfo(refData))
                 .compose(TransformerHelper.io2main())

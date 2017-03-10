@@ -12,7 +12,6 @@ import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.ReferenceEntity;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -128,17 +127,10 @@ public class QingHaiAS105DetailPresenterImp extends ASDetailPresenterImp {
      * 通过insLot将缓存和原始单据行关联起来
      */
     @Override
-    protected RefDetailEntity getLineDataByRefLineId(String insLot, ReferenceEntity refData) {
-        if (TextUtils.isEmpty(insLot))
+    protected RefDetailEntity getLineDataByRefLineId(RefDetailEntity refLineData, ReferenceEntity cachedRefData) {
+        if (refLineData == null)
             return null;
-        List<RefDetailEntity> detail = refData.billDetailList;
-        for (RefDetailEntity entity : detail) {
-            if (insLot.equals(entity.insLot)) {
-                return entity;
-            }
-        }
-        return null;
+        return getLineDataByRefLineIdInternal(refLineData.insLot, cachedRefData);
     }
-
 
 }

@@ -36,6 +36,10 @@
         </activity>
 
         <activity
+            android:name=".module_acceptstore.ww_component.DSWWComponentActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+
+        <activity
             android:name=".module.login.LoginActivity"
             android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
@@ -45,7 +49,7 @@
             android:name=".module.welcome.WelcomeActivity"
             android:windowSoftInputMode="adjustPan|stateHidden" />
 
-        <activity android:name=".module.resetpwd.ResetPwdActivity"/>
+        <activity android:name=".module.resetpwd.ResetPwdActivity" />
 
         <activity
             android:name=".module.main.MainActivity"
@@ -62,12 +66,11 @@
         <activity
             android:name=".module.edit.EditActivity"
             android:windowSoftInputMode="adjustPan|stateHidden" />
-         注册Service
-        <service android:name=".service.LoadBasicDataService" />
-        <service android:name=".service.InitializeService"/>
+        注册Service
+        <service android:name=".service.InitializeService" />
         <service
             android:name=".tinker.service.SampleResultService"
-            android:exported="false"/>
+            android:exported="false" />
 
     </application>
 

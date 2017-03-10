@@ -4,14 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
 import com.richfit.barcodesystemproduct.module.edit.EditActivity;
 import com.richfit.barcodesystemproduct.module.main.MainActivity;
 import com.richfit.barcodesystemproduct.module_movestore.basedetail.IMSDetailPresenter;
 import com.richfit.barcodesystemproduct.module_movestore.basedetail.IMSDetailView;
-import com.richfit.common_lib.basetreerv.RecycleTreeViewHelper;
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
@@ -25,7 +23,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.subscribers.ResourceSubscriber;
 
@@ -219,20 +216,20 @@ public abstract class BaseMSDetailPresenter extends BasePresenter<IMSDetailView>
         List<RefDetailEntity> list = refData.billDetailList;
         for (RefDetailEntity node : list) {
             //获取缓存中的明细，如果该行明细没有缓存，那么该行明细仅仅赋值原始单据信息
-            RefDetailEntity entity = getLineDataByLineId(node.refLineId, cache);
-            if (entity == null)
-                entity = new RefDetailEntity();
+            RefDetailEntity cachedEntity = getLineDataByRefLineId(node, cache);
+            if (cachedEntity == null)
+                cachedEntity = new RefDetailEntity();
 
-            entity.lineNum = node.lineNum;
-            entity.materialNum = node.materialNum;
-            entity.materialId = node.materialId;
-            entity.materialDesc = node.materialDesc;
-            entity.materialGroup = node.materialGroup;
-            entity.actQuantity = node.actQuantity;
-            entity.workCode = node.workCode;
+            cachedEntity.lineNum = node.lineNum;
+            cachedEntity.materialNum = node.materialNum;
+            cachedEntity.materialId = node.materialId;
+            cachedEntity.materialDesc = node.materialDesc;
+            cachedEntity.materialGroup = node.materialGroup;
+            cachedEntity.actQuantity = node.actQuantity;
+            cachedEntity.workCode = node.workCode;
             //处理父节点的缓存
-            entity.mapExt = UiUtil.copyMap(node.mapExt, entity.mapExt);
-            nodes.add(entity);
+            cachedEntity.mapExt = UiUtil.copyMap(node.mapExt, cachedEntity.mapExt);
+            nodes.add(cachedEntity);
         }
 
         //生成父节点
@@ -270,40 +267,6 @@ public abstract class BaseMSDetailPresenter extends BasePresenter<IMSDetailView>
             }
         }
         return nodes;
-    }
-
-    /**
-     * 通过行id获取到该行
-     */
-    private RefDetailEntity getLineDataByLineId(String lineId, ReferenceEntity refData) {
-        if (TextUtils.isEmpty(lineId))
-            return null;
-        List<RefDetailEntity> detail = refData.billDetailList;
-        for (RefDetailEntity entity : detail) {
-            if (lineId.equals(entity.refLineId)) {
-                return entity;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 展示之前的节点排序
-     *
-     * @param nodes
-     * @return
-     */
-    protected Flowable<ArrayList<RefDetailEntity>> sortNodes(final ArrayList<RefDetailEntity> nodes) {
-        return Flowable.create(emitter -> {
-            try {
-                ArrayList<RefDetailEntity> allNodes = RecycleTreeViewHelper.getSortedNodes(nodes, 1);
-                emitter.onNext(allNodes);
-                emitter.onComplete();
-            } catch (Exception e) {
-                e.printStackTrace();
-                emitter.onError(new Throwable(e.getMessage()));
-            }
-        }, BackpressureStrategy.BUFFER);
     }
 
 }

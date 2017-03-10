@@ -22,7 +22,7 @@ import io.reactivex.subscribers.ResourceSubscriber;
 public class MainPresenterImp extends BasePresenter<MainContract.View>
         implements MainContract.Presenter {
 
-    MainContract.View mView;
+    protected MainContract.View mView;
 
     @Inject
     public MainPresenterImp(@ContextLife("Activity") Context context) {
@@ -30,8 +30,9 @@ public class MainPresenterImp extends BasePresenter<MainContract.View>
     }
 
     @Override
-    public void setupMainContent(final FragmentManager fragmentManager, String companyCode,
-                                 String moduleCode, String bizType, String refType, int currentPageIndex) {
+    public void setupMainContent(FragmentManager fragmentManager, String companyCode,
+                                 String moduleCode, String bizType, String refType,
+                                 String lineNum, int currentPageIndex) {
 
         mView = getView();
         ResourceSubscriber<MainPagerViewAdapter> subscriber =

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.orhanobut.logger.Logger;
+import com.richfit.barcodesystemproduct.crash.CrashManager;
+import com.richfit.barcodesystemproduct.crash.HttpCrashReport;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.data.cache.RxCache;
 
@@ -40,6 +42,7 @@ public class InitializeService extends IntentService {
         initSPrefUtils();
         initLogger();
         initRxCache();
+        initCrashManage();
     }
 
     private void initSPrefUtils() {
@@ -54,5 +57,9 @@ public class InitializeService extends IntentService {
         RxCache.init(getApplication());
     }
 
-
+    private void initCrashManage() {
+        CrashManager crashManager = CrashManager.getInstance();
+        HttpCrashReport httpCrashReport = new HttpCrashReport();
+        crashManager.init(getApplication(),httpCrashReport);
+    }
 }

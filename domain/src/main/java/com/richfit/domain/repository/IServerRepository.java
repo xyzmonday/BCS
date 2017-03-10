@@ -150,8 +150,8 @@ public interface IServerRepository extends IRepository {
      * @param materialDesc：物料描述
      * @param batchFlag:批次
      * @param location:仓位
-     * @param invType:库存类型 0 代管；1:正常
-     * @param specialInvFlag:特殊库存标识 N K
+     * @param invType:库存类型                                                             0 代管；1:正常
+     * @param specialInvFlag:特殊库存标识                                                    N K
      * @param specialInvNum:抬头界面的供应商编号
      * @return
      */
@@ -182,7 +182,7 @@ public interface IServerRepository extends IRepository {
      */
     Flowable<ReferenceEntity> loadRefDataFromServer(@NonNull String refNum, @NonNull String refType,
                                                     @NonNull String bizType, @NonNull String moveType,
-                                                    @NonNull String userId);
+                                                    @NonNull String refLineId,@NonNull String userId);
 
     /**
      * 用户修改密码
@@ -201,5 +201,15 @@ public interface IServerRepository extends IRepository {
      */
     Flowable<String> uploadInspectionDataOffline(ReferenceEntity refData);
 
+
+    /**
+     * 上传验收采集的所有图片(从青海开始，使用该新开发的接口)
+     * 传输参数加了一个  transFileToServer  区分传输到SAP还是条码服务器
+     * private String transFileToServer;// 01：条码服务器，02：SAP服务器，DEBUG:传输DEBUG文件到本地服务器
+     *
+     * @param results
+     * @return
+     */
+    Flowable<String> uploadMultiFiles(List<ResultEntity> results);
 
 }

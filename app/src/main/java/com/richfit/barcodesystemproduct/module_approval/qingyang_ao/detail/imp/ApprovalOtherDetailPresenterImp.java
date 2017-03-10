@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
 import com.richfit.barcodesystemproduct.base.BasePresenter;
 import com.richfit.barcodesystemproduct.di.scope.ContextLife;
@@ -48,10 +47,12 @@ public class ApprovalOtherDetailPresenterImp extends BasePresenter<IApprovalOthe
     }
 
     @Override
-    public void getReference(ReferenceEntity data, @NonNull String refNum, @NonNull String refType, @NonNull String bizType, @NonNull String moveType, @NonNull String userId) {
+    public void getReference(ReferenceEntity data, @NonNull String refNum, @NonNull String refType, @NonNull String bizType,
+                             @NonNull String moveType, String refLineId, @NonNull String userId) {
         mView = getView();
 
-        ResourceSubscriber<ReferenceEntity> subscriber = mRepository.getReference(refNum, refType, bizType, moveType, userId)
+        ResourceSubscriber<ReferenceEntity> subscriber =
+                mRepository.getReference(refNum, refType, bizType, moveType, refLineId, userId)
                 .filter(refData -> refData != null && refData.billDetailList != null && refData.billDetailList.size() > 0)
                 .map(refData -> addTreeInfo(refData))
                 .compose(TransformerHelper.io2main())
@@ -91,7 +92,7 @@ public class ApprovalOtherDetailPresenterImp extends BasePresenter<IApprovalOthe
                 mRepository.deleteCollectionDataSingle("", "", "", "", refType, bizType, refLineId,
                         userId, position, companyCode)
                         .doOnNext(str -> mRepository.deleteInspectionImagesSingle(refNum, refLineNum, refLineId, false))
-                        .doOnNext(str -> FileUtil.deleteDir(FileUtil.getImageCacheDir(mContext.getApplicationContext(),refNum, refLineNum,false)))
+                        .doOnNext(str -> FileUtil.deleteDir(FileUtil.getImageCacheDir(mContext.getApplicationContext(), refNum, refLineNum, false)))
                         .compose(TransformerHelper.io2main())
                         .subscribeWith(new RxSubscriber<String>(mContext) {
                             @Override
@@ -167,10 +168,11 @@ public class ApprovalOtherDetailPresenterImp extends BasePresenter<IApprovalOthe
         mView = getView();
         if ("0".equals(refType)) {
             addSubscriber(Flowable.concat(uploadInspectedImages(refNum, refCodeId, userId, isLocal),
-                    deleteAllImages(refNum, refCodeId, isLocal),
                     uploadCollectionData(refCodeId, bizType, refType, inspectionType, voucherDate, userId))
+                    .doOnComplete(() -> mRepository.deleteInspectionImages(refNum, refCodeId, false))
+                    .doOnComplete(() -> FileUtil.deleteDir(FileUtil.getImageCacheDir(mContext.getApplicationContext(), refNum, false)))
                     .compose(TransformerHelper.io2main())
-                    .subscribeWith(new RxSubscriber<String>(mContext,"正在过账..."){
+                    .subscribeWith(new RxSubscriber<String>(mContext, "正在过账...") {
 
                         @Override
                         public void _onNext(String s) {
@@ -179,35 +181,36 @@ public class ApprovalOtherDetailPresenterImp extends BasePresenter<IApprovalOthe
 
                         @Override
                         public void _onNetWorkConnectError(String message) {
-                            if(mView != null) {
+                            if (mView != null) {
                                 mView.submitDataFail(message);
                             }
                         }
 
                         @Override
                         public void _onCommonError(String message) {
-                            if(mView != null) {
+                            if (mView != null) {
                                 mView.submitDataFail(message);
                             }
                         }
 
                         @Override
                         public void _onServerError(String code, String message) {
-                            if(mView != null) {
+                            if (mView != null) {
                                 mView.submitDataFail(message);
                             }
                         }
 
                         @Override
                         public void _onComplete() {
-                            if(mView != null) {
+                            if (mView != null) {
                                 mView.showSubmitSuccessMessage(mSuccessMessage);
                             }
                         }
                     }));
         } else if ("1".equals(refType)) {
-            addSubscriber(Flowable.concat(readImagesFromLocalAndUpload(refNum, refCodeId, userId, isLocal),
-                    deleteAllImages(refNum, refCodeId, isLocal))
+            addSubscriber(readImagesFromLocalAndUpload(refNum, refCodeId, userId, isLocal)
+                    .doOnComplete(() -> mRepository.deleteInspectionImages(refNum, refCodeId, false))
+                    .doOnComplete(() -> FileUtil.deleteDir(FileUtil.getImageCacheDir(mContext.getApplicationContext(), refNum, false)))
                     .compose(TransformerHelper.io2main())
                     .subscribeWith(new ResourceSubscriber<String>() {
 
@@ -276,7 +279,6 @@ public class ApprovalOtherDetailPresenterImp extends BasePresenter<IApprovalOthe
      *
      * @return
      */
-
     private ResultEntity wrapperImage(ImageEntity image, String refCodeId, String userId) {
         ResultEntity result = new ResultEntity();
         result.suffix = Global.IMAGE_DEFAULT_FORMAT;
@@ -301,17 +303,5 @@ public class ApprovalOtherDetailPresenterImp extends BasePresenter<IApprovalOthe
     private Flowable<String> uploadCollectionData(String refCodeId, String bizType, String refType,
                                                   int inspectionType, String voucherDate, String userId) {
         return mRepository.uploadCollectionData(refCodeId, "", bizType, refType, inspectionType, voucherDate, "", userId);
-    }
-
-    /**
-     * 删除该张单据的地SD卡和数据的图片
-     */
-    private Flowable<String> deleteAllImages(String refNum, String refCodeId, boolean isLocal) {
-        //删除数据库和中间件的图片
-        return Flowable.just(refNum)
-                .filter(num -> !TextUtils.isEmpty(num))
-                .flatMap(num -> mRepository.deleteInspectionImages(num, refCodeId, isLocal))
-                //删除SD
-                .doOnNext(flag -> FileUtil.deleteDir(FileUtil.getImageCacheDir(mContext.getApplicationContext(),refNum,false)));
     }
 }

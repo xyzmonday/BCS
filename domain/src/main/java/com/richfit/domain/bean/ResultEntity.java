@@ -84,6 +84,7 @@ public class ResultEntity {
     public String recLocation;
     //接收批次
     public String recBatchFlag;
+    public String transFileToServer;
 
     public Map<String, Object> mapExHead;// 头扩展字段
     public Map<String, Object> mapExLine;// 行扩展字段
@@ -119,4 +120,5 @@ public class ResultEntity {
     public String moveCauseDesc;
     //项目文本
     public String projectText;
+    public String supplierNum;
 }

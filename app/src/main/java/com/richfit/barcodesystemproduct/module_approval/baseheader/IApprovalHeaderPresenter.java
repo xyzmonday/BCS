@@ -20,7 +20,7 @@ public interface IApprovalHeaderPresenter extends IPresenter<IApprovalHeaderView
      */
     void getReference(String refNum, String refType,
                       String bizType, String moveType,
-                      String userId);
+                      String refLineId,String userId);
 
     /**
      * 删除整单缓存

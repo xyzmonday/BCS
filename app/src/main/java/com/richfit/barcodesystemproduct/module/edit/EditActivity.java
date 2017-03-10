@@ -54,7 +54,6 @@ public class EditActivity extends BaseActivity<EditPresenterImp> implements IEdi
                 mCompanyCode = bundle.getString(Global.EXTRA_COMPANY_CODE_KEY);
                 mBizType = bundle.getString(Global.EXTRA_BIZ_TYPE_KEY);
                 mRefType = bundle.getString(Global.EXTRA_REF_TYPE_KEY);
-
             }
         }
     }

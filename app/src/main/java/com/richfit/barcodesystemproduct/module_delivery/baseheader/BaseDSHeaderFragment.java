@@ -91,7 +91,7 @@ public abstract class BaseDSHeaderFragment extends BaseFragment<DSHeaderPresente
     protected void getRefData(String refNum) {
         mRefData = null;
         clearAllUI();
-        mPresenter.getReference(refNum, mRefType, getBizType(), getMoveType(), Global.USER_ID);
+        mPresenter.getReference(refNum, mRefType, getBizType(), getMoveType(),"", Global.USER_ID);
     }
 
     /**
@@ -260,7 +260,7 @@ public abstract class BaseDSHeaderFragment extends BaseFragment<DSHeaderPresente
     public void retry(String retryAction) {
         switch (retryAction) {
             case Global.RETRY_LOAD_REFERENCE_ACTION:
-                mPresenter.getReference(getString(etRefNum), mRefType, getBizType(), getMoveType(), Global.LOGIN_ID);
+                mPresenter.getReference(getString(etRefNum), mRefType, getBizType(), getMoveType(),"", Global.LOGIN_ID);
                 break;
         }
         super.retry(retryAction);

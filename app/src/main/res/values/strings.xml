@@ -217,6 +217,8 @@
     <string name="refDoc">物料凭证</string>
     <string name="refDocItem">物料凭证行项目</string>
     <string name="move_cause">移动原因</string>
+    <string name="real_used_quantity">实际消耗数量</string>
+    <string name="total_used_quantity">累计消耗数量</string>
 
     //组织机构
     <integer name="orgNorm">0</integer>

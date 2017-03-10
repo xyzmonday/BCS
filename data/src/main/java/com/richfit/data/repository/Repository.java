@@ -255,9 +255,10 @@ public class Repository implements ILocalRepository, IServerRepository {
      */
     @Override
     public Flowable<ReferenceEntity> getReference(@NonNull String refNum, @NonNull String refType,
-                                                  @NonNull String bizType, @NonNull String moveType, @NonNull String userId) {
-        return isLocal ? mLocalRepository.getReference(refNum, refType, bizType, moveType, userId) :
-                mServerRepository.getReference(refNum, refType, bizType, moveType, userId);
+                                                  @NonNull String bizType, @NonNull String moveType,
+                                                  @NonNull String refLineId, @NonNull String userId) {
+        return isLocal ? mLocalRepository.getReference(refNum, refType, bizType, moveType, refLineId, userId) :
+                mServerRepository.getReference(refNum, refType, bizType, moveType, refLineId, userId);
     }
 
     /**
@@ -410,8 +411,8 @@ public class Repository implements ILocalRepository, IServerRepository {
     }
 
     @Override
-    public Flowable<String> deleteInspectionImages(String refNum, String refCodeId, boolean isLocal) {
-        return mLocalRepository.deleteInspectionImages(refNum, refCodeId, isLocal);
+    public void deleteInspectionImages(String refNum, String refCodeId, boolean isLocal) {
+        mLocalRepository.deleteInspectionImages(refNum, refCodeId, isLocal);
     }
 
     @Override
@@ -457,6 +458,11 @@ public class Repository implements ILocalRepository, IServerRepository {
     }
 
     @Override
+    public Flowable<String> uploadMultiFiles(List<ResultEntity> results) {
+        return mServerRepository.uploadMultiFiles(results);
+    }
+
+    @Override
     public Flowable<MaterialEntity> getMaterialInfo(String queryType, String materialNum) {
         return isLocal ? mLocalRepository.getMaterialInfo(queryType, materialNum) : mServerRepository.getMaterialInfo(queryType, materialNum);
     }
@@ -468,8 +474,9 @@ public class Repository implements ILocalRepository, IServerRepository {
     }
 
     @Override
-    public Flowable<ReferenceEntity> loadRefDataFromServer(@NonNull String refNum, @NonNull String refType, @NonNull String bizType, @NonNull String moveType, @NonNull String userId) {
-        return mServerRepository.getReference(refNum, refType, bizType, moveType, userId);
+    public Flowable<ReferenceEntity> loadRefDataFromServer(@NonNull String refNum, @NonNull String refType, @NonNull String bizType, @NonNull String moveType,
+                                                           @NonNull String refLineId, @NonNull String userId) {
+        return mServerRepository.getReference(refNum, refType, bizType, moveType, refLineId, userId);
     }
 
 }

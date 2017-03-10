@@ -169,7 +169,7 @@ public interface ILocalRepository extends IRepository {
      * @param isLocal：是否是离线，true：离线，false:在线
      * @return
      */
-    Flowable<String> deleteInspectionImages(String refNum, String refCodeId, boolean isLocal);
+    void deleteInspectionImages(String refNum, String refCodeId, boolean isLocal);
 
     /**
      * 验收明细界面删除该行的缓存图片

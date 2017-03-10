@@ -50,7 +50,9 @@ public class LocalRepositoryImp implements ILocalRepository {
     }
 
     @Override
-    public Flowable<ReferenceEntity> getReference(@NonNull String refNum, @NonNull String refType, @NonNull String bizType, @NonNull String moveType, @NonNull String userId) {
+    public Flowable<ReferenceEntity> getReference(@NonNull String refNum, @NonNull String refType,
+                                                  @NonNull String bizType, @NonNull String moveType,
+                                                  @NonNull String refLineId,@NonNull String userId) {
         return null;
     }
 
@@ -327,20 +329,18 @@ public class LocalRepositoryImp implements ILocalRepository {
     }
 
     @Override
-    public Flowable<String> deleteInspectionImages(String refNum, String refCodeId, boolean isLocal) {
-        return Flowable.create(new FlowableOnSubscribe<String>() {
-            @Override
-            public void subscribe(FlowableEmitter<String> emitter) throws Exception {
-                try {
-                    mApprovalDao.deleteInspectionImages(refNum, isLocal);
-                    emitter.onNext("删除本地缓存图片成功");
-                    emitter.onComplete();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    emitter.onError(e);
-                }
-            }
-        }, BackpressureStrategy.LATEST);
+    public void deleteInspectionImages(String refNum, String refCodeId, boolean isLocal) {
+//        return Flowable.create(emitter -> {
+//            try {
+//
+//                emitter.onNext("删除本地缓存图片成功");
+//                emitter.onComplete();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                emitter.onError(e);
+//            }
+//        }, BackpressureStrategy.LATEST);
+        mApprovalDao.deleteInspectionImages(refNum, isLocal);
     }
 
     @Override

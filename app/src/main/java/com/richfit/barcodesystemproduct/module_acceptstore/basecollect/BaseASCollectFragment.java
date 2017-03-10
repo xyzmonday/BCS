@@ -84,8 +84,6 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
     protected CheckBox cbSingle;
     @BindView(R.id.tv_total_quantity)
     protected TextView tvTotalQuantity;
-
-
     /*是否不上架.对于非质检的物资isNLocation=false。也就是说子类如果不处理那么默认需要输入上架仓位*/
     protected boolean isNLocation;
     /*当前匹配的行明细（行号）*/
@@ -660,6 +658,7 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
             result.modifyFlag = "N";
             result.refDoc = lineData.refDoc;
             result.refDocItem = lineData.refDocItem;
+            result.supplierNum = mRefData.supplierNum;
 
             result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
             result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, lineData.mapExt, mExtraLocationMap);

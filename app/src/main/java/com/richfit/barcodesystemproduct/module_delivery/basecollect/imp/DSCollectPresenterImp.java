@@ -29,7 +29,7 @@ import io.reactivex.subscribers.ResourceSubscriber;
 public class DSCollectPresenterImp extends BasePresenter<IDSCollectView>
         implements IDSCollectPresenter {
 
-    IDSCollectView mView;
+    protected IDSCollectView mView;
 
     @Inject
     public DSCollectPresenterImp(@ContextLife("Activity") Context context) {
@@ -88,7 +88,7 @@ public class DSCollectPresenterImp extends BasePresenter<IDSCollectView>
         addSubscriber(subscriber);
     }
 
-    class InventorySubscriber extends RxSubscriber<List<InventoryEntity>> {
+    protected class InventorySubscriber extends RxSubscriber<List<InventoryEntity>> {
 
         public InventorySubscriber(Context context, String msg) {
             super(context, msg);

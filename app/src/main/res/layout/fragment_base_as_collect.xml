@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:fillViewport="false"
     android:fitsSystemWindows="true"
-    android:fillViewport="false">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <LinearLayout
         android:id="@id/root_id"
@@ -60,8 +60,7 @@
 
             <TextView
                 android:id="@+id/tv_material_desc"
-                style="@style/RightTextViewItemStyle"
-                />
+                style="@style/RightTextViewItemStyle" />
         </LinearLayout>
 
         <LinearLayout
@@ -76,8 +75,7 @@
 
             <TextView
                 android:id="@+id/tv_special_inv_flag"
-                style="@style/RightTextViewItemStyle"
-                 />
+                style="@style/RightTextViewItemStyle" />
         </LinearLayout>
 
 
@@ -88,15 +86,15 @@
             android:padding="5dp">
 
             <TextView
-                style="@style/LeftTextViewItemStyle"
                 android:id="@+id/tv_work_name"
+                style="@style/LeftTextViewItemStyle"
                 android:text="@string/work" />
 
             <TextView
                 android:id="@+id/tv_work"
                 style="@style/RightTextViewItemStyle"
 
-                 />
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -112,8 +110,7 @@
 
             <TextView
                 android:id="@+id/tv_act_quantity"
-                style="@style/RightTextViewItemStyle"
-                />
+                style="@style/RightTextViewItemStyle" />
         </LinearLayout>
 
         <LinearLayout
@@ -128,8 +125,8 @@
 
             <EditText
                 android:id="@+id/et_batch_flag"
-                android:gravity="center_horizontal"
-                style="@style/RightEditTextItemStyle" />
+                style="@style/RightEditTextItemStyle"
+                android:gravity="center_horizontal" />
         </LinearLayout>
 
         <LinearLayout
@@ -181,8 +178,7 @@
 
             <TextView
                 android:id="@+id/tv_location_quantity"
-                style="@style/RightTextViewItemStyle"
-                />
+                style="@style/RightTextViewItemStyle" />
         </LinearLayout>
 
         <LinearLayout
@@ -228,19 +224,14 @@
 
             <TextView
                 android:id="@+id/tv_total_quantity"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2.0"
-                android:background="@drawable/edit_selector"
-                android:gravity="center_horizontal"
-                android:padding="5dp" />
+                style="@style/RightTextViewItemStyle" />
         </LinearLayout>
 
         <ViewStub
             android:id="@+id/viewstub_as_collect"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout="@layout/viewstub_as_collect"/>
+            android:layout="@layout/viewstub_as_collect" />
     </LinearLayout>
 
 

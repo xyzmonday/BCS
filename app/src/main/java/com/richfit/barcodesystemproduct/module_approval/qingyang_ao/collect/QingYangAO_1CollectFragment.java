@@ -110,10 +110,7 @@ public class QingYangAO_1CollectFragment extends QingYangAOCollectFragment {
 
     @Override
     protected void toTakePhoto(String menuName, int takePhotoType) {
-        if (!etMaterialNum.isEnabled()) {
-            showMessage("请先获取单据数据");
-            return;
-        }
+
         Intent intent = new Intent(mActivity, TakephotoActivity.class);
         Bundle bundle = new Bundle();
         //入库的子菜单的名称

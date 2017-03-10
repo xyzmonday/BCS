@@ -44,16 +44,14 @@ public interface IQingHaiAODetailView extends BaseView {
      */
     void deleteNodeFail(String message);
 
+    void showTransferedVisa(String transNum);
     /**
      * 数据提交到条码系统成功
      */
-    void showSubmitComplete();
-
-    void showTransNum(String message);
+    void submitDataComplete();
 
     /**
      * 数据提交到条码系统失败
-     *
      * @param message
      */
     void submitDataFail(String message);

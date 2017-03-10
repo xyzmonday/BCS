@@ -10,6 +10,7 @@ import com.richfit.domain.bean.ReferenceEntity;
  */
 
 public interface IApprovalOtherDetailPresenter extends IPresenter<IApprovalOtherDetailView> {
+
     /**
      * 获取单据数据
      *
@@ -21,7 +22,7 @@ public interface IApprovalOtherDetailPresenter extends IPresenter<IApprovalOther
      */
     void getReference(ReferenceEntity refData, String refNum, String refType,
                       String bizType, String moveType,
-                      String userId);
+                      String refLineId,String userId);
 
     /**
      * 父节点删除

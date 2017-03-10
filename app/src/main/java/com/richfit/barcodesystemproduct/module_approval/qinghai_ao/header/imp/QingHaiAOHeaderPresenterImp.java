@@ -15,8 +15,6 @@ import com.richfit.domain.bean.ReferenceEntity;
 
 import javax.inject.Inject;
 
-import io.reactivex.Flowable;
-
 /**
  * Created by monday on 2017/2/28.
  */
@@ -34,7 +32,7 @@ public class QingHaiAOHeaderPresenterImp extends BasePresenter<IQingHaiAOHeaderV
     @Override
     protected void onStart() {
         mView = getView();
-        mSimpleRxBus.toFlowable().subscribe(a->{
+        mSimpleRxBus.toFlowable().subscribe(a -> {
             if (mView != null) {
                 mView.clearAllUIAfterSubmitSuccess();
             }
@@ -57,7 +55,7 @@ public class QingHaiAOHeaderPresenterImp extends BasePresenter<IQingHaiAOHeaderV
             return;
         }
 
-        RxSubscriber<ReferenceEntity> subscriber = mRepository.getReference(refNum, refType, bizType, moveType, userId)
+        RxSubscriber<ReferenceEntity> subscriber = mRepository.getReference(refNum, refType, bizType, moveType,"", userId)
                 .filter(refData -> refData != null && refData.billDetailList != null && refData.billDetailList.size() > 0)
                 .map(refData -> addTreeInfo(refData))
                 .compose(TransformerHelper.io2main())
@@ -114,15 +112,17 @@ public class QingHaiAOHeaderPresenterImp extends BasePresenter<IQingHaiAOHeaderV
         mView = getView();
 
         RxSubscriber<String> subscriber =
-                Flowable.concat(mRepository.deleteCollectionData(refNum, transId, refCodeId, refType, bizType, userId,
-                        companyCode),
-                        deleteInspectionImages(refNum, refCodeId))
+                mRepository.deleteCollectionData(refNum, transId, refCodeId, refType, bizType, userId,
+                        companyCode)
+                        .doOnComplete(() -> mRepository.deleteInspectionImages(refNum, refCodeId, false))
+                        .doOnComplete(() -> FileUtil.deleteDir(FileUtil.getImageCacheDir(mContext.getApplicationContext(), refNum, false)))
                         .compose(TransformerHelper.io2main())
                         .subscribeWith(new RxSubscriber<String>(mContext, "正在删除...") {
                             @Override
                             public void _onNext(String s) {
 
                             }
+
 
                             @Override
                             public void _onNetWorkConnectError(String message) {
@@ -157,11 +157,11 @@ public class QingHaiAOHeaderPresenterImp extends BasePresenter<IQingHaiAOHeaderV
      * 删除服务器端的图片和本地SD的图片以及中间件缓存的数据.
      * 获取每一行的照片的名字
      */
-    private Flowable<String> deleteInspectionImages(final String refNum, final String refCodeId) {
-        return Flowable.just(refNum)
-                .filter(num -> !TextUtils.isEmpty(num))
-                .flatMap(num -> mRepository.deleteInspectionImages(refNum, refCodeId, false))
-                .doOnNext(a -> FileUtil.deleteDir(FileUtil.getImageCacheDir(mContext.getApplicationContext(),refNum,false)));
-    }
+//    private Flowable<String> deleteInspectionImages(final String refNum, final String refCodeId) {
+//        return Flowable.just(refNum)
+//                .filter(num -> !TextUtils.isEmpty(num))
+//                .flatMap(num -> mRepository.deleteInspectionImages(refNum, refCodeId, false))
+//                .doOnNext(a -> FileUtil.deleteDir(FileUtil.getImageCacheDir(mContext.getApplicationContext(),refNum,false)));
+//    }
 
 }

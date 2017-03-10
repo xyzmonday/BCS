@@ -105,7 +105,8 @@ public class ServerRepositoryImp implements IServerRepository {
      */
     @Override
     public Flowable<ReferenceEntity> getReference(@NonNull String refNum, @NonNull String refType,
-                                                  @NonNull String bizType, @NonNull String moveType, @NonNull String userId) {
+                                                  @NonNull String bizType, @NonNull String moveType,
+                                                  @NonNull String refLineId, @NonNull String userId) {
 
         mRequestParam.clear();
         mRequestParam.put("recordNum", refNum.trim().toUpperCase());
@@ -113,6 +114,7 @@ public class ServerRepositoryImp implements IServerRepository {
         mRequestParam.put("moveType", moveType);
         mRequestParam.put("businessType", bizType);
         mRequestParam.put("userId", userId);
+        mRequestParam.put("refLineId", refLineId);
 
         return mRequestApi.getReference(JsonUtil.map2Json(mRequestParam))
                 .compose(TransformerHelper.handleResponse());
@@ -254,14 +256,14 @@ public class ServerRepositoryImp implements IServerRepository {
      */
     @Override
     public Flowable<String> deleteCheckData(String storageNum, String workId, String invId,
-                                            String checkId, String userId,String bizType) {
+                                            String checkId, String userId, String bizType) {
         mRequestParam.clear();
-        mRequestParam.put("storageNum",storageNum);
-        mRequestParam.put("workId",workId);
-        mRequestParam.put("invId",invId);
+        mRequestParam.put("storageNum", storageNum);
+        mRequestParam.put("workId", workId);
+        mRequestParam.put("invId", invId);
         mRequestParam.put("checkId", checkId);
         mRequestParam.put("userId", userId);
-        mRequestParam.put("businessType",bizType);
+        mRequestParam.put("businessType", bizType);
         return mRequestApi.deleteCheckData(JsonUtil.map2Json(mRequestParam))
                 .compose(TransformerHelper.MapTransformer);
     }
@@ -274,13 +276,13 @@ public class ServerRepositoryImp implements IServerRepository {
      * @return
      */
     @Override
-    public Flowable<List<InventoryEntity>> getCheckTransferInfoSingle(String checkId, String materialId,String materialNum, String location,String bizType) {
+    public Flowable<List<InventoryEntity>> getCheckTransferInfoSingle(String checkId, String materialId, String materialNum, String location, String bizType) {
         mRequestParam.clear();
         mRequestParam.put("checkId", checkId);
         mRequestParam.put("materialNum", materialNum);
         mRequestParam.put("materialId", materialId);
         mRequestParam.put("location", location);
-        mRequestParam.put("businessType",bizType);
+        mRequestParam.put("businessType", bizType);
         return mRequestApi.getCheckTransferInfoSingle(JsonUtil.map2Json(mRequestParam))
                 .compose(TransformerHelper.handleResponse());
     }
@@ -298,7 +300,7 @@ public class ServerRepositoryImp implements IServerRepository {
      */
     @Override
     public Flowable<ReferenceEntity> getCheckTransferInfo(String checkId, String materialNum,
-                                                          String location, String queryPage, int pageNum, int pageSize,String bizType) {
+                                                          String location, String queryPage, int pageNum, int pageSize, String bizType) {
         mRequestParam.clear();
         mRequestParam.put("checkId", checkId);
         mRequestParam.put("materialNum", materialNum);
@@ -306,7 +308,7 @@ public class ServerRepositoryImp implements IServerRepository {
         mRequestParam.put("queryPage", queryPage);
         mRequestParam.put("pageNum", pageNum);
         mRequestParam.put("pageSize", pageSize);
-        mRequestParam.put("businessType",bizType);
+        mRequestParam.put("businessType", bizType);
         return mRequestApi.getCheckTransferInfo(JsonUtil.map2Json(mRequestParam))
                 .compose(TransformerHelper.handleResponse());
     }
@@ -320,12 +322,12 @@ public class ServerRepositoryImp implements IServerRepository {
      * @return
      */
     @Override
-    public Flowable<String> deleteCheckDataSingle(String checkId, String checkLineId, String userId,String bizType) {
+    public Flowable<String> deleteCheckDataSingle(String checkId, String checkLineId, String userId, String bizType) {
         mRequestParam.clear();
         mRequestParam.put("checkId", checkId);
         mRequestParam.put("checkLineId", checkLineId);
         mRequestParam.put("userId", userId);
-        mRequestParam.put("businessType",bizType);
+        mRequestParam.put("businessType", bizType);
         return mRequestApi.deleteCheckDataSingle(JsonUtil.map2Json(mRequestParam))
                 .compose(TransformerHelper.MapTransformer);
     }
@@ -333,7 +335,7 @@ public class ServerRepositoryImp implements IServerRepository {
     @Override
     public Flowable<ReferenceEntity> getCheckInfo(String userId, String bizType, String checkLevel,
                                                   String checkSpecial, String storageNum, String workId,
-                                                  String invId,String checkNum) {
+                                                  String invId, String checkNum) {
         mRequestParam.clear();
         mRequestParam.put("userId", userId);
         mRequestParam.put("businessType", bizType);
@@ -342,7 +344,7 @@ public class ServerRepositoryImp implements IServerRepository {
         mRequestParam.put("storageNum", storageNum);
         mRequestParam.put("workId", workId);
         mRequestParam.put("invId", invId);
-        mRequestParam.put("checkNum",checkNum);
+        mRequestParam.put("checkNum", checkNum);
         return mRequestApi.getCheckInfo(JsonUtil.map2Json(mRequestParam))
                 .compose(TransformerHelper.handleResponse());
     }
@@ -551,13 +553,14 @@ public class ServerRepositoryImp implements IServerRepository {
     @Override
     public Flowable<ReferenceEntity> loadRefDataFromServer(@NonNull String refNum, @NonNull String refType,
                                                            @NonNull String bizType, @NonNull String moveType,
-                                                           @NonNull String userId) {
+                                                           @NonNull String refLineId, @NonNull String userId) {
         mRequestParam.clear();
         mRequestParam.put("recordNum", refNum.trim().toUpperCase());
         mRequestParam.put("refType", refType);
         mRequestParam.put("moveType", moveType);
         mRequestParam.put("businessType", bizType);
         mRequestParam.put("userId", userId);
+        mRequestParam.put("refLineId", refLineId);
 
         return mRequestApi.getReference(JsonUtil.map2Json(mRequestParam))
                 .compose(TransformerHelper.handleResponse());
@@ -579,6 +582,31 @@ public class ServerRepositoryImp implements IServerRepository {
     }
 
     @Override
+    public Flowable<String> uploadMultiFiles(List<ResultEntity> results) {
+        Map<String, RequestBody> bodyMap = new HashMap<>();
+        if (results.size() > 0) {
+            for (int i = 0; i < results.size(); i++) {
+                ResultEntity result = results.get(i);
+                File file = null;
+                try {
+                    file = new File(result.imagePath);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    file = null;
+                }
+                if (file == null)
+                    continue;
+                bodyMap.put("file" + i + "\"; filename=\"" + file.getName(), RequestBody.create(MediaType.parse("image/png"), file));
+            }
+        }
+        String requestParam = JsonUtil.object2Json(results);
+        RequestBody description = RequestBody.create(MediaType.parse("multipart/form-data"), requestParam);
+        return mRequestApi.uploadMultiFiles(bodyMap, description)
+                .compose(TransformerHelper.MapTransformer);
+    }
+
+
+    @Override
     public Flowable<MaterialEntity> getMaterialInfo(String queryType, String materialNum) {
         mRequestParam.clear();
         mRequestParam.put("queryType", queryType);
@@ -588,11 +616,11 @@ public class ServerRepositoryImp implements IServerRepository {
     }
 
     @Override
-    public Flowable<String> transferCheckData(String checkId,String userId,String bizType) {
+    public Flowable<String> transferCheckData(String checkId, String userId, String bizType) {
         mRequestParam.clear();
         mRequestParam.put("checkId", checkId);
-        mRequestParam.put("businessType",bizType);
-        mRequestParam.put("userId",userId);
+        mRequestParam.put("businessType", bizType);
+        mRequestParam.put("userId", userId);
         return mRequestApi.transferCheckData(JsonUtil.map2Json(mRequestParam))
                 .compose(TransformerHelper.MapTransformer);
     }

@@ -23,7 +23,7 @@ public interface IQingHaiAODetailPresenter extends IPresenter<IQingHaiAODetailVi
      */
     void getReference(ReferenceEntity refData, String refNum, String refType,
                       String bizType, String moveType,
-                      String userId);
+                      String refLineId,String userId);
 
     /**
      * 父节点删除
@@ -49,11 +49,26 @@ public interface IQingHaiAODetailPresenter extends IPresenter<IQingHaiAODetailVi
                   String refType, String subFunName, int position);
 
 
-    void transferCollectionData(String transId, String bizType, String refType, String userId, String voucherDate,
-                                Map<String, Object> flagMap, Map<String, Object> extraHeaderMap);
-
+    /**
+     * 过账验收数据
+     *
+     * @param refNum
+     * @param refCodeId
+     * @param transId
+     * @param bizType
+     * @param refType
+     * @param inspectionType
+     * @param userId
+     * @param isLocal
+     * @param voucherDate
+     * @param flagMap
+     */
+    void transferCollectionData(String refNum,String refCodeId, String transId, String bizType, String refType,
+                                int inspectionType, String userId, boolean isLocal, String voucherDate,
+                                Map<String, Object> flagMap,Map<String,Object> extraHeaderMap);
 
     /**
+     * /**
      * 数据提交到sap后，从数据明细界面跳转到抬头界面
      *
      * @param position

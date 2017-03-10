@@ -21,7 +21,7 @@ public interface IMSHeaderPresenter extends IPresenter<IMSHeaderView> {
      */
     void getReference(@NonNull String refNum, @NonNull String refType,
                       @NonNull String bizType, @NonNull String moveType,
-                      @NonNull String userId);
+                      @NonNull String refLineId,@NonNull String userId);
 
     /**
      * 获取整单缓存

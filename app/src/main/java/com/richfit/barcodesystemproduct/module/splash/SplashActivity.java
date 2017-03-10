@@ -12,7 +12,9 @@ import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
+import com.richfit.domain.bean.LoadBasicDataWrapper;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -63,6 +65,9 @@ public class SplashActivity extends BaseActivity<SplashPresenterImp>
         return true;
     }
 
+    /**
+     * 跳转到登陆页面
+     */
     @Override
     public void toLogin() {
         Flowable.timer(1000, TimeUnit.MILLISECONDS)
@@ -74,6 +79,10 @@ public class SplashActivity extends BaseActivity<SplashPresenterImp>
                 });
     }
 
+    /**
+     * 用户未注册，提示用户注册。
+     * @param message
+     */
     @Override
     public void unRegister(String message) {
         new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE)
@@ -91,11 +100,18 @@ public class SplashActivity extends BaseActivity<SplashPresenterImp>
                 .show();
     }
 
+    /**
+     * 注册完毕
+     */
     @Override
     public void registered() {
         mPresenter.syncDate();
     }
 
+    /**
+     * 同步时间成功
+     * @param dateStr
+     */
     @Override
     public void syncDateSuccess(String dateStr) {
         SPrefUtil.saveData(Global.SYNC_DATE_KEY, dateStr);
@@ -104,6 +120,31 @@ public class SplashActivity extends BaseActivity<SplashPresenterImp>
     @Override
     public void syncDateFail(String message) {
         showMessage(message);
+    }
+
+    /**
+     * 时间同步完毕后，开始下载基础数据
+     */
+    @Override
+    public void syncDateComplete() {
+        ArrayList<LoadBasicDataWrapper> requestParam = new ArrayList<>();
+        LoadBasicDataWrapper task = new LoadBasicDataWrapper();
+        task.isByPage = false;
+        task.queryType = "ZZ";
+        requestParam.add(task);
+
+        task = new LoadBasicDataWrapper();
+        task.isByPage = false;
+        task.queryType = "ZZ2";
+        requestParam.add(task);
+
+        //获取扩展字段的字典
+        task = new LoadBasicDataWrapper();
+        task.isByPage = false;
+        task.queryType = "SD";
+        requestParam.add(task);
+
+        mPresenter.loadAndSaveBasicData(requestParam);
     }
 
     @Override

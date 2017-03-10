@@ -69,4 +69,5 @@ dependencies {
     annotationProcessor  'com.jakewharton:butterknife-compiler:8.4.0'
     compile 'cn.pedant.sweetalert:library:1.3'
     compile 'ch.ielse:switchbutton:1.0.0'
+    compile 'com.github.chrisbanes:PhotoView:1.3.1'
 }

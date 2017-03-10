@@ -13,6 +13,7 @@ import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.barcodesystemproduct.module_approval.qinghai_ao.detail.imp.QingHaiAODetailPresenterImp;
 import com.richfit.common_lib.animationrv.Animation.animators.FadeInDownAnimator;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.AutoSwipeRefreshLayout;
 import com.richfit.domain.bean.RefDetailEntity;
@@ -23,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
-import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Created by monday on 2017/2/28.
@@ -45,6 +45,8 @@ public class QingHaiAODetailFragment extends BaseFragment<QingHaiAODetailPresent
 
     protected String mTransNum;
     protected String mTransId;
+
+    QingHaiAODetailAdapter mAdapter;
 
     @Override
     public void initInjector() {
@@ -132,18 +134,32 @@ public class QingHaiAODetailFragment extends BaseFragment<QingHaiAODetailPresent
         final String refType = mRefData.refType;
         //移动类型
         final String moveType = mRefData.moveType;
+        //清除缓存标识
+        mTransId = "";
+        //清除过账凭证
+        mTransNum = "";
         //获取缓存累计数量不对
-        mPresenter.getReference(mRefData, recordNum, refType, bizType, moveType, Global.USER_ID);
+        mPresenter.getReference(mRefData, recordNum, refType, bizType, moveType,"", Global.USER_ID);
     }
 
+    /**
+     * 注意这里我们需要获取到抬头的缓存标识。
+     *
+     * @param nodes
+     * @param transId
+     */
     @Override
     public void showNodes(List<RefDetailEntity> nodes, String transId) {
         mTransId = transId;
-        QingHaiAODetailAdapter mAdapter = new QingHaiAODetailAdapter(mActivity,
-                R.layout.item_qinghai_ao_detail, nodes,
-                mSubFunEntity.parentNodeConfigs, null, mCompanyCode);
-        mAdapter.setOnItemEditAndDeleteListener(this);
-        mRecycleView.setAdapter(mAdapter);
+        if (mAdapter == null) {
+            mAdapter = new QingHaiAODetailAdapter(mActivity,
+                    R.layout.item_qinghai_ao_detail, nodes,
+                    mSubFunEntity.parentNodeConfigs, null, mCompanyCode);
+            mAdapter.setOnItemEditAndDeleteListener(this);
+            mRecycleView.setAdapter(mAdapter);
+        } else {
+            mAdapter.addAll(nodes);
+        }
     }
 
 
@@ -171,21 +187,35 @@ public class QingHaiAODetailFragment extends BaseFragment<QingHaiAODetailPresent
                 mRefData.refType, mRefData.bizType, Global.USER_ID, position, mCompanyCode);
     }
 
+    /**
+     * 删除明细节点成功
+     *
+     * @param position：节点在明细列表的位置
+     */
     @Override
     public void deleteNodeSuccess(int position) {
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && QingHaiAODetailAdapter.class.isInstance(adapter)) {
-            QingHaiAODetailAdapter approvalOtherAdapter = (QingHaiAODetailAdapter) adapter;
-            approvalOtherAdapter.removeNodeByPosition(position);
+        showMessage("删除成功");
+        if (mAdapter != null) {
+            mAdapter.removeNodeByPosition(position);
         }
     }
 
+    /**
+     * 删除明细节点失败
+     *
+     * @param message
+     */
     @Override
     public void deleteNodeFail(String message) {
         showMessage(message);
     }
 
-
+    /**
+     * 修改明细节点
+     *
+     * @param node
+     * @param position
+     */
     @Override
     public void editNode(final RefDetailEntity node, int position) {
         if (TextUtils.isEmpty(node.transLineId) || TextUtils.isEmpty(node.totalQuantity) ||
@@ -252,39 +282,33 @@ public class QingHaiAODetailFragment extends BaseFragment<QingHaiAODetailPresent
         mTransNum = "";
         FLAGMAP.clear();
         FLAGMAP.put("transToSapFlag", "Z01");
-        mPresenter.transferCollectionData(mTransId, mBizType, mRefType, Global.USER_ID,
+        mPresenter.transferCollectionData(mRefData.recordNum, mRefData.refCodeId, mTransId, mBizType,
+                mRefType, mRefData.inspectionType, Global.USER_ID, false,
                 mRefData.voucherDate, FLAGMAP, createExtraHeaderMap());
     }
 
     @Override
-    public void showTransNum(String message) {
-        mTransNum = message;
+    public void showTransferedVisa(String transNum) {
+        mTransNum = transNum;
     }
 
     @Override
-    public void showSubmitComplete() {
-
-        //清除界面显示的历史明细
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && QingHaiAODetailAdapter.class.isInstance(adapter)) {
-            QingHaiAODetailAdapter qingYangAOAdapter = (QingHaiAODetailAdapter) adapter;
-            qingYangAOAdapter.removeAllVisibleNodes();
+    public void submitDataComplete() {
+        showMessage("上传图片和数据成功");
+        if (mAdapter != null) {
+            mAdapter.removeAllVisibleNodes();
         }
-
-        new SweetAlertDialog(mActivity, SweetAlertDialog.SUCCESS_TYPE)
-                .setTitleText("温馨提示")
-                .setContentText(mTransNum)
-                .show();
-
-        //清除数据，防止重复上传数据
+        showSuccessDialog(mTransNum);
+        mTransId = "";
+        mTransNum = "";
         mRefData = null;
-
-        //跳转到抬头界面,并且清除抬头界面的字段信息。
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 
+
     @Override
     public void submitDataFail(String message) {
+        L.e("error = " + message);
         showMessage(message);
     }
 

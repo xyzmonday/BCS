@@ -124,6 +124,16 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
     }
 
     @Override
+    public void handleBarCodeScanResult(String type, String[] list) {
+
+        if (list != null && list.length >= 12) {
+            final String materialNum = list[2];
+            final String batchFlag = list[11];
+            loadMaterialInfo(materialNum, batchFlag);
+        }
+    }
+
+    @Override
     public void initVariable(Bundle savedInstanceState) {
         mRefLines = new ArrayList<>();
         mInvDatas = new ArrayList<>();

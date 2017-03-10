@@ -46,7 +46,7 @@ public class ASHeaderPresenterImp extends BasePresenter<IASHeaderView>
 
     @Override
     public void getReference(@NonNull String refNum, @NonNull String refType, @NonNull String bizType,
-                             @NonNull String moveType, @NonNull String userId) {
+                             @NonNull String moveType, @NonNull String refLineId, @NonNull String userId) {
         mView = getView();
 
         if (TextUtils.isEmpty(refNum) && mView != null) {
@@ -59,7 +59,7 @@ public class ASHeaderPresenterImp extends BasePresenter<IASHeaderView>
             return;
         }
 
-        RxSubscriber<ReferenceEntity> subscriber = mRepository.getReference(refNum, refType, bizType, moveType, userId)
+        RxSubscriber<ReferenceEntity> subscriber = mRepository.getReference(refNum, refType, bizType, moveType, refLineId, userId)
                 .filter(refData -> refData != null && refData.billDetailList != null && refData.billDetailList.size() > 0)
                 .map(refData -> addTreeInfo(refData))
                 .compose(TransformerHelper.io2main())
@@ -101,7 +101,7 @@ public class ASHeaderPresenterImp extends BasePresenter<IASHeaderView>
     }
 
     @Override
-    public void deleteCollectionData(String refNum, String transId, String refCodeId,String refType, String bizType,
+    public void deleteCollectionData(String refNum, String transId, String refCodeId, String refType, String bizType,
                                      String userId, String companyCode) {
         mView = getView();
         ResourceSubscriber<String> subscriber = mRepository.deleteCollectionData(refNum, transId, refCodeId,
@@ -209,7 +209,7 @@ public class ASHeaderPresenterImp extends BasePresenter<IASHeaderView>
     public void getTransferInfo(final ReferenceEntity refData, String refCodeId, String bizType, String refType) {
         mView = getView();
         ResourceSubscriber<ReferenceEntity> subscriber = mRepository.getTransferInfo("", refCodeId, bizType, refType, "", "", "", "", "")
-                .zipWith(Flowable.just(refData), (cache, data) -> createHeaderByCache(cache,data))
+                .zipWith(Flowable.just(refData), (cache, data) -> createHeaderByCache(cache, data))
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new ResourceSubscriber<ReferenceEntity>() {
 
@@ -220,14 +220,14 @@ public class ASHeaderPresenterImp extends BasePresenter<IASHeaderView>
 
                     @Override
                     public void onError(Throwable t) {
-                        if(mView != null) {
+                        if (mView != null) {
                             mView.getTransferInfoFail(t.getMessage());
                         }
                     }
 
                     @Override
                     public void onComplete() {
-                        if(mView != null) {
+                        if (mView != null) {
                             mView.bindCommonHeaderUI();
                         }
                     }
@@ -237,11 +237,12 @@ public class ASHeaderPresenterImp extends BasePresenter<IASHeaderView>
 
     /**
      * 将抬头的缓存写入单据中
+     *
      * @param cache：缓存单据数据
      * @param data：原始单据数据
      * @return
      */
-    private ReferenceEntity createHeaderByCache(ReferenceEntity cache,ReferenceEntity data) {
+    private ReferenceEntity createHeaderByCache(ReferenceEntity cache, ReferenceEntity data) {
         data.voucherDate = cache.voucherDate;
         return data;
     }

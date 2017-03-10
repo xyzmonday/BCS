@@ -203,10 +203,8 @@ public class ShowAndTakePhotoFragment extends BaseFragment<ShowAndTakePhotoPrese
     @Override
     public void onItemClick(View view, RecyclerView.ViewHolder holder, int position) {
         mImages.get(position).isSelected = !mImages.get(position).isSelected;
-        if (mRecycleView.getAdapter() != null &&
-                ShowPhotosAdapter.class.isInstance(mRecycleView.getAdapter())) {
-            ShowPhotosAdapter adapter = (ShowPhotosAdapter) mRecycleView.getAdapter();
-            adapter.notifyItemChanged(position);
+        if (mAdapter != null) {
+            mAdapter.notifyItemChanged(position);
         }
     }
 

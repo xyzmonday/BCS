@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.richfit.barcodesystemproduct.camera.ShowAndTakePhotoFragment;
+import com.richfit.barcodesystemproduct.di.module.FragmentModule;
 import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.di.scope.FragmentScope;
-import com.richfit.barcodesystemproduct.di.module.FragmentModule;
 import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_103.QingHaiAS103CollectFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_103.QingHaiAS103DetailFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_103.QingHaiAS103EditFragment;
@@ -27,6 +27,8 @@ import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.collect.
 import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.detail.QingYangASNDetailFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.edit.QingYangASNEditFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.header.QingYangASNHeaderFragment;
+import com.richfit.barcodesystemproduct.module_acceptstore.ww_component.collect.QingHaiWWCCollectFragment;
+import com.richfit.barcodesystemproduct.module_acceptstore.ww_component.detail.QingHaiWWCDetailFragment;
 import com.richfit.barcodesystemproduct.module_approval.qinghai_ao.collect.QingHaiAOCollectFragment;
 import com.richfit.barcodesystemproduct.module_approval.qinghai_ao.detail.QingHaiAODetailFragment;
 import com.richfit.barcodesystemproduct.module_approval.qinghai_ao.edit.QingHaiAOEditFragment;
@@ -47,7 +49,7 @@ import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsn.collect.Qing
 import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsn.detail.QingHaiDSNDetailFragment;
 import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsn.edit.QingHaiDSNEditFragment;
 import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsn.header.QingHaiDSNHeaderFragment;
-import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsww.QingHaiDSWWCollectFragmet;
+import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsww.QingHaiDSWWCollectFragment;
 import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsww.QingHaiDSWWDetailFragment;
 import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsww.QingHaiDSWWEditFragment;
 import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsww.QingHaiDSWWHeaderFragment;
@@ -228,8 +230,11 @@ public interface FragmentComponent {
     void inject(QingHaiAOEditFragment fragment);
 
     void inject(QingHaiAS105HeaderFragment fragment);
+
     void inject(QingHaiAS105DetailFragment fragment);
+
     void inject(QingHaiAS105CollectFragment fragment);
+
     void inject(QingHaiAS105EditFragment fragment);
 
     void inject(QingHaiRSNHeaderFragment fragment);
@@ -241,22 +246,34 @@ public interface FragmentComponent {
     void inject(QingHaiRSNEditFragment fragment);
 
     void inject(QingHaiCNHeaderFragment fragment);
+
     void inject(QingHaiCNDetailFragment fragment);
+
     void inject(QingHaiCNCollectFragment fragment);
+
     void inject(QingHaiCNEditFragment fragment);
 
 
     void inject(QingHaiBlindHeaderFragment fragment);
+
     void inject(QingHaiBlindDetailFragment fragment);
+
     void inject(QingHaiBlindCollectFragment fragment);
+
     void inject(QingHaiBlindEditFragment fragment);
 
     void inject(QingHaiDSWWHeaderFragment fragment);
+
     void inject(QingHaiDSWWDetailFragment fragment);
-    void inject(QingHaiDSWWCollectFragmet fragment);
+
+    void inject(QingHaiDSWWCollectFragment fragment);
+
     void inject(QingHaiDSWWEditFragment fragment);
 
 
+    void inject(QingHaiWWCDetailFragment fragment);
+
+    void inject(QingHaiWWCCollectFragment fragment);
 
     void inject(LAHeaderFragment fragment);
 

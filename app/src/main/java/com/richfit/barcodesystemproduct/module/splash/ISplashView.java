@@ -7,10 +7,12 @@ import com.richfit.barcodesystemproduct.base.BaseView;
  */
 
 public interface ISplashView extends BaseView{
+
     void toLogin();
 
     void syncDateSuccess(String date);
     void syncDateFail(String message);
+    void syncDateComplete();
 
     void unRegister(String message);
     void registered();

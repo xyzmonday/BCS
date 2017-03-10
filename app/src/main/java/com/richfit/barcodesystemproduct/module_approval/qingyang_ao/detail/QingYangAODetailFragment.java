@@ -40,6 +40,8 @@ public class QingYangAODetailFragment extends BaseFragment<ApprovalOtherDetailPr
     @BindView(R.id.root_id)
     LinearLayout mExtraContainer;
 
+    QingYangAOAdapter mAdapter;
+
     @Override
     protected int getContentId() {
         return R.layout.fragment_qingyang_ao_detail;
@@ -112,11 +114,15 @@ public class QingYangAODetailFragment extends BaseFragment<ApprovalOtherDetailPr
 
     @Override
     public void showNodes(List<RefDetailEntity> nodes) {
-        QingYangAOAdapter mAdapter = new QingYangAOAdapter(mActivity,
-                R.layout.item_qingyang_ao_detail, nodes,
-                mSubFunEntity.parentNodeConfigs, null, mCompanyCode);
-        mAdapter.setOnItemEditAndDeleteListener(this);
-        mRecycleView.setAdapter(mAdapter);
+        if (mAdapter == null) {
+            mAdapter = new QingYangAOAdapter(mActivity,
+                    R.layout.item_qingyang_ao_detail, nodes,
+                    mSubFunEntity.parentNodeConfigs, null, mCompanyCode);
+            mAdapter.setOnItemEditAndDeleteListener(this);
+            mRecycleView.setAdapter(mAdapter);
+        } else {
+            mAdapter.addAll(nodes);
+        }
     }
 
     /**
@@ -133,7 +139,7 @@ public class QingYangAODetailFragment extends BaseFragment<ApprovalOtherDetailPr
         //移动类型
         final String moveType = mRefData.moveType;
         //获取缓存累计数量不对
-        mPresenter.getReference(mRefData, recordNum, refType, bizType, moveType, Global.USER_ID);
+        mPresenter.getReference(mRefData, recordNum, refType, bizType, moveType,"", Global.USER_ID);
     }
 
     @Override
@@ -165,10 +171,9 @@ public class QingYangAODetailFragment extends BaseFragment<ApprovalOtherDetailPr
 
     @Override
     public void deleteNodeSuccess(int position) {
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && QingYangAOAdapter.class.isInstance(adapter)) {
-            QingYangAOAdapter approvalOtherAdapter = (QingYangAOAdapter) adapter;
-            approvalOtherAdapter.removeNodeByPosition(position);
+        showMessage("删除成功");
+        if (mAdapter != null) {
+            mAdapter.removeNodeByPosition(position);
         }
     }
 
@@ -249,10 +254,8 @@ public class QingYangAODetailFragment extends BaseFragment<ApprovalOtherDetailPr
     @Override
     public void showSubmitSuccessMessage(String message) {
         //清除界面显示的历史明细
-        RecyclerView.Adapter adapter = mRecycleView.getAdapter();
-        if (adapter != null && QingYangAOAdapter.class.isInstance(adapter)) {
-            QingYangAOAdapter qingYangAOAdapter = (QingYangAOAdapter) adapter;
-            qingYangAOAdapter.removeAllVisibleNodes();
+        if (mAdapter != null) {
+            mAdapter.removeAllVisibleNodes();
         }
         new SweetAlertDialog(mActivity, SweetAlertDialog.SUCCESS_TYPE)
                 .setTitleText("温馨提示")

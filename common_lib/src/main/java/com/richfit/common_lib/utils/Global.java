@@ -49,6 +49,7 @@ public class Global {
     //离线模式
     public static final String L_LOADDATA = "113";//单据下载模块
     public static final String L_UPLOADDATA = "114";
+    public static final String DGYK = "115";
 
     //用户选择的模式
     public static final int ONLINE_MODE = 0x0;
@@ -229,4 +230,5 @@ public class Global {
     public static final String EXTRA_RETURN_QUANTITY_KEY = "extra_return_quantity";
     public static final String EXTRA_PROJECT_TEXT_KEY = "extra_project_text";
     public static final String EXTRA_MOVE_CAUSE_DESC_KEY = "extra_move_cause_desc";
+    public static final String EXTRA_CAPTION_KEY  = "extra_caption";
 }

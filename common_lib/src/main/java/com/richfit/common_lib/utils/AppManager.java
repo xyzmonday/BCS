@@ -13,6 +13,7 @@ import java.util.Stack;
  * @created 2012-3-21
  */
 public class AppManager {
+
     private static Stack<AppCompatActivity> activityStack = new Stack<>();
 
     /**
@@ -83,6 +84,7 @@ public class AppManager {
         try {
             finishAllActivity();
             android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(0);
         } catch (Exception e) {
             e.printStackTrace();
         }

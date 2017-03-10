@@ -6,6 +6,7 @@ import android.support.annotation.StringRes;
 import android.text.TextUtils;
 
 import com.richfit.common_lib.IInterface.IPresenter;
+import com.richfit.common_lib.basetreerv.RecycleTreeViewHelper;
 import com.richfit.common_lib.rxutils.RxManager;
 import com.richfit.common_lib.rxutils.SimpleRxBus;
 import com.richfit.common_lib.rxutils.TransformerHelper;
@@ -25,6 +26,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -273,7 +275,7 @@ public class BasePresenter<T extends BaseView> implements IPresenter<T> {
     }
 
     /**
-     * 通过refLineId将缓存数据关联到原始的单据中去
+     * 通过refLineId将获取原始单据中的明细行
      * @param refLineId:单据行Id
      * @param refData:原始单据信息
      * @return
@@ -288,6 +290,51 @@ public class BasePresenter<T extends BaseView> implements IPresenter<T> {
         }
         return Flowable.error(new Throwable("未能找到与该行匹配的缓存"));
     }
+
+    /**
+     * 通过refLineId将缓存和原始单据行关联起来
+     */
+    protected RefDetailEntity getLineDataByRefLineId(RefDetailEntity refLineData, ReferenceEntity cachedRefData) {
+        if (refLineData == null) {
+            return null;
+        }
+        return getLineDataByRefLineIdInternal(refLineData.refLineId, cachedRefData);
+    }
+
+    protected RefDetailEntity getLineDataByRefLineIdInternal(String key, ReferenceEntity cachedRefData) {
+        if (TextUtils.isEmpty(key))
+            return null;
+        //通过refLineId匹配出缓存中的明细行
+        List<RefDetailEntity> detail = cachedRefData.billDetailList;
+        for (RefDetailEntity entity : detail) {
+            if (key.equals(entity.refLineId)) {
+                return entity;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 展示之前的节点排序
+     *
+     * @param nodes
+     * @return
+     */
+    protected Flowable<ArrayList<RefDetailEntity>> sortNodes(final ArrayList<RefDetailEntity> nodes) {
+        return Flowable.create(emitter -> {
+            try {
+                ArrayList<RefDetailEntity> allNodes = RecycleTreeViewHelper.getSortedNodes(nodes, 1);
+                emitter.onNext(allNodes);
+                emitter.onComplete();
+            } catch (Exception e) {
+                e.printStackTrace();
+                emitter.onError(new Throwable(e.getMessage()));
+            }
+        }, BackpressureStrategy.BUFFER);
+    }
+
+
+
 
     protected ArrayList<String> wrapper2Str(ArrayList<SimpleEntity> list) {
         ArrayList<String> strs = new ArrayList<>();

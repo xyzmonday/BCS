@@ -21,6 +21,6 @@ public interface MainContract {
 
     interface Presenter extends IPresenter<View> {
         void setupMainContent(FragmentManager fragmentManager, String companyCode, String moduleCode,
-                              String bizType, String refType, int currentPageIndex);
+                              String bizType, String refType,String lineNum, int currentPageIndex);
     }
 }

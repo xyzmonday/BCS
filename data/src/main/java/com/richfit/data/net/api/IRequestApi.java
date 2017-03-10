@@ -23,6 +23,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.PartMap;
 import retrofit2.http.Query;
 
 
@@ -32,10 +33,10 @@ import retrofit2.http.Query;
 public interface IRequestApi {
 
     @GET("syncDate")
-    Flowable<Map<String,Object>> syncDate();
+    Flowable<Map<String, Object>> syncDate();
 
     @GET("getMappingInfo")
-    Flowable<Map<String,Object>> getMappingInfo();
+    Flowable<Map<String, Object>> getMappingInfo();
 
     @GET("getLoginInfo")
     Flowable<Response<UserEntity>> login(@Query("requestParam") String requestParam);
@@ -50,7 +51,7 @@ public interface IRequestApi {
     Flowable<Response<ReferenceEntity>> getReference(@Query("requestParam") String requestParam);
 
     @GET("getIncrementalInfo")
-    Flowable<Map<String,Object>> preparePageLoad(@Query("requestParam") String requestParam);
+    Flowable<Map<String, Object>> preparePageLoad(@Query("requestParam") String requestParam);
 
     @GET("getIncrementalInfo")
     Flowable<Response<List<Map<String, Object>>>> loadBasicData(@Query("requestParam") String requestParam);
@@ -87,6 +88,10 @@ public interface IRequestApi {
     @POST("uploadInspectionImage")
     Flowable<Map<String, Object>> uploadInspectionImage(@Part() MultipartBody.Part photo, @Part("requestParam") RequestBody requestParam);
 
+    @Multipart
+    @POST("uploadSingleFile")
+    Flowable<Map<String, Object>> uploadMultiFiles(@PartMap Map<String, RequestBody> files, @Part("requestParam") RequestBody des);
+
     /*获取盘点头信息*/
     @GET("getCheckInfo")
     Flowable<Response<ReferenceEntity>> getCheckInfo(@Query("requestParam") String requestParam);
@@ -116,14 +121,14 @@ public interface IRequestApi {
     Flowable<Response<UpdateEntity>> getAppVersion();
 
     @GET("changeLoginInfo")
-    Flowable<Map<String,Object>> changeLoginInfo(@Query("requestParam") String requestParam);
+    Flowable<Map<String, Object>> changeLoginInfo(@Query("requestParam") String requestParam);
 
     @GET("uploadInspectionDataOffline")
-    Flowable<Map<String,Object>> uploadInspectionDataOffline(@Query("requestParam") String requestParam);
+    Flowable<Map<String, Object>> uploadInspectionDataOffline(@Query("requestParam") String requestParam);
 
     @GET("getMaterialInfo")
     Flowable<Response<MaterialEntity>> getMaterialInfo(@Query("requestParam") String requestParam);
 
     @GET("transferCheckData")
-    Flowable<Map<String,Object>> transferCheckData(@Query("requestParam") String requestParam);
+    Flowable<Map<String, Object>> transferCheckData(@Query("requestParam") String requestParam);
 }

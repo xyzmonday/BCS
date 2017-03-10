@@ -109,19 +109,6 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
         if (list != null && list.length >= 12) {
             final String materialNum = list[2];
             final String batchFlag = list[11];
-            //清除公共UI
-            clearCommonUI(etMaterialNum, tvMaterialDesc, tvWork,
-                    etBatchFlag, tvOrderQuantity, tvBalanceQuantity, etQuantity);
-            //库存地点
-            if (spInv.getAdapter() != null) {
-                spInv.setSelection(0);
-            }
-            //单据行
-            if (mRefLineAdapter != null) {
-                mRefLines.clear();
-                mRefLineAdapter.notifyDataSetChanged();
-                spRefLine.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.white));
-            }
             loadMaterialInfo(materialNum, batchFlag);
         }
     }

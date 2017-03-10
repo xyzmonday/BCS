@@ -284,11 +284,11 @@ public class HomeActivity extends BaseActivity<HomePresenterImp> implements Home
                 MainActivity.class;
         Intent intent = new Intent(HomeActivity.this, clazz);
         Bundle bundle = new Bundle();
-        bundle.putString(MainActivity.EXTRA_COMPANY_CODE_KEY, companyCode);
-        bundle.putString(MainActivity.EXTRA_MODULE_CODE_KEY, moduleCode);
-        bundle.putString(MainActivity.EXTRA_BIZ_TYPE_KEY, bizType);
-        bundle.putString(MainActivity.EXTRA_REF_TYPE_KEY, refType);
-        bundle.putString(MainActivity.EXTRA_CAPTION_KEY, caption);
+        bundle.putString(Global.EXTRA_COMPANY_CODE_KEY, companyCode);
+        bundle.putString(Global.EXTRA_MODULE_CODE_KEY, moduleCode);
+        bundle.putString(Global.EXTRA_BIZ_TYPE_KEY, bizType);
+        bundle.putString(Global.EXTRA_REF_TYPE_KEY, refType);
+        bundle.putString(Global.EXTRA_CAPTION_KEY, caption);
         intent.putExtras(bundle);
         startActivity(intent);
     }

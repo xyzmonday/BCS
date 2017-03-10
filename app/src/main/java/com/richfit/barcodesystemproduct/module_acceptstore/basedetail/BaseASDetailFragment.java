@@ -63,9 +63,9 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
     /*应收，应退数量*/
     @BindView(R.id.actQuantity)
     protected TextView tvActQuantity;
-
     @BindView(R.id.root_id)
     protected LinearLayout mExtraContainer;
+
     protected String mTransNum;
     protected String mTransId;
     //第二步过账成功后返回的验收单号

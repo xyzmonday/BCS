@@ -113,7 +113,7 @@ public abstract class BaseApprovalHeaderFragment extends BaseFragment<ApprovalHe
     protected void getRefData(String refNum) {
         mRefData = null;
         clearAllUI();
-        mPresenter.getReference(refNum, mRefType, getBizType(), getMoveType(), Global.USER_ID);
+        mPresenter.getReference(refNum, mRefType, getBizType(), getMoveType(), "", Global.USER_ID);
     }
 
     @Override
@@ -227,7 +227,7 @@ public abstract class BaseApprovalHeaderFragment extends BaseFragment<ApprovalHe
     public void retry(String action) {
         switch (action) {
             case Global.RETRY_LOAD_REFERENCE_ACTION:
-                mPresenter.getReference(getString(etRefNum), mRefType, getBizType(), getMoveType(), Global.LOGIN_ID);
+                mPresenter.getReference(getString(etRefNum), mRefType, getBizType(), getMoveType(), "", Global.LOGIN_ID);
                 break;
         }
         super.retry(action);

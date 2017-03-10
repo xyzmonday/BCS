@@ -90,6 +90,8 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
 
     /*抬头界面，数据明细界面，数据采集界面共享的单据数据，注意我们需要将单据数据和缓存数据隔离*/
     protected static ReferenceEntity mRefData;
+    /*对于委外入库，组件界面的明细界面和数据采集界面共享的数据明细*/
+    protected static List<RefDetailEntity> mRefDetail;
     /*抬头界面，数据明细界面，数据采集界面共享的额外字段配置信息*/
     protected static SubFuncEntity mSubFunEntity = new SubFuncEntity();
 
@@ -208,7 +210,10 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
     public static <T extends BaseFragment> T newInstance(String className, Bundle arguments) {
         T instance = null;
         try {
-            instance = (T) Class.forName(className).newInstance();
+            final Class clazz = Class.forName(className);
+            instance = (T) clazz.newInstance();
+            String tabTitle = arguments.getString(Global.EXTRA_TITLE_KEY);
+            setFieldValue(clazz, instance, tabTitle);
             instance.setArguments(arguments);
             return instance;
         } catch (Exception e) {

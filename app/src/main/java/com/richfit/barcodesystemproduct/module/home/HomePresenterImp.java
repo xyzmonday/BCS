@@ -110,6 +110,8 @@ public class HomePresenterImp extends BasePresenter<HomeContract.View>
                 return R.mipmap.icon_module12;
             case Global.SETTING:
                 return R.mipmap.icon_module13;
+            case Global.DGYK:
+                return R.mipmap.icon_module14;
         }
         return 0;
     }

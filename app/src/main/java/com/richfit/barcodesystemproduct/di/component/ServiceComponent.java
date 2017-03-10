@@ -5,7 +5,6 @@ import android.content.Context;
 import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.di.scope.ServiceScope;
 import com.richfit.barcodesystemproduct.di.module.ServiceModule;
-import com.richfit.barcodesystemproduct.service.LoadBasicDataService;
 
 import dagger.Component;
 
@@ -18,7 +17,5 @@ public interface ServiceComponent {
 
     @ContextLife("Application")
     Context getApplicationContext();
-
-    void inject(LoadBasicDataService service);
 
 }

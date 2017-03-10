@@ -18,7 +18,6 @@ import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.InvAdapter;
 import com.richfit.barcodesystemproduct.adapter.LocationAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
-import com.richfit.barcodesystemproduct.module_delivery.basecollect.imp.DSCollectPresenterImp;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.SPrefUtil;
@@ -46,7 +45,7 @@ import rx.android.schedulers.AndroidSchedulers;
  * Created by monday on 2016/11/19.
  */
 
-public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresenterImp, Object>
+public abstract class BaseDSCollectFragment<P extends IDSCollectPresenter> extends BaseFragment<P, Object>
         implements IDSCollectView {
 
     @BindView(R.id.ref_line_num_spinner)
@@ -367,7 +366,8 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
         final InvEntity invEntity = mInvDatas.get(position);
         mPresenter.getInventoryInfo(getInventoryQueryType(),lineData.workId,
                 invEntity.invId, lineData.workCode, invEntity.invCode, "", getString(etMaterialNum),
-                lineData.materialId, "", getString(etBatchFlag),lineData.specialInvFlag,mRefData.supplierNum, getInvType());
+                lineData.materialId, "", getString(etBatchFlag),lineData.specialInvFlag,
+                mRefData.supplierNum, getInvType());
     }
 
     /**
@@ -728,6 +728,7 @@ public abstract class BaseDSCollectFragment extends BaseFragment<DSCollectPresen
             result.quantity = getString(etQuantity);
             result.specialInvFlag = getString(tvSpecialInvFlag);
             result.specialInvNum = mRefData.supplierNum;
+            result.supplierNum = mRefData.supplierNum;
             result.modifyFlag = "N";
 
             result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, lineData.mapExt, mExtraLocationMap);

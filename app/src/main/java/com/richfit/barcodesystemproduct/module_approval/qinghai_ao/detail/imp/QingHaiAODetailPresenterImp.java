@@ -8,20 +8,27 @@ import android.os.Bundle;
 import com.richfit.barcodesystemproduct.base.BasePresenter;
 import com.richfit.barcodesystemproduct.di.scope.ContextLife;
 import com.richfit.barcodesystemproduct.module.edit.EditActivity;
+import com.richfit.barcodesystemproduct.module.main.MainActivity;
 import com.richfit.barcodesystemproduct.module_approval.qinghai_ao.detail.IQingHaiAODetailPresenter;
 import com.richfit.barcodesystemproduct.module_approval.qinghai_ao.detail.IQingHaiAODetailView;
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.FileUtil;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.domain.bean.ImageEntity;
 import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.ReferenceEntity;
+import com.richfit.domain.bean.ResultEntity;
 
+import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.reactivex.Flowable;
 import io.reactivex.subscribers.ResourceSubscriber;
 
 /**
@@ -39,12 +46,12 @@ public class QingHaiAODetailPresenterImp extends BasePresenter<IQingHaiAODetailV
     }
 
     @Override
-    public void getReference(ReferenceEntity data, String refNum, String refType, String bizType, String moveType, String userId) {
+    public void getReference(ReferenceEntity data, String refNum, String refType, String bizType, String moveType, String refLineId, String userId) {
 
         mView = getView();
 
         ResourceSubscriber<ReferenceEntity> subscriber =
-                mRepository.getReference(refNum, refType, bizType, moveType, userId)
+                mRepository.getReference(refNum, refType, bizType, moveType, refLineId,userId)
                         .filter(refData -> refData != null && refData.billDetailList != null && refData.billDetailList.size() > 0)
                         .map(refData -> addTreeInfo(refData))
                         .compose(TransformerHelper.io2main())
@@ -177,55 +184,127 @@ public class QingHaiAODetailPresenterImp extends BasePresenter<IQingHaiAODetailV
         activity.startActivity(intent);
     }
 
+    /**
+     * 过账验收数据，逻辑是只有是所有步骤都成功了才能够删除图片，任何一步失败了都得从新开始。
+     *
+     * @param refNum
+     * @param refCodeId
+     * @param transId
+     * @param bizType
+     * @param refType
+     * @param inspectionType
+     * @param userId
+     * @param isLocal
+     * @param voucherDate
+     * @param flagMap
+     * @param extraHeaderMap
+     */
     @Override
-    public void transferCollectionData(String transId, String bizType, String refType, String userId, String voucherDate, Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
+    public void transferCollectionData(String refNum, String refCodeId, String transId,
+                                       String bizType, String refType, int inspectionType, String userId,
+                                       boolean isLocal, String voucherDate,
+                                       Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
         mView = getView();
 
-        RxSubscriber<String> subscriber =
-                mRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate,
-                        flagMap, extraHeaderMap)
-                        .compose(TransformerHelper.io2main())
-                        .subscribeWith(new RxSubscriber<String>(mContext, "正在上传数据...") {
-                            @Override
-                            public void _onNext(String message) {
-                                if (mView != null) {
-                                    mView.showTransNum(message);
-                                }
-                            }
+        addSubscriber(Flowable.concat(uploadInspectedImages(refNum, refCodeId, transId, userId, "01", isLocal),
+                uploadInspectedImages(refNum, refCodeId, transId, userId, "02", isLocal),
+                mRepository.transferCollectionData(transId, bizType, refType, userId, voucherDate, flagMap, extraHeaderMap))
+                .doOnComplete(() -> mRepository.deleteInspectionImages(refNum, refCodeId, isLocal))
+                .doOnComplete(() -> FileUtil.deleteDir(FileUtil.getImageCacheDir(mContext.getApplicationContext(), refNum, false)))
+                .compose(TransformerHelper.io2main())
+                .subscribeWith(new RxSubscriber<String>(mContext, "正在过账...") {
 
-                            @Override
-                            public void _onNetWorkConnectError(String message) {
-                                if (mView != null) {
-                                    mView.submitDataFail(message);
-                                }
-                            }
+                    @Override
+                    public void _onNext(String transNum) {
+                        if (mView != null) {
+                            mView.showTransferedVisa(transNum);
+                        }
+                    }
 
-                            @Override
-                            public void _onCommonError(String message) {
-                                if (mView != null) {
-                                    mView.submitDataFail(message);
-                                }
-                            }
+                    @Override
+                    public void _onNetWorkConnectError(String message) {
+                        if (mView != null) {
+                            mView.submitDataFail(message);
+                        }
+                    }
 
-                            @Override
-                            public void _onServerError(String code, String message) {
-                                if (mView != null) {
-                                    mView.submitDataFail(message);
-                                }
-                            }
+                    @Override
+                    public void _onCommonError(String message) {
+                        if (mView != null) {
+                            mView.submitDataFail(message);
+                        }
+                    }
 
-                            @Override
-                            public void _onComplete() {
-                                if (mView != null) {
-                                    mView.showSubmitComplete();
-                                }
-                            }
-                        });
-        addSubscriber(subscriber);
+                    @Override
+                    public void _onServerError(String code, String message) {
+                        if (mView != null) {
+                            mView.submitDataFail(message);
+                        }
+                    }
+
+                    @Override
+                    public void _onComplete() {
+                        if (mView != null) {
+                            mView.submitDataComplete();
+                        }
+                    }
+                }));
+    }
+
+    /**
+     * 上传图片。如果没有图片直接过滤掉。
+     */
+    private Flowable<String> uploadInspectedImages(String refNum, String refCodeId, String transId,
+                                                   String userId, String transFileToServer, boolean isLocal) {
+        return Flowable.just(refNum)
+                .map(num -> mRepository.readImagesByRefNum(refNum, isLocal))
+                .filter(images -> images != null && images.size() > 0)
+                .map(images -> wrapperImage(images, refCodeId, transId, userId, transFileToServer))
+                .flatMap(results -> mRepository.uploadMultiFiles(results));
+    }
+
+    /**
+     * 图片上传。将imageEntity装换成上传ResultEntity实体类
+     *
+     * @return
+     */
+    private ResultEntity wrapperImageInternal(ImageEntity image, String refCodeId, String transId, String userId,
+                                              String transFileToServer) {
+        ResultEntity result = new ResultEntity();
+        result.suffix = Global.IMAGE_DEFAULT_FORMAT;
+        result.bizHeadId = transId;
+        result.bizLineId = image.refLineId;
+        result.imageName = image.imageName;
+        result.refType = image.refType;
+        result.businessType = image.bizType;
+        result.bizPart = "1";
+        result.imagePath = image.imageDir + File.separator + result.imageName;
+        result.createdBy = image.createBy;
+        result.imageDate = image.createDate;
+        result.userId = userId;
+        result.transFileToServer = transFileToServer;
+        result.fileType = image.takePhotoType;
+        return result;
+    }
+
+    private ArrayList<ResultEntity> wrapperImage(List<ImageEntity> images, String refCodeId, String transId, String userId,
+                                                 String transFileToServer) {
+        ArrayList<ResultEntity> results = new ArrayList<>();
+        for (ImageEntity image : images) {
+            ResultEntity result = wrapperImageInternal(image, refCodeId, transId, userId, transFileToServer);
+            results.add(result);
+        }
+        return results;
     }
 
     @Override
     public void showHeadFragmentByPosition(int position) {
-
+        if (mSimpleRxBus.hasSubscribers()) {
+            mSimpleRxBus.post(true);
+        }
+        if (MainActivity.class.isInstance(mContext)) {
+            MainActivity activity = (MainActivity) mContext;
+            activity.showFragmentByPosition(position);
+        }
     }
 }

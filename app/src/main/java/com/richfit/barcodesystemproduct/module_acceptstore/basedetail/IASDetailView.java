@@ -17,7 +17,7 @@ public interface IASDetailView extends BaseView {
     void startAutoRefresh();
     /**
      * 显示明细
-     * @param nodes
+     * @param allNodes
      */
     void showNodes(List<RefDetailEntity> allNodes);
 

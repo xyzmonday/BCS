@@ -11,7 +11,6 @@ import com.richfit.barcodesystemproduct.base.BaseActivity;
 import com.richfit.common_lib.utils.AppCompat;
 import com.richfit.common_lib.utils.GUIUtils;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.common_lib.utils.L;
 
 import java.util.concurrent.TimeUnit;
 
@@ -51,14 +50,14 @@ public class WelcomeActivity extends BaseActivity<WelcomePresenterImp> implement
     public void initEvent() {
 
         RxView.clicks(btnOnlineMode)
-                .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                .throttleFirst(500, TimeUnit.MILLISECONDS)
                 .subscribe(a -> {
                     mode = Global.ONLINE_MODE;
                     mPresenter.loadFragmentConfig(Global.companyId,QINGHAI_FRAGMENT_CONFIG);
                 });
 
         RxView.clicks(btnOfflineMode)
-                .throttleFirst(1000, TimeUnit.MILLISECONDS)
+                .throttleFirst(500, TimeUnit.MILLISECONDS)
                 .subscribe(a -> {
                     mode = Global.OFFLINE_MODE;
                     mPresenter.loadFragmentConfig(Global.companyId,QINGHAI_FRAGMENT_CONFIG);
@@ -73,7 +72,6 @@ public class WelcomeActivity extends BaseActivity<WelcomePresenterImp> implement
 
     @Override
     public void loadFragmentConfigFail(String message) {
-        L.e("messasge = " + message);
         showMessage(message);
     }
 
@@ -87,7 +85,6 @@ public class WelcomeActivity extends BaseActivity<WelcomePresenterImp> implement
 
     @Override
     public void loadExtraConfigFail(String message) {
-        L.e("messasge = " + message);
         showMessage(message);
         toHome();
     }

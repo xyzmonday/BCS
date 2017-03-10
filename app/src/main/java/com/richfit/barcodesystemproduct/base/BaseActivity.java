@@ -21,6 +21,7 @@ import com.richfit.barcodesystemproduct.di.component.DaggerActivityComponent;
 import com.richfit.barcodesystemproduct.di.module.ActivityModule;
 import com.richfit.common_lib.IInterface.IPresenter;
 import com.richfit.common_lib.dialog.NetConnectErrorDialogFragment;
+import com.richfit.common_lib.utils.AppManager;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.StatusBarCompat;
 import com.richfit.common_lib.utils.ViewServer;
@@ -87,6 +88,7 @@ public abstract class BaseActivity<T extends IPresenter> extends AppCompatActivi
         if (mOpenStatusBar)
             StatusBarCompat.compat(this);
         ViewServer.get(this).addWindow(this);
+        AppManager.addActivity(this);
     }
 
     protected void setStatusBar(boolean isOpenStatusBar) {
