@@ -24,6 +24,7 @@ import com.richfit.common_lib.animationrv.Animation.animators.FadeInDownAnimator
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.AutoSwipeRefreshLayout;
+import com.richfit.domain.bean.BottomMenuEntity;
 import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.RowConfig;
 
@@ -192,6 +193,10 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
             showMessage("已经过账,不允许删除");
             return;
         }
+        if (TextUtils.isEmpty(node.transLineId)) {
+            showMessage("该行还未进行数据采集");
+            return;
+        }
         mPresenter.deleteNode("N", node.transId, node.transLineId, node.locationId, mRefData.refType,
                 mRefData.bizType, position, mCompanyCode);
     }
@@ -333,6 +338,16 @@ public class QingYangASNDetailFragment extends BaseFragment<ASNDetailPresenterIm
             mAdapter.removeAllVisibleNodes();
         }
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
+    }
+
+    /**
+     * 这里重写的目的是只显示两个按钮
+     * @return
+     */
+    @Override
+    public List<BottomMenuEntity> provideDefaultBottomMenu() {
+        List<BottomMenuEntity> menus = super.provideDefaultBottomMenu();
+        return menus.subList(0, 2);
     }
 
     @Override

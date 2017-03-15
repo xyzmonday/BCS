@@ -18,6 +18,7 @@ import com.richfit.barcodesystemproduct.adapter.ASYDetailAdapter;
 import com.richfit.barcodesystemproduct.adapter.BottomMenuAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.common_lib.animationrv.Animation.animators.FadeInDownAnimator;
+import com.richfit.common_lib.basetreerv.MultiItemTypeTreeAdapter;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
@@ -60,6 +61,8 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
     protected TextView tvSpecialInvFag;
     @BindView(R.id.work)
     protected TextView tvWork;
+    @BindView(R.id.refLineNum)
+    protected TextView tvRefLineNum;//参考单据行
     /*应收，应退数量*/
     @BindView(R.id.actQuantity)
     protected TextView tvActQuantity;
@@ -71,7 +74,7 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
     //第二步过账成功后返回的验收单号
     protected String mInspectionNum;
     protected List<BottomMenuEntity> mBottomMenus;
-    protected ASYDetailAdapter mAdapter;
+    protected MultiItemTypeTreeAdapter<RefDetailEntity> mAdapter;
 
     @Override
     protected int getContentId() {
@@ -215,6 +218,10 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
         String state = (String) getData(mBizType + mRefType, "0");
         if (!"0".equals(state)) {
             showMessage("已经过账,不允许修改");
+            return;
+        }
+        if (TextUtils.isEmpty(node.transLineId)) {
+            showMessage("该行还未进行数据采集");
             return;
         }
         TreeNode parentNode = node.getParent();

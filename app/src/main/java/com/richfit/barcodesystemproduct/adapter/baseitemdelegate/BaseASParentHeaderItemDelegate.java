@@ -28,6 +28,7 @@ public class BaseASParentHeaderItemDelegate implements ItemViewDelegate<RefDetai
     public void convert(ViewHolder holder, RefDetailEntity data, int position) {
         holder.setText(R.id.rowNum,(position + 1) + "");
         holder.setText(R.id.lineNum,data.lineNum);
+        holder.setText(R.id.refLineNum,data.lineNum105);
         holder.setText(R.id.materialNum,data.materialNum);
         holder.setText(R.id.materialDesc,data.materialDesc);
         holder.setText(R.id.materialGroup,data.materialGroup);

@@ -52,6 +52,13 @@ public abstract class BaseApprovalHeaderFragment extends BaseFragment<ApprovalHe
     protected RichEditText erArrivalDate;
 
     @Override
+    public void handleBarCodeScanResult(String type, String[] list) {
+        if(list != null && list.length >= 1) {
+            getRefData(list[0]);
+        }
+    }
+
+    @Override
     protected int getContentId() {
         return R.layout.fragment_base_approval_header;
     }

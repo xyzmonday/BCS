@@ -3,7 +3,9 @@ package com.richfit.barcodesystemproduct.module_acceptstore.qinghai_105;
 
 import android.text.TextUtils;
 import android.view.ViewStub;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.module_acceptstore.basecollect.BaseASCollectFragment;
@@ -16,7 +18,6 @@ import com.richfit.domain.bean.ResultEntity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -35,6 +36,8 @@ public class QingHaiAS105CollectFragment extends BaseASCollectFragment<QingHaiAS
     EditText etReturnQuantity;
     EditText etProjectText;
     EditText etMoveCauseDesc;
+    Spinner spStrategyCode;
+    Spinner spMoveReason;
 
     @Override
     public void initInjector() {
@@ -50,7 +53,26 @@ public class QingHaiAS105CollectFragment extends BaseASCollectFragment<QingHaiAS
         //如果输入的退货交货数量，那么移动原因必输，如果退货交货数量没有输入那么移动原因可输可不输
         etProjectText = (EditText) mActivity.findViewById(R.id.et_project_text);
         etMoveCauseDesc = (EditText) mActivity.findViewById(R.id.et_move_cause_desc);
+        spStrategyCode = (Spinner) mActivity.findViewById(R.id.sp_strategy_code);
+        spMoveReason = (Spinner) mActivity.findViewById(R.id.sp_move_cause);
+
+        etBatchFlag.setEnabled(false);
         super.initView();
+    }
+
+    @Override
+    public void initData() {
+        if (spStrategyCode != null) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(mActivity, R.layout.item_simple_sp,
+                    getStringArray(R.array.strategy_codes));
+            spStrategyCode.setAdapter(adapter);
+        }
+        if (spMoveReason != null) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(mActivity, R.layout.item_simple_sp,
+                    getStringArray(R.array.move_reasons));
+            spMoveReason.setAdapter(adapter);
+        }
+        super.initData();
     }
 
     /**
@@ -122,28 +144,9 @@ public class QingHaiAS105CollectFragment extends BaseASCollectFragment<QingHaiAS
     }
 
     @Override
-    public void readConfigsComplete() {
-        //这里我们仅仅初始化一次数据字典，那么这就意味着当切换或者调用clearAllUI方法的时候不应该
-        //清除字典的数据
-        mPresenter.readExtraDataSourceDictionary(mSubFunEntity.collectionConfigs);
-    }
-
-    @Override
-    public void readExtraDictionarySuccess(Map<String, Object> extraMap) {
-        bindExtraUI(mSubFunEntity.collectionConfigs, extraMap);
-    }
-
-    @Override
-    public void readExtraDictionaryFail(String message) {
-        showMessage(message);
-    }
-
-    @Override
     public void initEvent() {
         super.initEvent();
-        etLocation.setOnRichEditTouchListener((view, location) -> {
-            getTransferSingle(getString(etBatchFlag), location);
-        });
+        etLocation.setOnRichEditTouchListener((view, location) -> getTransferSingle(getString(etBatchFlag), location));
     }
 
     @Override
@@ -204,7 +207,9 @@ public class QingHaiAS105CollectFragment extends BaseASCollectFragment<QingHaiAS
 
     @Override
     public boolean checkCollectedDataBeforeSave() {
-        if (!isEmpty(getString(etReturnQuantity)) && isEmpty(getString(etMoveCauseDesc))) {
+        //如果退货数量不为o那么移动原因说明必须输入
+        if ((!isEmpty(getString(etReturnQuantity)) || !"0".equals(getString(etReturnQuantity)))
+                && isEmpty(getString(etMoveCauseDesc))) {
             showMessage("请输入移动原因说明");
             return false;
         }
@@ -247,6 +252,19 @@ public class QingHaiAS105CollectFragment extends BaseASCollectFragment<QingHaiAS
             result.moveCauseDesc = getString(etMoveCauseDesc);
             //项目文本
             result.projectText = getString(etProjectText);
+            //决策代码
+            if (spStrategyCode.getSelectedItemPosition() > 0) {
+                Object object = spStrategyCode.getSelectedItem();
+                if (object != null) {
+                    result.decisionCode = object.toString().split("_")[0];
+                }
+            }
+            //移动原因
+            if (spMoveReason.getSelectedItemPosition() > 0) {
+                Object selectedItem = spMoveReason.getSelectedItem();
+                if (selectedItem != null)
+                    result.moveCause = selectedItem.toString().split("_")[0];
+            }
 
             result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
             result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, lineData.mapExt, mExtraLocationMap);

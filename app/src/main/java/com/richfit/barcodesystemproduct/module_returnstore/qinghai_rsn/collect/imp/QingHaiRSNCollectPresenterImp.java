@@ -65,10 +65,11 @@ public class QingHaiRSNCollectPresenterImp extends BasePresenter<IQingHaiRSNColl
 
     @Override
     public void getTransferSingleInfo(String bizType, String materialNum, String userId, String workId,
-                                      String invId, String recWorkId, String recInvId, String batchFlag) {
+                                      String invId, String recWorkId, String recInvId, String batchFlag,
+                                      String refDoc,int refDocItem) {
         mView = getView();
         RxSubscriber<ReferenceEntity> subscriber = mRepository.getTransferInfoSingle("","",bizType, "",
-                workId,invId,recWorkId,recInvId,materialNum,batchFlag,"",userId)
+                workId,invId,recWorkId,recInvId,materialNum,batchFlag,"",refDoc,refDocItem,userId)
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<ReferenceEntity>(mContext) {
                     @Override

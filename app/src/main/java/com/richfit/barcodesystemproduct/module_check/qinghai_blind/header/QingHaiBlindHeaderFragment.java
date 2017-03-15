@@ -433,6 +433,7 @@ public class QingHaiBlindHeaderFragment extends BaseFragment<BlindHeaderPresente
                 mRefData.storageNum = mStorageNums.get(spStorageNum.getSelectedItemPosition());
                 mRefData.checkLevel = "01";
             } else if (rbWarehouseLevel.isChecked()) {
+                //库存级
                 final int selectedWorkPosition = spWork.getSelectedItemPosition();
                 if (selectedWorkPosition > 0) {
                     mRefData.workId = mWorkDatas.get(selectedWorkPosition).workId;

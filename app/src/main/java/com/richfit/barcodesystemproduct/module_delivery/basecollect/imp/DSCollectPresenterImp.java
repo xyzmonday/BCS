@@ -130,10 +130,11 @@ public class DSCollectPresenterImp extends BasePresenter<IDSCollectView>
 
     @Override
     public void getTransferInfoSingle(String refCodeId, String refType, String bizType, String refLineId,
-                                      String batchFlag, String location, String userId) {
+                                      String batchFlag, String location,String refDoc,int refDocItem, String userId) {
         mView = getView();
         RxSubscriber<RefDetailEntity> subscriber =
-                mRepository.getTransferInfoSingle(refCodeId, refType, bizType, refLineId, "", "", "", "", "", batchFlag, location, userId)
+                mRepository.getTransferInfoSingle(refCodeId, refType, bizType, refLineId,
+                        "", "", "", "", "", batchFlag, location,refDoc,refDocItem, userId)
                         .filter(refData -> refData != null && refData.billDetailList != null)
                         .flatMap(refData -> getMatchedLineData(refLineId, refData))
                         .compose(TransformerHelper.io2main())

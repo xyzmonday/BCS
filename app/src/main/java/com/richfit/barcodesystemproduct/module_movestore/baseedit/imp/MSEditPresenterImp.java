@@ -33,31 +33,32 @@ public class MSEditPresenterImp extends BasePresenter<IMSEditView>
     public MSEditPresenterImp(@ContextLife("Activity") Context context) {
         super(context);
     }
+
     @Override
     public void getInventoryInfo(String queryType, String workId, String invId, String workCode, String invCode, String storageNum,
                                  String materialNum, String materialId, String location, String batchFlag,
-                                 String specialInvFlag,String specialInvNum,String invType) {
+                                 String specialInvFlag, String specialInvNum, String invType) {
         mView = getView();
         RxSubscriber<List<InventoryEntity>> subscriber = null;
         if ("04".equals(queryType)) {
             subscriber = mRepository.getStorageNum(workId, workCode, invId, invCode)
                     .filter(num -> !TextUtils.isEmpty(num))
                     .flatMap(num -> mRepository.getInventoryInfo(queryType, workId, invId,
-                            workCode, invCode, num, materialNum, materialId, "", "", batchFlag, location, specialInvFlag,storageNum,invType))
+                            workCode, invCode, num, materialNum, materialId, "", "", batchFlag, location, specialInvFlag, storageNum, invType))
                     .compose(TransformerHelper.io2main())
                     .subscribeWith(new InventorySubscriber(mContext, "正在获取库存"));
 
         } else {
             subscriber = mRepository.getInventoryInfo(queryType, workId, invId,
                     workCode, invCode, storageNum, materialNum, materialId, "", "", batchFlag, location,
-                    specialInvFlag,storageNum,invType)
+                    specialInvFlag, storageNum, invType)
                     .compose(TransformerHelper.io2main())
                     .subscribeWith(new InventorySubscriber(mContext, "正在获取库存"));
         }
         addSubscriber(subscriber);
     }
 
-    class InventorySubscriber extends RxSubscriber<List<InventoryEntity>>{
+    class InventorySubscriber extends RxSubscriber<List<InventoryEntity>> {
 
         public InventorySubscriber(Context context, String msg) {
             super(context, msg);
@@ -99,11 +100,11 @@ public class MSEditPresenterImp extends BasePresenter<IMSEditView>
 
     @Override
     public void getTransferInfoSingle(String refCodeId, String refType, String bizType, String refLineId,
-                                      String batchFlag, String location, String userId) {
+                                      String batchFlag, String location, String refDoc, int refDocItem, String userId) {
         mView = getView();
         RxSubscriber<RefDetailEntity> subscriber =
                 mRepository.getTransferInfoSingle(refCodeId, refType, bizType, refLineId,
-                        "", "", "", "", "", batchFlag, location, userId)
+                        "", "", "", "", "", batchFlag, location, refDoc, refDocItem, userId)
                         .filter(refData -> refData != null && refData.billDetailList != null)
                         .flatMap(refData -> getMatchedLineData(refLineId, refData))
                         .compose(TransformerHelper.io2main())

@@ -35,31 +35,31 @@ public class ASCollectPresenterImp extends BasePresenter<IASCollectView>
     }
 
     @Override
-    public void getInvsByWorkId(String workId,int flag) {
+    public void getInvsByWorkId(String workId, int flag) {
         mView = getView();
         ResourceSubscriber<ArrayList<InvEntity>> subscriber =
-                mRepository.getInvsByWorkId(workId,flag)
-                .compose(TransformerHelper.io2main())
-                .subscribeWith(new ResourceSubscriber<ArrayList<InvEntity>>() {
-                    @Override
-                    public void onNext(ArrayList<InvEntity> list) {
-                        if (mView != null) {
-                            mView.showInvs(list);
-                        }
-                    }
+                mRepository.getInvsByWorkId(workId, flag)
+                        .compose(TransformerHelper.io2main())
+                        .subscribeWith(new ResourceSubscriber<ArrayList<InvEntity>>() {
+                            @Override
+                            public void onNext(ArrayList<InvEntity> list) {
+                                if (mView != null) {
+                                    mView.showInvs(list);
+                                }
+                            }
 
-                    @Override
-                    public void onError(Throwable t) {
-                        if (mView != null) {
-                            mView.loadInvFail(t.getMessage());
-                        }
-                    }
+                            @Override
+                            public void onError(Throwable t) {
+                                if (mView != null) {
+                                    mView.loadInvFail(t.getMessage());
+                                }
+                            }
 
-                    @Override
-                    public void onComplete() {
+                            @Override
+                            public void onComplete() {
 
-                    }
-                });
+                            }
+                        });
         addSubscriber(subscriber);
     }
 
@@ -78,37 +78,38 @@ public class ASCollectPresenterImp extends BasePresenter<IASCollectView>
 
         ResourceSubscriber<String> subscriber =
                 mRepository.getLocationInfo(queryType, workId, invId, location)
-                .compose(TransformerHelper.io2main())
-                .subscribeWith(new ResourceSubscriber<String>() {
-                    @Override
-                    public void onNext(String s) {
+                        .compose(TransformerHelper.io2main())
+                        .subscribeWith(new ResourceSubscriber<String>() {
+                            @Override
+                            public void onNext(String s) {
 
-                    }
+                            }
 
-                    @Override
-                    public void onError(Throwable t) {
-                        if (mView != null) {
-                            mView.checkLocationFail(t.getMessage());
-                        }
-                    }
+                            @Override
+                            public void onError(Throwable t) {
+                                if (mView != null) {
+                                    mView.checkLocationFail(t.getMessage());
+                                }
+                            }
 
-                    @Override
-                    public void onComplete() {
-                        if (mView != null) {
-                            mView.checkLocationSuccess(batchFlag, location);
-                        }
-                    }
-                });
+                            @Override
+                            public void onComplete() {
+                                if (mView != null) {
+                                    mView.checkLocationSuccess(batchFlag, location);
+                                }
+                            }
+                        });
         addSubscriber(subscriber);
     }
 
     @Override
-    public void getTransferInfoSingle(final String refCodeId, final String refType, final String bizType,
-                                      final String refLineId, final String batchFlag, final String location,
-                                      final String userId) {
+    public void getTransferInfoSingle(String refCodeId, String refType, String bizType,
+                                      String refLineId, String batchFlag, String location,
+                                      String refDoc, int refDocItem, String userId) {
         mView = getView();
         RxSubscriber<RefDetailEntity> subscriber =
-                mRepository.getTransferInfoSingle(refCodeId, refType, bizType, refLineId, "", "", "", "", "", batchFlag, location, userId)
+                mRepository.getTransferInfoSingle(refCodeId, refType, bizType, refLineId, "", "", "", "", "",
+                        batchFlag, location, refDoc, refDocItem, userId)
                         .filter(refData -> refData != null && refData.billDetailList != null)
                         .flatMap(refData -> getMatchedLineData(refLineId, refData))
                         .compose(TransformerHelper.io2main())

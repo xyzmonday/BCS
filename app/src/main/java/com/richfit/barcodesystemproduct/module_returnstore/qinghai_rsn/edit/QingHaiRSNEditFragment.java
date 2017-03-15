@@ -89,7 +89,7 @@ public class QingHaiRSNEditFragment extends BaseFragment<QingHaiRSNEditPresenter
         RxTextView.textChanges(etLocation)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .filter(location ->  !TextUtils.isEmpty(location) && location.length() > 0)
+                .filter(location -> !TextUtils.isEmpty(location) && location.length() > 0)
                 .debounce(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread())
                 .subscribe(location -> loadLocationQuantity(location.toString(), getString(tvBatchFlag)), e -> L.d(e.getMessage()));
     }
@@ -124,7 +124,7 @@ public class QingHaiRSNEditFragment extends BaseFragment<QingHaiRSNEditPresenter
         //获取缓存信息
         mPresenter.getTransferInfoSingle(mRefData.bizType, materialNum,
                 Global.USER_ID, mRefData.workId, mRefData.invId, mRefData.recWorkId,
-                mRefData.recInvId, batchFlag);
+                mRefData.recInvId, batchFlag, "", -1);
     }
 
     @Override
@@ -299,7 +299,7 @@ public class QingHaiRSNEditFragment extends BaseFragment<QingHaiRSNEditPresenter
             case Global.RETRY_LOAD_SINGLE_CACHE_ACTION:
                 mPresenter.getTransferInfoSingle(mRefData.bizType, getString(tvMaterialNum),
                         Global.USER_ID, mRefData.workId, mRefData.invId, mRefData.recWorkId,
-                        mRefData.recInvId, getString(tvBatchFlag));
+                        mRefData.recInvId, getString(tvBatchFlag), "", -1);
                 break;
             case Global.RETRY_SAVE_COLLECTION_DATA_ACTION:
                 saveCollectedData();

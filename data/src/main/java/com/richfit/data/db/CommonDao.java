@@ -587,8 +587,11 @@ public class CommonDao extends BaseDao {
 
         final String tableName = flag == 0 ? PAuthOrgKey : PAuthOrg2Key;
 
-        Cursor cursor = db.rawQuery("select org_id,org_name,org_code from " + tableName + " where parent_id = ?"
-                , new String[]{workId});
+        StringBuffer sb = new StringBuffer();
+        sb.append("select org_id,org_name,org_code from ")
+                .append(tableName)
+                .append(" where parent_id = ? order by org_code ");
+        Cursor cursor = db.rawQuery(sb.toString(), new String[]{workId});
         while (cursor.moveToNext()) {
             InvEntity entity = new InvEntity();
             entity.invId = cursor.getString(0);
@@ -596,7 +599,7 @@ public class CommonDao extends BaseDao {
             entity.invCode = cursor.getString(2);
             datas.add(entity);
         }
-
+        sb.setLength(0);
         cursor.close();
         db.close();
         return datas;

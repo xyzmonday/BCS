@@ -102,7 +102,7 @@ public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment<QingYang
     @Override
     public List<BottomMenuEntity> provideDefaultBottomMenu() {
         List<BottomMenuEntity> menus = super.provideDefaultBottomMenu();
-        return menus.subList(0, 1);
+        return menus.subList(3, 4);
     }
 
     @Override

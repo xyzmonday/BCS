@@ -103,7 +103,7 @@ public class QingHaiAS103DetailFragment extends BaseASDetailFragment<QingHaiAS10
 
     @Override
     public void submitBarcodeSystemFail(String message) {
-        showMessage(message);
+        showErrorDialog(message);
     }
 
     @Override

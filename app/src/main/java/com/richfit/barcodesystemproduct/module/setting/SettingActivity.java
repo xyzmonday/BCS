@@ -54,8 +54,8 @@ public class SettingActivity extends BaseActivity<SettingPresenterImp>
     SwitchView sbSupplier;
     @BindView(R.id.sb_cost_center)
     SwitchView sbCostCenter;
-    @BindView(R.id.sb_warehouse)
-    SwitchView sbWarehouse;
+//    @BindView(R.id.sb_warehouse)
+//    SwitchView sbWarehouse;
     @BindView(R.id.sb_project_num)
     SwitchView sbProjectNum;
     @BindView(R.id.check_update_apk)
@@ -141,14 +141,6 @@ public class SettingActivity extends BaseActivity<SettingPresenterImp>
             task.queryType = "CZ";
             requestParams.add(task);
             mMessage += "成本中心;";
-        }
-
-        if(sbWarehouse.isOpened()) {
-            task = new LoadBasicDataWrapper();
-            task.isByPage = false;
-            task.queryType = "LZ";
-            requestParams.add(task);
-            mMessage += "料组;";
         }
 
         if(sbProjectNum.isOpened()) {

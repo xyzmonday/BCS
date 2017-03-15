@@ -36,48 +36,49 @@ public class NMSEditPresenterImp extends BasePresenter<INMSEditView>
 
 
     @Override
-    public void getTransferInfoSingle(String bizType, String materialNum, String userId, String workId, String invId, String recWorkId, String recInvId, String batchFlag) {
+    public void getTransferInfoSingle(String bizType, String materialNum, String userId, String workId, String invId, String recWorkId,
+                                      String recInvId, String batchFlag, String refDoc, int refDocIem) {
         mView = getView();
         RxSubscriber<ReferenceEntity> subscriber =
                 mRepository.getTransferInfoSingle("", "", bizType, "",
-                workId, invId, recWorkId, recInvId, materialNum, batchFlag, "", userId)
-                .compose(TransformerHelper.io2main())
-                .subscribeWith(new RxSubscriber<ReferenceEntity>(mContext) {
-                    @Override
-                    public void _onNext(ReferenceEntity refData) {
-                        if (mView != null) {
-                            mView.onBindCommonUI(refData, batchFlag);
-                        }
-                    }
+                        workId, invId, recWorkId, recInvId, materialNum, batchFlag, "", refDoc, refDocIem, userId)
+                        .compose(TransformerHelper.io2main())
+                        .subscribeWith(new RxSubscriber<ReferenceEntity>(mContext) {
+                            @Override
+                            public void _onNext(ReferenceEntity refData) {
+                                if (mView != null) {
+                                    mView.onBindCommonUI(refData, batchFlag);
+                                }
+                            }
 
-                    @Override
-                    public void _onNetWorkConnectError(String message) {
-                        if (mView != null) {
-                            mView.networkConnectError(Global.RETRY_LOAD_SINGLE_CACHE_ACTION);
-                        }
-                    }
+                            @Override
+                            public void _onNetWorkConnectError(String message) {
+                                if (mView != null) {
+                                    mView.networkConnectError(Global.RETRY_LOAD_SINGLE_CACHE_ACTION);
+                                }
+                            }
 
-                    @Override
-                    public void _onCommonError(String message) {
-                        if (mView != null) {
-                            mView.loadTransferSingleInfoFail(message);
-                        }
-                    }
+                            @Override
+                            public void _onCommonError(String message) {
+                                if (mView != null) {
+                                    mView.loadTransferSingleInfoFail(message);
+                                }
+                            }
 
-                    @Override
-                    public void _onServerError(String code, String message) {
-                        if (mView != null) {
-                            mView.loadTransferSingleInfoFail(message);
-                        }
-                    }
+                            @Override
+                            public void _onServerError(String code, String message) {
+                                if (mView != null) {
+                                    mView.loadTransferSingleInfoFail(message);
+                                }
+                            }
 
-                    @Override
-                    public void _onComplete() {
-                        if (mView != null) {
-                            mView.loadTransferSingleInfoComplete();
-                        }
-                    }
-                });
+                            @Override
+                            public void _onComplete() {
+                                if (mView != null) {
+                                    mView.loadTransferSingleInfoComplete();
+                                }
+                            }
+                        });
         addSubscriber(subscriber);
     }
 

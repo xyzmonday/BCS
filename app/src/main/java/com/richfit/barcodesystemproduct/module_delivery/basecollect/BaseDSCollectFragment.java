@@ -61,7 +61,7 @@ public abstract class BaseDSCollectFragment<P extends IDSCollectPresenter> exten
     @BindView(R.id.act_quantity_name)
     protected TextView actQuantityName;
     @BindView(R.id.tv_act_quantity)
-    TextView tvActQuantity;
+    protected  TextView tvActQuantity;
     @BindView(R.id.et_batch_flag)
     EditText etBatchFlag;
     @BindView(R.id.inv_spinner)
@@ -69,17 +69,17 @@ public abstract class BaseDSCollectFragment<P extends IDSCollectPresenter> exten
     @BindView(R.id.sp_location)
     Spinner spLocation;
     @BindView(R.id.tv_inv_quantity)
-    TextView tvInvQuantity;
+    protected TextView tvInvQuantity;
     @BindView(R.id.tv_location_quantity)
-    TextView tvLocQuantity;
+    protected TextView tvLocQuantity;
     @BindView(R.id.quantity_name)
     protected TextView quantityName;
     @BindView(R.id.et_quantity)
-    EditText etQuantity;
+    protected EditText etQuantity;
     @BindView(R.id.cb_single)
     CheckBox cbSingle;
     @BindView(R.id.tv_total_quantity)
-    TextView tvTotalQuantity;
+    protected TextView tvTotalQuantity;
     @BindView(R.id.btn_component)
     Button btnComponent;
 
@@ -93,7 +93,7 @@ public abstract class BaseDSCollectFragment<P extends IDSCollectPresenter> exten
     private List<InventoryEntity> mInventoryDatas;
     private LocationAdapter mLocationAdapter;
     /*当前操作的明细行号*/
-    private String mSelectedRefLineNum;
+    protected String mSelectedRefLineNum;
     /*缓存的批次*/
     private String mCachedBatchFlag;
     /*缓存的仓位级别的额外字段*/
@@ -107,15 +107,19 @@ public abstract class BaseDSCollectFragment<P extends IDSCollectPresenter> exten
     @Override
     public void handleBarCodeScanResult(String type, String[] list) {
         if (list != null && list.length >= 12) {
-            final String materialNum = list[2];
-            final String batchFlag = list[11];
+            if (!etMaterialNum.isEnabled()) {
+                showMessage("请先在抬头界面获取相关数据");
+                return;
+            }
+            final String materialNum = list[Global.MATERIAL_POS];
+            final String batchFlag = list[Global.BATCHFALG_POS];
             if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
                getTransferSingle(spLocation.getSelectedItemPosition());
-            } else if (!cbSingle.isChecked()) {
-                //非单品模式下，先清除控件
+            } else {
+                //在非单品模式下，扫描不同的物料。注意这里必须用新的物料和批次更新UI
+                etMaterialNum.setText(materialNum);
+                etBatchFlag.setText(batchFlag);
                 loadMaterialInfo(materialNum, batchFlag);
-            } else if (cbSingle.isChecked() && !materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
-                loadMaterialInfo(getString(etMaterialNum), getString(etBatchFlag));
             }
         }
     }
@@ -432,9 +436,10 @@ public abstract class BaseDSCollectFragment<P extends IDSCollectPresenter> exten
         final String refType = mRefData.refType;
         final String bizType = mRefData.bizType;
         final String refLineId = lineData.refLineId;
-
+        mCachedBatchFlag = "";
+        mExtraLocationMap = null;
         mPresenter.getTransferInfoSingle(refCodeId, refType, bizType, refLineId,
-                batchFlag, location, Global.USER_ID);
+                batchFlag, location,lineData.refDoc,UiUtil.convertToInt(lineData.refDocItem), Global.USER_ID);
     }
 
     private void resetLocation() {
@@ -524,8 +529,7 @@ public abstract class BaseDSCollectFragment<P extends IDSCollectPresenter> exten
      * 不论扫描的是否是同一个物料，都清除控件的信息。
      */
     private void clearAllUI() {
-        clearCommonUI(tvMaterialDesc, tvWork, tvActQuantity,
-                etBatchFlag, tvLocQuantity, etQuantity, tvLocQuantity, tvInvQuantity,
+        clearCommonUI(tvMaterialDesc, tvWork, tvActQuantity, tvLocQuantity, etQuantity, tvLocQuantity, tvInvQuantity,
                 tvTotalQuantity, cbSingle);
         //单据行
         if (mRefLineAdapter != null) {
@@ -600,8 +604,6 @@ public abstract class BaseDSCollectFragment<P extends IDSCollectPresenter> exten
             etQuantity.setText("");
             return false;
         }
-        //对于冻结物资不需要检查历史仓位数据+本次录入数量<=库存数量
-//        if (!isFrozenMaterial) {
         //该仓位的历史出库数量
         final float historyQuantityV = UiUtil.convertToFloat(getString(tvLocQuantity), 0.0f);
         //该仓位的库存数量
@@ -761,6 +763,7 @@ public abstract class BaseDSCollectFragment<P extends IDSCollectPresenter> exten
     @Override
     public void _onPause() {
         clearAllUI();
+        clearCommonUI(etMaterialNum,etBatchFlag);
     }
 
     @Override

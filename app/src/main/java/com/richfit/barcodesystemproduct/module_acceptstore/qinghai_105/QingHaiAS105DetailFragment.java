@@ -60,7 +60,6 @@ public class QingHaiAS105DetailFragment extends BaseFragment<QingHaiAS105DetailP
     //第二步过账成功后返回的验收单号
     String mInspectionNum;
     List<BottomMenuEntity> mBottomMenus;
-
     QingHaiAS105DetailAdapter mAdapter;
 
 
@@ -133,7 +132,7 @@ public class QingHaiAS105DetailFragment extends BaseFragment<QingHaiAS105DetailP
     public void onRefresh() {
         String transferFlag = (String) getData(mBizType + mRefType, "0");
         if ("1".equals(transferFlag)) {
-            setRefreshing(false, "本次采集已经过账,请先进行数据上传操作");
+            setRefreshing(false, getString(R.string.detail_on_location));
             return;
         }
         //单据抬头id
@@ -264,6 +263,7 @@ public class QingHaiAS105DetailFragment extends BaseFragment<QingHaiAS105DetailP
      */
     @Override
     public void showOperationMenuOnDetail(final String companyCode) {
+
         View rootView = LayoutInflater.from(mActivity).inflate(R.layout.menu_bottom, null);
         GridView menu = (GridView) rootView.findViewById(R.id.gridview);
         mBottomMenus = provideDefaultBottomMenu();

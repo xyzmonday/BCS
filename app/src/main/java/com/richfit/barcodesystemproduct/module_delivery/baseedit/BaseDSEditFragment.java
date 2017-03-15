@@ -99,8 +99,8 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
                     tvInvQuantity.setText(mInventoryDatas.get(position).invQuantity);
                     //获取缓存
                     mPresenter.getTransferInfoSingle(mRefData.refCodeId, mRefData.refType,
-                            mRefData.bizType, mRefLineId, getString(tvBatchFlag), mSelectedLocation
-                            , Global.USER_ID);
+                            mRefData.bizType, mRefLineId, getString(tvBatchFlag), mSelectedLocation,
+                            "",-1, Global.USER_ID);
                 });
     }
 

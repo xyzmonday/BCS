@@ -288,6 +288,11 @@ public abstract class BaseNMSHeaderFragment extends BaseFragment<NMSHeaderPresen
     }
 
 
+    @Override
+    public boolean isNeedShowFloatingButton() {
+        return false;
+    }
+
     protected abstract String getMoveType();
 
     /**

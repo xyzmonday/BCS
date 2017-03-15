@@ -222,7 +222,7 @@ public abstract class BaseASHeaderFragment extends BaseFragment<ASHeaderPresente
             //单据号
             tvRefNum.setText(mRefData.recordNum);
             //供应商
-            tvSupplier.setText(mRefData.supplierNum);
+            tvSupplier.setText(mRefData.supplierNum + "_" + mRefData.supplierDesc);
             //发出工厂
             tvSendWork.setText(mRefData.workCode);
             tvCreator.setText(Global.LOGIN_ID);
@@ -270,6 +270,11 @@ public abstract class BaseASHeaderFragment extends BaseFragment<ASHeaderPresente
         super.retry(action);
     }
 
+
+    @Override
+    public boolean isNeedShowFloatingButton() {
+        return false;
+    }
 
     /*返回移动类型*/
     @CheckResult

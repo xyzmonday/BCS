@@ -8,6 +8,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.MainPagerViewAdapter;
@@ -16,7 +17,7 @@ import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.common_lib.rxutils.RxCilck;
 import com.richfit.common_lib.transformer.CubeTransformer;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.common_lib.utils.L;
+import com.richfit.common_lib.widget.NoScrollViewPager;
 
 import butterknife.BindView;
 
@@ -33,10 +34,8 @@ public abstract class BaseMainActivity<P extends MainContract.Presenter> extends
 
     @BindView(R.id.tablayout)
     TabLayout mTabLayout;
-
     @BindView(R.id.viewpager)
-    ViewPager mViewPager;
-
+    NoScrollViewPager mViewPager;
     @BindView(R.id.floating_button)
     FloatingActionButton mFloatingButton;
 
@@ -68,8 +67,6 @@ public abstract class BaseMainActivity<P extends MainContract.Presenter> extends
                 mRefType = bundle.getString(Global.EXTRA_REF_TYPE_KEY);
                 mCaption = bundle.getString(Global.EXTRA_CAPTION_KEY);
                 mSelectedRefLineNum = bundle.getString(Global.EXTRA_REF_LINE_NUM_KEY);
-
-                L.e("mBizType = " + mBizType + "; mRefType = " + mRefType + "; mSelectedRefLineNum = " + mSelectedRefLineNum);
             }
         }
     }
@@ -99,10 +96,8 @@ public abstract class BaseMainActivity<P extends MainContract.Presenter> extends
      * 设置主页面的内容
      */
     private void setupMainContent(Bundle savedInstanceState) {
-
         int currentPageIndex = savedInstanceState == null ? -1 :
                 savedInstanceState.getInt(CURRENT_PAGE_INDEX_KEY, -1);
-
         mPresenter.setupMainContent(getSupportFragmentManager(), mCompanyCode,
                 mModuleCode, mBizType, mRefType, mSelectedRefLineNum, currentPageIndex);
     }
@@ -114,6 +109,16 @@ public abstract class BaseMainActivity<P extends MainContract.Presenter> extends
         //默认显示第一个页签
         mCurrentPage = currentPageIndex == -1 ? 0 : currentPageIndex;
         mViewPager.setCurrentItem(mCurrentPage);
+        //如果默认显示的是抬头页面，那么根据isNeedShowFloatingButton决定是否显示按钮
+        isShowFloatingButton();
+    }
+
+    private void isShowFloatingButton() {
+        final BaseFragment fragment = getFragmentByPosition(mCurrentPage);
+        if (fragment == null)
+            return;
+        mFloatingButton.setVisibility(fragment.isNeedShowFloatingButton() ?
+                View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
@@ -124,7 +129,10 @@ public abstract class BaseMainActivity<P extends MainContract.Presenter> extends
     @Override
     protected void onRestart() {
         super.onRestart();
-        if (mCurrentPage == BaseFragment.DETAIL_FRAGMENT_INDEX) {
+        //当该Activity从后台再次进入前台的时候(也就是后台的Activity已经onPause了)，那么根据需求需要
+        //Fragment再次执行懒加载
+        BaseFragment fragment = getFragmentByPosition(mCurrentPage);
+        if (fragment != null && fragment.getFragmentType() == BaseFragment.DETAIL_FRAGMENT_INDEX) {
             getFragmentByPosition(mCurrentPage).setUserVisibleHint(true);
         }
     }
@@ -160,6 +168,7 @@ public abstract class BaseMainActivity<P extends MainContract.Presenter> extends
         if (position < 0 || position >= mViewPager.getAdapter().getCount())
             return;
         mViewPager.setCurrentItem(position);
+
     }
 
 
@@ -171,6 +180,7 @@ public abstract class BaseMainActivity<P extends MainContract.Presenter> extends
     @Override
     public void onPageSelected(int position) {
         mCurrentPage = position;
+        isShowFloatingButton();
     }
 
     @Override
@@ -216,5 +226,27 @@ public abstract class BaseMainActivity<P extends MainContract.Presenter> extends
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void handleBarCodeScanResult(String type, String[] list) {
+        final BaseFragment fragment = getFragmentByPosition(mCurrentPage);
+        if (fragment == null) {
+            return;
+        }
+        final int fragmentType = fragment.getFragmentType();
+        //物料
+        if (list.length > 2 && fragmentType == BaseFragment.COLLECT_FRAGMENT_INDEX) {
+            fragment.handleBarCodeScanResult(type, list);
+            //单据
+        } else if (list.length == 1 && fragmentType == BaseFragment.HEADER_FRAGMENT_INDEX) {
+            fragment.handleBarCodeScanResult(type, list);
+            //仓位
+        } else if (list.length == 2 && fragmentType == BaseFragment.COLLECT_FRAGMENT_INDEX) {
+            fragment.handleBarCodeScanResult(type, list);
+        } else {
+            fragment.handleBarCodeScanResult(type, list);
+        }
+    }
+
 
 }

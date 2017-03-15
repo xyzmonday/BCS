@@ -37,6 +37,11 @@ public class QingHaiRGHeaderFragment extends BaseDSHeaderFragment {
 
     }
 
+    @Override
+    public boolean isNeedShowFloatingButton() {
+        return false;
+    }
+
     @NonNull
     @Override
     protected String getBizType() {

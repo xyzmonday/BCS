@@ -105,11 +105,10 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
 
     /*缓存的历史仓位数量*/
     private List<RefDetailEntity> mHistoryDetailList;
-
     /*缓存的仓位级别的额外字段*/
-    Map<String, Object> mExtraLocationMap;
+    Map<String, Object> mCachedExtraLocationMap;
     /*缓存的行级别的额外字段*/
-    Map<String, Object> mExtraLineMap;
+    Map<String, Object> mCachedExtraLineMap;
 
 
     @Override
@@ -130,13 +129,14 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
                 showMessage("请先在抬头界面获取相关数据");
                 return;
             }
-            final String materialNum = list[2];
-            final String batchFlag = list[11];
+            final String materialNum = list[Global.MATERIAL_POS];
+            final String batchFlag = list[Global.BATCHFALG_POS];
             if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
                 //如果已经选中单品，那么说明已经扫描过一次。必须保证每一次的物料都一样
                 saveCollectedData();
             } else {
-                clearAllUI();
+                etMaterialNum.setText(materialNum);
+                etSendBatchFlag.setText(batchFlag);
                 loadMaterialInfo(materialNum, batchFlag);
             }
         } else if (list != null && list.length == 1 & !cbSingle.isChecked()) {
@@ -292,9 +292,10 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
             return;
         }
         clearAllUI();
+        mHistoryDetailList = null;
         mPresenter.getTransferInfoSingle(mRefData.bizType, materialNum,
                 Global.USER_ID, mRefData.workId, mRefData.invId, mRefData.recWorkId,
-                mRefData.recInvId, batchFlag);
+                mRefData.recInvId, batchFlag, "", -1);
     }
 
     @Override
@@ -380,6 +381,8 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
         }
 
         final InvEntity invEntity = mSendInvs.get(position);
+        mCachedExtraLocationMap = null;
+        mCachedExtraLocationMap = null;
         mPresenter.getInventoryInfo(getInventoryQueryType(), mRefData.workId, invEntity.invId,
                 mRefData.workCode, invEntity.invCode, "", getString(etMaterialNum),
                 CommonUtil.Obj2String(etMaterialNum.getTag()), "",
@@ -452,16 +455,16 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
                         locQuantity = locationInfo.quantity;
                         recLocation = locationInfo.recLocation;
                         recBatchFlag = locationInfo.recBatchFlag;
-                        mExtraLocationMap = locationInfo.mapExt;
-                        mExtraLineMap = detail.mapExt;
+                        mCachedExtraLocationMap = locationInfo.mapExt;
+                        mCachedExtraLineMap = detail.mapExt;
                         break;
                     }
                 }
             }
         }
         //绑定额外字段数据
-        bindExtraUI(mSubFunEntity.locationConfigs, mExtraLocationMap);
-        bindExtraUI(mSubFunEntity.collectionConfigs, mExtraLineMap);
+        bindExtraUI(mSubFunEntity.locationConfigs, mCachedExtraLocationMap);
+        bindExtraUI(mSubFunEntity.collectionConfigs, mCachedExtraLineMap);
         tvLocQuantity.setText(locQuantity);
         //注意如果缓存中没有接收批次或者接收仓位，或者已经手动赋值,那么不用缓存更新它们
         if (!TextUtils.isEmpty(recLocation) && !TextUtils.isEmpty(getString(etRecLoc)))
@@ -556,7 +559,7 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
      */
     @Override
     public boolean checkCollectedDataBeforeSave() {
-        if(!etMaterialNum.isEnabled()) {
+        if (!etMaterialNum.isEnabled()) {
             showMessage("请先获取物料信息");
             return false;
         }
@@ -627,10 +630,11 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
             result.quantity = getString(etQuantity);
             result.invType = getInvType();
             result.modifyFlag = "N";
-            result.specialInvFlag = CommonUtil.Obj2String(spSpecialInvFlag.getSelectedItem());
-            result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
-            result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
-            result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
+            //这里将specialInvFlag从N变成了""
+            result.specialInvFlag = spSpecialInvFlag.getSelectedItemPosition() == 0 ? "N" : CommonUtil.Obj2String(spSpecialInvFlag.getSelectedItem());
+            result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, mCachedExtraLineMap, mCachedExtraLocationMap);
+            result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, mCachedExtraLineMap, mCachedExtraLocationMap);
+            result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, mCachedExtraLineMap, mCachedExtraLocationMap);
             emitter.onNext(result);
             emitter.onComplete();
         }, BackpressureStrategy.BUFFER)
@@ -654,7 +658,7 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
     }
 
     private void clearAllUI() {
-        clearCommonUI(tvMaterialDesc, tvMaterialGroup, tvMaterialUnit, etSendBatchFlag,
+        clearCommonUI(tvMaterialDesc, tvMaterialGroup, tvMaterialUnit,
                 tvInvQuantity, tvLocQuantity, etQuantity, etRecBatchFlag, etRecLoc);
 
         //发出库位(注意由于发出库位是一进来就加载的,所以不能清理)
@@ -702,6 +706,7 @@ public abstract class BaseNMSCollectFragment<P extends INMSCollectPresenter> ext
     @Override
     public void _onPause() {
         clearAllUI();
+        clearCommonUI(etMaterialNum, etSendBatchFlag);
     }
 
     @Override

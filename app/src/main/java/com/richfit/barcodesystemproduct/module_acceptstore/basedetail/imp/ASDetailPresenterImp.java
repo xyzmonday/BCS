@@ -12,7 +12,6 @@ import com.richfit.barcodesystemproduct.module.edit.EditActivity;
 import com.richfit.barcodesystemproduct.module.main.MainActivity;
 import com.richfit.barcodesystemproduct.module_acceptstore.basedetail.IASDetailPresenter;
 import com.richfit.barcodesystemproduct.module_acceptstore.basedetail.IASDetailView;
-import com.richfit.common_lib.basetreerv.RecycleTreeViewHelper;
 import com.richfit.common_lib.rxutils.RetryWhenNetworkException;
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
@@ -30,7 +29,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.subscribers.ResourceSubscriber;
 
@@ -317,6 +315,7 @@ public class ASDetailPresenterImp extends BasePresenter<IASDetailView>
         }
     }
 
+
     /**
      * 通过抬头获取的单据数据和缓存数据生成新的单据数据。
      * 注意我们的目的是将这两部分数据完全分离，这样有利于处理。
@@ -348,6 +347,10 @@ public class ASDetailPresenterImp extends BasePresenter<IASDetailView>
             cachedEntity.actQuantity = node.actQuantity;
             cachedEntity.refDoc = node.refDoc;
             cachedEntity.refDocItem = node.refDocItem;
+            //注意单据中有lineNum105，但是缓存中只有有缓存的才有lineNum105
+            cachedEntity.lineNum105 = node.lineNum105;
+            cachedEntity.insLot = node.insLot;
+
             //处理父节点的缓存
             cachedEntity.mapExt = UiUtil.copyMap(node.mapExt, cachedEntity.mapExt);
             nodes.add(cachedEntity);

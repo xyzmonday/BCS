@@ -249,4 +249,9 @@ public class QingYangASNHeaderFragment extends BaseFragment<ASNHeaderPresenterIm
             return false;
         return true;
     }
+
+    @Override
+    public boolean isNeedShowFloatingButton() {
+        return false;
+    }
 }

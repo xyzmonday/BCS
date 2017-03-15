@@ -211,6 +211,13 @@ public class UiUtil {
         }
     }
 
+    public final static int convertToInt(Integer value) {
+       if(value == null) {
+           return -1;
+       }
+       return value.intValue();
+    }
+
     public final static float convertToFloat(Object value, float defaultValue) {
         if (value == null || "".equals(value.toString().trim())) {
             return defaultValue;

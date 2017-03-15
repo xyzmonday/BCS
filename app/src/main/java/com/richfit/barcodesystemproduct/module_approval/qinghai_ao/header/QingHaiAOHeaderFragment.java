@@ -39,6 +39,12 @@ public class QingHaiAOHeaderFragment extends BaseFragment<QingHaiAOHeaderPresent
     @BindView(R.id.tv_creator)
     TextView tvCreator;
 
+    @Override
+    public void handleBarCodeScanResult(String type, String[] list) {
+        if (list != null && list.length >= 1) {
+            getRefData(list[0]);
+        }
+    }
 
     @Override
     public void initInjector() {
@@ -170,7 +176,7 @@ public class QingHaiAOHeaderFragment extends BaseFragment<QingHaiAOHeaderPresent
             //单据号
             tvRefNum.setText(mRefData.recordNum);
             //供应商
-            tvSupplier.setText(mRefData.supplierNum);
+            tvSupplier.setText(mRefData.supplierNum + "_" + mRefData.supplierDesc);
             //创建人
             tvCreator.setText(Global.LOGIN_ID);
             //绑定额外字段
@@ -204,6 +210,7 @@ public class QingHaiAOHeaderFragment extends BaseFragment<QingHaiAOHeaderPresent
             mRefData.mapExt = UiUtil.copyMap(extraHeaderMap, mRefData.mapExt);
         }
     }
+
     /**
      * 网络错误重试
      *

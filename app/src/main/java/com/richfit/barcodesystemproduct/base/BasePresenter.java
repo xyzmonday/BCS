@@ -103,7 +103,7 @@ public class BasePresenter<T extends BaseView> implements IPresenter<T> {
 
     /*添加订阅*/
     public void addSubscriber(Disposable disposable) {
-        if(disposable != null) {
+        if (disposable != null) {
             mCompositeDisposable.add(disposable);
         }
     }
@@ -177,8 +177,9 @@ public class BasePresenter<T extends BaseView> implements IPresenter<T> {
 
     /**
      * 获取父节点的位置
+     *
      * @param refData:明细数据列表
-     *               @param refLineId:需要查询的父节点的id
+     * @param refLineId:需要查询的父节点的id
      */
     protected int getParentNodePosition(ReferenceEntity refData, String refLineId) {
         int pos = -1;
@@ -198,7 +199,7 @@ public class BasePresenter<T extends BaseView> implements IPresenter<T> {
 
 
     @Override
-    public void readExtraConfigs(String companyId, String bizType,String refType, String... configTypes) {
+    public void readExtraConfigs(String companyId, String bizType, String refType, String... configTypes) {
         final T view = getView();
 
         if (view == null)
@@ -216,26 +217,26 @@ public class BasePresenter<T extends BaseView> implements IPresenter<T> {
 
         ResourceSubscriber<List<ArrayList<RowConfig>>> subscriber =
                 Flowable.fromArray(configTypes)
-                .concatMap(configType -> mRepository.readExtraConfigInfo(companyId, bizType,refType, configType))
-                .buffer(configTypes.length)
-                .filter(configs -> configs.size() == configTypes.length)
-                .compose(TransformerHelper.io2main())
-                .subscribeWith(new ResourceSubscriber<List<ArrayList<RowConfig>>>() {
-                    @Override
-                    public void onNext(List<ArrayList<RowConfig>> configs) {
-                        view.readConfigsSuccess(configs);
-                    }
+                        .concatMap(configType -> mRepository.readExtraConfigInfo(companyId, bizType, refType, configType))
+                        .buffer(configTypes.length)
+                        .filter(configs -> configs.size() == configTypes.length)
+                        .compose(TransformerHelper.io2main())
+                        .subscribeWith(new ResourceSubscriber<List<ArrayList<RowConfig>>>() {
+                            @Override
+                            public void onNext(List<ArrayList<RowConfig>> configs) {
+                                view.readConfigsSuccess(configs);
+                            }
 
-                    @Override
-                    public void onError(Throwable t) {
-                        view.readConfigsFail(t.getMessage());
-                    }
+                            @Override
+                            public void onError(Throwable t) {
+                                view.readConfigsFail(t.getMessage());
+                            }
 
-                    @Override
-                    public void onComplete() {
-                        view.readConfigsComplete();
-                    }
-                });
+                            @Override
+                            public void onComplete() {
+                                view.readConfigsComplete();
+                            }
+                        });
         addSubscriber(subscriber);
     }
 
@@ -250,32 +251,33 @@ public class BasePresenter<T extends BaseView> implements IPresenter<T> {
 
         ResourceSubscriber<Map<String, Object>> subscriber =
                 Flowable.fromIterable(configs)
-                .filter(config -> !TextUtils.isEmpty(config.dataSource) &&
-                        !TextUtils.isEmpty(config.propertyCode))
-                .flatMap(config -> mRepository.readExtraDataSourceByDictionary(config.propertyCode, config.dataSource))
-                .filter(extraMap -> extraMap != null && extraMap.size() > 0)
-                .compose(TransformerHelper.io2main())
-                .subscribeWith(new ResourceSubscriber<Map<String, Object>>() {
-                    @Override
-                    public void onNext(Map<String, Object> extraMap) {
-                        view.readExtraDictionarySuccess(extraMap);
-                    }
+                        .filter(config -> !TextUtils.isEmpty(config.dataSource) &&
+                                !TextUtils.isEmpty(config.propertyCode))
+                        .flatMap(config -> mRepository.readExtraDataSourceByDictionary(config.propertyCode, config.dataSource))
+                        .filter(extraMap -> extraMap != null && extraMap.size() > 0)
+                        .compose(TransformerHelper.io2main())
+                        .subscribeWith(new ResourceSubscriber<Map<String, Object>>() {
+                            @Override
+                            public void onNext(Map<String, Object> extraMap) {
+                                view.readExtraDictionarySuccess(extraMap);
+                            }
 
-                    @Override
-                    public void onError(Throwable t) {
-                        view.readExtraDictionaryFail(t.getMessage());
-                    }
+                            @Override
+                            public void onError(Throwable t) {
+                                view.readExtraDictionaryFail(t.getMessage());
+                            }
 
-                    @Override
-                    public void onComplete() {
-                        view.readExtraDictionaryComplete();
-                    }
-                });
+                            @Override
+                            public void onComplete() {
+                                view.readExtraDictionaryComplete();
+                            }
+                        });
         addSubscriber(subscriber);
     }
 
     /**
      * 通过refLineId将获取原始单据中的明细行
+     *
      * @param refLineId:单据行Id
      * @param refData:原始单据信息
      * @return
@@ -298,21 +300,19 @@ public class BasePresenter<T extends BaseView> implements IPresenter<T> {
         if (refLineData == null) {
             return null;
         }
-        return getLineDataByRefLineIdInternal(refLineData.refLineId, cachedRefData);
-    }
-
-    protected RefDetailEntity getLineDataByRefLineIdInternal(String key, ReferenceEntity cachedRefData) {
-        if (TextUtils.isEmpty(key))
+        final String refLineId = refLineData.refLineId;
+        if (TextUtils.isEmpty(refLineId))
             return null;
         //通过refLineId匹配出缓存中的明细行
         List<RefDetailEntity> detail = cachedRefData.billDetailList;
         for (RefDetailEntity entity : detail) {
-            if (key.equals(entity.refLineId)) {
+            if (refLineId.equals(entity.refLineId)) {
                 return entity;
             }
         }
         return null;
     }
+
 
     /**
      * 展示之前的节点排序
@@ -332,8 +332,6 @@ public class BasePresenter<T extends BaseView> implements IPresenter<T> {
             }
         }, BackpressureStrategy.BUFFER);
     }
-
-
 
 
     protected ArrayList<String> wrapper2Str(ArrayList<SimpleEntity> list) {

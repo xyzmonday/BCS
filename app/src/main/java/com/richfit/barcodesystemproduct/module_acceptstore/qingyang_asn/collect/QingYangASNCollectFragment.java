@@ -92,16 +92,14 @@ public class QingYangASNCollectFragment extends BaseFragment<ASNCollectPresenter
                 showMessage("请先在抬头界面获取相关数据");
                 return;
             }
-            final String materialNum = list[2];
-            final String batchFlag = list[11];
+            final String materialNum = list[Global.MATERIAL_POS];
+            final String batchFlag = list[Global.BATCHFALG_POS];
             if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
                 //如果已经选中单品，那么说明已经扫描过一次。必须保证每一次的物料都一样
                 saveCollectedData();
-            } else if (!cbSingle.isChecked()) {
-                clearAllUI();
-                loadMaterialInfo(materialNum, batchFlag);
-            } else if (cbSingle.isChecked() && !materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
-                clearAllUI();
+            } else {
+                etMaterialNum.setText(materialNum);
+                etBatchFlag.setText(batchFlag);
                 loadMaterialInfo(materialNum, batchFlag);
             }
         }
@@ -174,7 +172,7 @@ public class QingYangASNCollectFragment extends BaseFragment<ASNCollectPresenter
         etBatchFlag.setEnabled(mIsOpenBatchManager);
         etLocation.setEnabled(isLocation);
         //加载发出工厂下的发出库位
-        mPresenter.getInvsByWorks(mRefData.workId,0);
+        mPresenter.getInvsByWorks(mRefData.workId, 0);
     }
 
     /**
@@ -208,7 +206,7 @@ public class QingYangASNCollectFragment extends BaseFragment<ASNCollectPresenter
         clearAllUI();
         mPresenter.getTransferSingleInfo(mRefData.bizType, materialNum,
                 Global.USER_ID, mRefData.workId, mRefData.invId, mRefData.recWorkId,
-                mRefData.recInvId, batchFlag);
+                mRefData.recInvId, batchFlag, "", -1);
     }
 
     @Override
@@ -294,8 +292,7 @@ public class QingYangASNCollectFragment extends BaseFragment<ASNCollectPresenter
     }
 
     private void clearAllUI() {
-        clearCommonUI(tvMaterialDesc, tvMaterialGroup, etBatchFlag,
-                tvLocQuantity, tvLocQuantity, etQuantity, etLocation);
+        clearCommonUI(tvMaterialDesc, tvMaterialGroup, tvLocQuantity, tvLocQuantity, etQuantity, etLocation);
 
         //库存地点
         if (spInv.getAdapter() != null) {
@@ -316,7 +313,7 @@ public class QingYangASNCollectFragment extends BaseFragment<ASNCollectPresenter
         }
 
         //上架仓位
-        if (isLocation && TextUtils.isEmpty(getString(etLocation))){
+        if (isLocation && TextUtils.isEmpty(getString(etLocation))) {
             showMessage("请先输入上架仓位");
             return false;
         }
@@ -404,6 +401,7 @@ public class QingYangASNCollectFragment extends BaseFragment<ASNCollectPresenter
     public void _onPause() {
         super._onPause();
         clearAllUI();
+        clearCommonUI(etMaterialNum, etBatchFlag);
     }
 
     @Override

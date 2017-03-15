@@ -25,7 +25,7 @@ import io.reactivex.subscribers.ResourceSubscriber;
  */
 
 public class QingHaiAOCollectPresenterImp extends BasePresenter<IQingHaiAOCollectView>
-implements IQingHaiAOCollectPresenter {
+        implements IQingHaiAOCollectPresenter {
 
     IQingHaiAOCollectView mView;
 
@@ -37,11 +37,11 @@ implements IQingHaiAOCollectPresenter {
     @Override
     public void getTransferInfoSingle(final String refCodeId, final String refType, final String bizType,
                                       final String refLineId, final String batchFlag, final String location,
-                                      final String userId) {
+                                      String refDoc, int refDocItem, String userId) {
         mView = getView();
         RxSubscriber<RefDetailEntity> subscriber =
                 mRepository.getTransferInfoSingle(refCodeId, refType, bizType, refLineId,
-                        "", "", "", "", "", batchFlag, location,userId)
+                        "", "", "", "", "", batchFlag, location, refDoc, refDocItem, userId)
                         .filter(refData -> refData != null && refData.billDetailList != null
                                 && refData.billDetailList.size() > 0)
                         .flatMap(refData -> getMatchedLineData(refLineId, refData))
@@ -87,26 +87,26 @@ implements IQingHaiAOCollectPresenter {
     }
 
     @Override
-    public void getInvsByWorkId(String workId,int flag) {
+    public void getInvsByWorkId(String workId, int flag) {
         mView = getView();
-        if(TextUtils.isEmpty(workId) && mView != null) {
+        if (TextUtils.isEmpty(workId) && mView != null) {
             mView.loadInvsFail("工厂Id为空");
             return;
         }
         ResourceSubscriber<ArrayList<InvEntity>> subscriber =
-                mRepository.getInvsByWorkId(workId,flag)
+                mRepository.getInvsByWorkId(workId, flag)
                         .compose(TransformerHelper.io2main())
                         .subscribeWith(new ResourceSubscriber<ArrayList<InvEntity>>() {
                             @Override
                             public void onNext(ArrayList<InvEntity> invs) {
-                                if(mView != null) {
+                                if (mView != null) {
                                     mView.showInvs(invs);
                                 }
                             }
 
                             @Override
                             public void onError(Throwable t) {
-                                if(mView != null) {
+                                if (mView != null) {
                                     mView.loadInvsFail(t.getMessage());
                                 }
                             }

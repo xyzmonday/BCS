@@ -130,23 +130,6 @@
                 android:layout_height="@dimen/spinner_min_height"
                 android:layout_weight="2" />
         </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="5dp">
-
-            <TextView
-                style="@style/LeftTextViewItemStyle"
-                android:text="@string/location_quantity" />
-
-            <TextView
-                android:id="@+id/tv_location_quantity"
-                style="@style/RightTextViewItemStyle" />
-        </LinearLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

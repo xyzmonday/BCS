@@ -231,4 +231,8 @@ public class Global {
     public static final String EXTRA_PROJECT_TEXT_KEY = "extra_project_text";
     public static final String EXTRA_MOVE_CAUSE_DESC_KEY = "extra_move_cause_desc";
     public static final String EXTRA_CAPTION_KEY  = "extra_caption";
+
+    /*扫描物料和批次位置*/
+    public static final int MATERIAL_POS = 2;
+    public static final int BATCHFALG_POS = 12;
 }

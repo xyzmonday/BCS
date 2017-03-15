@@ -45,10 +45,10 @@ public class QingHaiDSNHeaderFragment extends BaseFragment<QingHaiDSNHeaderPrese
 
     @BindView(R.id.sp_work)
     Spinner spWork;
-    @BindView(R.id.et_cost_center)
-    AutoCompleteTextView etCostCenter;
-    @BindView(R.id.tv_cost_center_name)
-    TextView tvCostCenterName;
+    @BindView(R.id.et_auto_comp)
+    AutoCompleteTextView etAutoComp;
+    @BindView(R.id.et_auto_comp_name)
+    TextView tvAutoCompName;
     @BindView(R.id.et_transfer_date)
     RichEditText etTransferDate;
 
@@ -93,20 +93,20 @@ public class QingHaiDSNHeaderFragment extends BaseFragment<QingHaiDSNHeaderPrese
         RxAdapterView.itemSelections(spWork)
                 .filter(position -> position.intValue() > 0)
                 .subscribe(position -> mPresenter.getAutoCompleteList(mWorks.get(position).workCode,
-                        getString(etCostCenter), 100, ORG_FLAG, mBizType));
+                        getString(etAutoComp), 100, ORG_FLAG, mBizType));
 
-        RxCilck.clicks(etCostCenter)
-                .subscribe(a -> showAutoCompleteConfig(etCostCenter));
+        RxCilck.clicks(etAutoComp)
+                .subscribe(a -> showAutoCompleteConfig(etAutoComp));
 
-        RxTextView.textChanges(etCostCenter)
+        RxTextView.textChanges(etAutoComp)
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .filter(str -> !TextUtils.isEmpty(str) && mCostCenters != null &&
                         mCostCenters.size() > 0 && !filterKeyWord(str) && spWork.getSelectedItemPosition() > 0)
                 .subscribe(a -> mPresenter.getAutoCompleteList(mWorks.get(spWork.getSelectedItemPosition()).workCode,
-                        getString(etCostCenter), 100, ORG_FLAG, mBizType));
+                        getString(etAutoComp), 100, ORG_FLAG, mBizType));
 
-        RxAutoCompleteTextView.itemClickEvents(etCostCenter)
-                .subscribe(a -> hideKeyboard(etCostCenter));
+        RxAutoCompleteTextView.itemClickEvents(etAutoComp)
+                .subscribe(a -> hideKeyboard(etAutoComp));
 
         mPresenter.deleteCollectionData("", mBizType, Global.USER_ID, mCompanyCode);
     }
@@ -115,7 +115,7 @@ public class QingHaiDSNHeaderFragment extends BaseFragment<QingHaiDSNHeaderPrese
     protected void initView() {
         //如果BizType是26那么显示成本中心,否者显示项目编号
         if ("27".equalsIgnoreCase(mBizType)) {
-            tvCostCenterName.setText("项目编号");
+            tvAutoCompName.setText("项目编号");
         }
         mPresenter.readExtraConfigs(mCompanyCode, mBizType, mRefType, Global.HEADER_CONFIG_TYPE);
     }
@@ -179,8 +179,8 @@ public class QingHaiDSNHeaderFragment extends BaseFragment<QingHaiDSNHeaderPrese
         if (mCostCenterAdapter == null) {
             mCostCenterAdapter = new ArrayAdapter<>(mActivity,
                     android.R.layout.simple_dropdown_item_1line, mCostCenters);
-            etCostCenter.setAdapter(mCostCenterAdapter);
-            setAutoCompleteConfig(etCostCenter);
+            etAutoComp.setAdapter(mCostCenterAdapter);
+            setAutoCompleteConfig(etAutoComp);
         } else {
             mCostCenterAdapter.notifyDataSetChanged();
         }
@@ -188,8 +188,8 @@ public class QingHaiDSNHeaderFragment extends BaseFragment<QingHaiDSNHeaderPrese
 
     @Override
     public void loadAutoCompleteFail(String message) {
-        hideKeyboard(etCostCenter);
-        showMessage(message);
+        hideKeyboard(etAutoComp);
+        showFailDialog(message);
     }
 
     @Override
@@ -224,9 +224,9 @@ public class QingHaiDSNHeaderFragment extends BaseFragment<QingHaiDSNHeaderPrese
             mRefData.workName = mWorks.get(position).workName;
 
             if ("27".equalsIgnoreCase(mBizType)) {
-                mRefData.projectNum = getString(etCostCenter).split("_")[0];
+                mRefData.projectNum = getString(etAutoComp).split("_")[0];
             } else {
-                mRefData.costCenter = getString(etCostCenter).split("_")[0];
+                mRefData.costCenter = getString(etAutoComp).split("_")[0];
             }
             mRefData.bizType = mBizType;
             mRefData.voucherDate = getString(etTransferDate);
@@ -235,6 +235,10 @@ public class QingHaiDSNHeaderFragment extends BaseFragment<QingHaiDSNHeaderPrese
             Map<String, Object> extraHeaderMap = saveExtraUIData(mSubFunEntity.headerConfigs);
             mRefData.mapExt = UiUtil.copyMap(extraHeaderMap, mRefData.mapExt);
         }
+    }
 
+    @Override
+    public boolean isNeedShowFloatingButton() {
+        return false;
     }
 }

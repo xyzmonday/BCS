@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -19,6 +20,7 @@ import com.richfit.barcodesystemproduct.adapter.InvAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.RichEditText;
@@ -68,6 +70,8 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
     protected TextView tvActQuantityName;
     @BindView(R.id.tv_act_quantity)
     protected TextView tvActQuantity;
+    @BindView(R.id.ll_batch_flag)
+    protected LinearLayout llBatchFlag;
     @BindView(R.id.et_batch_flag)
     protected EditText etBatchFlag;
     @BindView(R.id.inv_spinner)
@@ -84,7 +88,12 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
     protected CheckBox cbSingle;
     @BindView(R.id.tv_total_quantity)
     protected TextView tvTotalQuantity;
-    /*是否不上架.对于非质检的物资isNLocation=false。也就是说子类如果不处理那么默认需要输入上架仓位*/
+    @BindView(R.id.ll_location)
+    protected LinearLayout llLocation;
+    @BindView(R.id.ll_location_quantity)
+    protected LinearLayout llLocationQuantity;
+
+    /*是否不上架。false表示上架处理，那么用户必须输入上架仓位，true表示不做上架处理，保存数据默认传barcode*/
     protected boolean isNLocation;
     /*当前匹配的行明细（行号）*/
     protected ArrayList<String> mRefLines;
@@ -100,7 +109,7 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
     /*缓存的批次*/
     String mCachedBatchFlag;
     /*缓存的仓位级别的额外字段*/
-    protected  Map<String, Object> mExtraLocationMap;
+    protected Map<String, Object> mExtraLocationMap;
     //校验仓位是否存在，如果false表示校验该仓位不存在或者没有校验该仓位，不允许保存数据
     protected boolean isLocationChecked = false;
 
@@ -123,13 +132,21 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
     @Override
     public void handleBarCodeScanResult(String type, String[] list) {
         if (list != null && list.length >= 12) {
-            final String materialNum = list[2];
-            final String batchFlag = list[11];
+            if (!etMaterialNum.isEnabled()) {
+                showMessage("请先在抬头界面获取相关数据");
+                return;
+            }
+            final String materialNum = list[Global.MATERIAL_POS];
+            final String batchFlag = list[Global.BATCHFALG_POS];
             if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
                 //如果已经选中单品，那么说明已经扫描过一次。必须保证每一次的物料都一样
                 getTransferSingle(batchFlag, getString(etLocation));
             } else {
-                //在单品模式下，扫描不同的物料
+                //在非单品模式下，扫描不同的物料。注意这里必须用新的物料和批次更新UI,因为clearAllUI方法没有
+                //清除显示在屏幕上的物料和批次信息
+                etMaterialNum.setText(materialNum);
+                etBatchFlag.setText(batchFlag);
+                L.e("batchFlag = " + batchFlag);
                 loadMaterialInfo(materialNum, batchFlag);
             }
             //处理仓位
@@ -265,7 +282,6 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
             return;
         }
         clearAllUI();
-        etBatchFlag.setText(batchFlag);
         //刷新界面(在单据行明细查询是否有该物料条码，如果有那么刷新界面)
         matchMaterialInfo(materialNum, batchFlag)
                 .compose(TransformerHelper.io2main())
@@ -322,9 +338,15 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
         tvWork.setText(lineData.workName);
         //应收数量
         tvActQuantity.setText(lineData.actQuantity);
-        //批次
+        //批次。注意这里的逻辑是如果用户输入或者扫描带出了批次，那么不需要
+        //刷新批次，因为此时单据中批次和显示的批次一致；如果用户没有输入或者条码中没有批次
+        //那么你默认显示单据中的批次即可，如果没有打开批次管理那么默认显示为空(按理来说此时单据中的
+        // 批次信息也应该为空)。在青海委外和105入库中批次只能够显示条码和单据中的批次。
         if (TextUtils.isEmpty(getString(etBatchFlag))) {
             etBatchFlag.setText(mIsOpenBatchManager ? lineData.batchFlag : "");
+        } else {
+            //如果没有输入批次，那么对应的情况就是不让用户输入批次仅仅显示单据或者条码中的批次
+            etBatchFlag.setText(lineData.batchFlag);
         }
         //先将库存地点选择器打开，获取缓存后在判断是否需要锁定
         spInv.setEnabled(true);
@@ -339,7 +361,10 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
      * 在获取仓位数量的缓存之前，必须检查仓位是否合理。注意不同的公司检查的策略不一样。
      */
     protected void getTransferSingle(String batchFlag, String location) {
-
+        if (isNLocation) {
+            showMessage("该物料不能上架");
+            return;
+        }
         if (spRefLine.getSelectedItemPosition() == 0) {
             showMessage("请先选择单据行");
             return;
@@ -360,6 +385,8 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
             showMessage("请先输入上架仓位");
             return;
         }
+        mCachedBatchFlag = "";
+        mExtraLocationMap = null;
         final RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
         final String invId = mInvDatas.get(spInv.getSelectedItemPosition()).invId;
         mPresenter.checkLocation("04", lineData.workId, invId, batchFlag, location);
@@ -380,7 +407,7 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
         final String refType = mRefData.refType;
         final String bizType = mRefData.bizType;
         mPresenter.getTransferInfoSingle(refCodeId, refType, bizType, refLineId,
-                batchFlag, location, Global.USER_ID);
+                batchFlag, location, lineData.refDoc, UiUtil.convertToInt(lineData.refDocItem), Global.USER_ID);
     }
 
     @Override
@@ -407,8 +434,7 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
      * 不论扫描的是否是同一个物料，都清除控件的信息。
      */
     private void clearAllUI() {
-        clearCommonUI(tvMaterialDesc, tvWork, tvActQuantity, etLocation,
-                etBatchFlag, tvLocQuantity, etQuantity, tvLocQuantity,
+        clearCommonUI(tvMaterialDesc, tvWork, tvActQuantity, etLocation, tvLocQuantity, etQuantity, tvLocQuantity,
                 tvTotalQuantity, cbSingle);
 
         //单据行
@@ -433,7 +459,7 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
      * 注意在bindCommonCollectUI方法中，系统需要判断是否上架，主要的逻辑是，
      * 用户输入物料和批次后，得到该行的物料信息，该物料信息包含了该物料是否是质检
      * 物资，如果是非质检物质那么isNLocation=false,表示必须上架；如果是质检物质
-     * 那么需要通过该父节点下的第一个子节点是否录入了仓位。如果第一个子节点由仓位
+     * 那么需要通过该父节点下的第一个子节点是否录入了仓位。如果第一个子节点有仓位
      * 那么isNLocation = false,否者isNLocation=true。
      *
      * @param cache：缓存数据
@@ -598,7 +624,7 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
 
         //实发数量
         if (!cbSingle.isChecked() && TextUtils.isEmpty(getString(etQuantity))) {
-            showMessage("请先输入数量");
+            showMessage("请先输入实发数量");
             return false;
         }
 
@@ -690,6 +716,7 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
     @Override
     public void _onPause() {
         clearAllUI();
+        clearCommonUI(etMaterialNum, etBatchFlag);
     }
 
     @Override
@@ -703,7 +730,5 @@ public abstract class BaseASCollectFragment<P extends IASCollectPresenter> exten
         super.retry(retryAction);
     }
 
-
     protected abstract int getOrgFlag();
-
 }

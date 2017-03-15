@@ -67,7 +67,8 @@ public class LocalRepositoryImp implements ILocalRepository {
     }
 
     @Override
-    public Flowable<ReferenceEntity> getTransferInfoSingle(String refCodeId, String refType, String bizType, String refLineId, String workId, String invId, String recWorkId, String recInvId, String materialNum, String batchFlag, String location, String userId) {
+    public Flowable<ReferenceEntity> getTransferInfoSingle(String refCodeId, String refType, String bizType, String refLineId, String workId, String invId, String recWorkId, String recInvId, String materialNum,
+                                                           String batchFlag, String location,String refDoc,int refDocItem, String userId) {
         return null;
     }
 
@@ -261,7 +262,7 @@ public class LocalRepositoryImp implements ILocalRepository {
             try {
                 final ArrayList<SimpleEntity> list = mCommonDao.getSupplierList(workCode, keyWord, defaultItemNum, flag);
                 if (list == null || list.size() == 0) {
-                    emitter.onError(new Throwable("未获取到供应商数据,请检查工厂或者是否已经下载了供应基础数据。如果您还未下载，请到设置界面下载该基础数据"));
+                    emitter.onError(new Throwable("未获取到该基础数据,请检查是否您选择的工厂是否正确或者是否在设置界面同步过该基础数据"));
                 } else {
                     emitter.onNext(list);
                     emitter.onComplete();
@@ -278,8 +279,7 @@ public class LocalRepositoryImp implements ILocalRepository {
             try {
                 final ArrayList<SimpleEntity> list = mCommonDao.getCostCenterList(workCode, keyWord, defaultItemNum, flag);
                 if (list == null || list.size() == 0) {
-                    emitter.onError(new Throwable("未获取到供应商数据,请检查工厂是否合适或者是否已经下载了供应基础数据。" +
-                            "如果您还未下载，请到设置界面下载该基础数据"));
+                    emitter.onError(new Throwable("未获取到该基础数据,请检查是否您选择的工厂是否正确或者是否在设置界面同步过该基础数据"));
                 } else {
                     emitter.onNext(list);
                     emitter.onComplete();

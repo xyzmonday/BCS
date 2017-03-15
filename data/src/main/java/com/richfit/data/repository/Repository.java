@@ -301,9 +301,11 @@ public class Repository implements ILocalRepository, IServerRepository {
     @Override
     public Flowable<ReferenceEntity> getTransferInfoSingle(String refCodeId, String refType, String bizType, String refLineId,
                                                            String workId, String invId, String recWorkId, String recInvId,
-                                                           String materialNum, String batchFlag, String location, String userId) {
-        return isLocal ? mLocalRepository.getTransferInfoSingle(refCodeId, refType, bizType, refLineId, workId, invId, recWorkId, recInvId, materialNum, batchFlag, location, userId)
-                : mServerRepository.getTransferInfoSingle(refCodeId, refType, bizType, refLineId, workId, invId, recWorkId, recInvId, materialNum, batchFlag, location, userId);
+                                                           String materialNum, String batchFlag, String location, String refDoc, int refDocItem, String userId) {
+        return isLocal ? mLocalRepository.getTransferInfoSingle(refCodeId, refType, bizType, refLineId,
+                workId, invId, recWorkId, recInvId, materialNum, batchFlag, location, refDoc, refDocItem, userId)
+                : mServerRepository.getTransferInfoSingle(refCodeId, refType, bizType, refLineId,
+                workId, invId, recWorkId, recInvId, materialNum, batchFlag, location, refDoc, refDocItem, userId);
     }
 
 

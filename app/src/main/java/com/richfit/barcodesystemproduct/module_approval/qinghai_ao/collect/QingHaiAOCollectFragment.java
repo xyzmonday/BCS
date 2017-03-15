@@ -127,8 +127,9 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
     public void handleBarCodeScanResult(String type, String[] list) {
 
         if (list != null && list.length >= 12) {
-            final String materialNum = list[2];
-            final String batchFlag = list[11];
+            final String materialNum = list[Global.MATERIAL_POS];
+            final String batchFlag = list[Global.BATCHFALG_POS];
+            etMaterialNum.setText(materialNum);
             loadMaterialInfo(materialNum, batchFlag);
         }
     }
@@ -271,14 +272,17 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
      */
     private void getTransferInfoSingle(int index) {
         spRefLine.setSelection(index);
+        mCachedRefDetailData = null;
         mSelectedRefLineNum = mRefLines.get(spRefLine.getSelectedItemPosition());
         final RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
+        if (lineData == null)
+            return;
         final String refCodeId = mRefData.refCodeId;
         final String refType = mRefData.refType;
         final String bizType = mRefData.bizType;
         final String refLineId = lineData.refLineId;
         mPresenter.getTransferInfoSingle(refCodeId, refType, bizType, refLineId, "", "",
-                Global.USER_ID);
+                lineData.refDoc, UiUtil.convertToInt(lineData.refDocItem), Global.USER_ID);
     }
 
     @Override
@@ -291,6 +295,7 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
     @Override
     public void loadCacheFail(String message) {
         showMessage(message);
+        mCachedRefDetailData = null;
         clearAllUI();
     }
 
@@ -417,7 +422,7 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
     }
 
     /**
-     * 检查用户输入的到货数量是否合理，必须保证到货数量小于等于应收数量而且大于等于0
+     * 1.实收数量应等于完好数、锈蚀、损坏、变质、其他质量问题数量之和
      *
      * @param quantity:实收数量
      * @param sampleQuantity:抽检数量
@@ -450,8 +455,8 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
         final float otherQuantityV = UiUtil.convertToFloat(getString(etOtherQuantity), 0.0f);
 
         if (Float.compare(qualifiedQuantityV + rustCorrosionQuantityV + damagedQuantity + badQuantityV
-                + otherQuantityV, quantityV) > 0.0f) {
-            showMessage("完好数量,锈蚀,损坏,变质,其他质量问题数量之和大于实收数量");
+                + otherQuantityV, quantityV) != 0.0f) {
+            showMessage("完好数量,锈蚀,损坏,变质,其他质量问题数量之和不等于实收数量");
             return false;
         }
         return true;
@@ -601,6 +606,8 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
     @Override
     public void saveCollectedDataSuccess() {
         showMessage("数据保存成功");
+        clearCommonUI(etQuantity,etSampleQuantity,etQualifiedQuantity,
+                etQmNum,etBad,etOtherQuantity,etDamage,etCorrosion,etInspectQuantity);
     }
 
     @Override

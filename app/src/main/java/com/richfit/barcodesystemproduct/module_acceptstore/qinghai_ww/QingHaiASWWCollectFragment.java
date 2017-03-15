@@ -18,6 +18,7 @@ import com.richfit.barcodesystemproduct.module_acceptstore.ww_component.DSWWComp
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.domain.bean.BottomMenuEntity;
+import com.richfit.domain.bean.RefDetailEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,21 +39,46 @@ public class QingHaiASWWCollectFragment extends BaseASCollectFragment<QingHaiASW
     @Override
     public void initEvent() {
         super.initEvent();
+        /*监听上架仓位点击事件*/
         etLocation.setOnRichEditTouchListener((view, location) -> getTransferSingle(getString(etBatchFlag), location));
     }
 
+    @Override
+    protected void initView() {
+        etBatchFlag.setEnabled(false);
+        super.initView();
+    }
+
+
+    /**
+     * 绑定UI。
+     */
+    @Override
+    public void bindCommonCollectUI() {
+        mSelectedRefLineNum = mRefLines.get(spRefLine.getSelectedItemPosition());
+        RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
+        if(lineData != null) {
+            if("X".equalsIgnoreCase(lineData.qmFlag)) {
+                //如果是质检物资不做上架处理
+                isNLocation = true;
+                etLocation.setEnabled(!isNLocation);
+            }
+        }
+        super.bindCommonCollectUI();
+    }
 
     @Override
     public boolean checkCollectedDataBeforeSave() {
-        final String location = getString(etLocation);
-        if (TextUtils.isEmpty(location)) {
-            showMessage("请输入上架仓位");
-            return false;
-        }
-
-        if (location.length() > 10) {
-            showMessage("您输入的上架不合理");
-            return false;
+        if(!isNLocation) {
+            final String location = getString(etLocation);
+            if (TextUtils.isEmpty(location)) {
+                showMessage("请输入上架仓位");
+                return false;
+            }
+            if (location.length() > 10) {
+                showMessage("您输入的上架不合理");
+                return false;
+            }
         }
 
         return super.checkCollectedDataBeforeSave();

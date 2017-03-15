@@ -137,10 +137,13 @@ public class QingHaiNMS311DetailFragment extends BaseNMSDetailFragment<QingHaiNM
 
     @Override
     public List<BottomMenuEntity> provideDefaultBottomMenu() {
-        List<BottomMenuEntity> menus = super.provideDefaultBottomMenu();
-        menus.get(0).transToSapFlag = "01";
-        menus.get(1).transToSapFlag = "05";
-        return menus.subList(0, 2);
+        List<BottomMenuEntity> tmp = super.provideDefaultBottomMenu();
+        tmp.get(0).transToSapFlag = "01";
+        tmp.get(3).transToSapFlag = "05";
+        ArrayList menus = new ArrayList();
+        menus.add(tmp.get(0));
+        menus.add(tmp.get(3));
+        return menus;
     }
 
     @Override

@@ -157,7 +157,7 @@ public abstract class BaseNMSEditFragment<P extends INMSEditPresenter> extends B
         //获取缓存信息
         mPresenter.getTransferInfoSingle(mRefData.bizType, materialNum,
                 Global.USER_ID, mRefData.workId, mRefData.invId, mRefData.recWorkId,
-                mRefData.recInvId, batchFlag);
+                mRefData.recInvId, batchFlag,"",-1);
     }
 
     @Override
@@ -426,7 +426,7 @@ public abstract class BaseNMSEditFragment<P extends INMSEditPresenter> extends B
             case Global.RETRY_LOAD_SINGLE_CACHE_ACTION:
                 mPresenter.getTransferInfoSingle(mRefData.bizType, getString(tvMaterialNum),
                         Global.USER_ID, mRefData.workId, mRefData.invId, mRefData.recWorkId,
-                        mRefData.recInvId, getString(tvSendBatchFlag));
+                        mRefData.recInvId, getString(tvSendBatchFlag),"",-1);
                 break;
             case Global.RETRY_SAVE_COLLECTION_DATA_ACTION:
                 saveCollectedData();

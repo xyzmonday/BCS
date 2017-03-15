@@ -17,7 +17,6 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxAdapterView;
-import com.jakewharton.rxbinding.widget.RxTextView;
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.BottomMenuAdapter;
 import com.richfit.barcodesystemproduct.adapter.InvAdapter;
@@ -37,7 +36,6 @@ import com.richfit.domain.bean.RowConfig;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import io.reactivex.BackpressureStrategy;
@@ -107,8 +105,8 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
     public void handleBarCodeScanResult(String type, String[] list) {
 
         if (list != null && list.length >= 12) {
-            final String materialNum = list[2];
-            final String batchFlag = list[11];
+            final String materialNum = list[Global.MATERIAL_POS];
+            final String batchFlag = list[Global.BATCHFALG_POS];
             loadMaterialInfo(materialNum, batchFlag);
         }
     }
@@ -142,10 +140,10 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
                 .filter(position -> position > 0)
                 .subscribe(position -> getTransferInfoSingle(position.intValue()));
         //监听到货数量
-        RxTextView.textChanges(etQuantity)
-                .debounce(500, TimeUnit.MILLISECONDS, rx.android.schedulers.AndroidSchedulers.mainThread())
-                .filter(str -> !TextUtils.isEmpty(str) && str.length() > 0)
-                .subscribe(str -> tvBalanceQuantity.setText(str));
+//        RxTextView.textChanges(etQuantity)
+//                .debounce(500, TimeUnit.MILLISECONDS, rx.android.schedulers.AndroidSchedulers.mainThread())
+//                .filter(str -> !TextUtils.isEmpty(str) && str.length() > 0)
+//                .subscribe(str -> tvBalanceQuantity.setText(str));
     }
 
     @Override
@@ -249,12 +247,14 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
         spRefLine.setSelection(index);
         mSelectedRefLineNum = mRefLines.get(spRefLine.getSelectedItemPosition());
         final RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
+        if (lineData == null)
+            return;
         final String refCodeId = mRefData.refCodeId;
         final String refType = mRefData.refType;
         final String bizType = mRefData.bizType;
         final String refLineId = lineData.refLineId;
         mPresenter.getTransferInfoSingle(refCodeId, refType, bizType, refLineId, getString(etBatchFlag), "",
-                Global.USER_ID);
+                lineData.refDoc, UiUtil.convertToInt(lineData.refDocItem), Global.USER_ID);
     }
 
     @Override
@@ -383,7 +383,7 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
 
     @Override
     public boolean checkCollectedDataBeforeSave() {
-        if(!etMaterialNum.isEnabled()) {
+        if (!etMaterialNum.isEnabled()) {
             showMessage("请先获取单据数据");
             return false;
         }
@@ -522,11 +522,18 @@ public class QingYangAOCollectFragment extends BaseFragment<ApprovalOtherPresent
     @Override
     public void saveCollectedDataSuccess() {
         showMessage("数据保存成功");
+        clearCommonUI(etQuantity);
+        //结算数量为累计数量的逻辑
     }
 
     @Override
     public void saveCollectedDataFail(String message) {
         showMessage(message);
+        final float quantityV = UiUtil.convertToFloat(getString(etQuantity), 0.0f);
+        final float totalQuantity = UiUtil.convertToFloat(getString(tvBalanceQuantity), 0.0f);
+        tvBalanceQuantity.setText(String.valueOf(totalQuantity + quantityV));
+        etQuantity.setText("");
+
     }
 
     /**

@@ -104,7 +104,7 @@ public abstract class BaseMSEditFragment extends BaseFragment<MSEditPresenterImp
                     //获取缓存
                     mPresenter.getTransferInfoSingle(mRefData.refCodeId, mRefData.refType,
                             mRefData.bizType, mRefLineId, getString(tvBatchFlag), mSelectedLocation
-                            , Global.USER_ID);
+                            , "", -1, Global.USER_ID);
                 });
     }
 

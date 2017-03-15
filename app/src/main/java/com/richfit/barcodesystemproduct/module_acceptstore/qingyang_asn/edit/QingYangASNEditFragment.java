@@ -124,7 +124,7 @@ public class QingYangASNEditFragment extends BaseFragment<ASNEditPresenterImp, O
         //获取缓存信息
         mPresenter.getTransferInfoSingle(mRefData.bizType, materialNum,
                 Global.USER_ID, mRefData.workId, mRefData.invId, mRefData.recWorkId,
-                mRefData.recInvId, batchFlag);
+                mRefData.recInvId, batchFlag,"",-1);
     }
 
     @Override
@@ -298,7 +298,7 @@ public class QingYangASNEditFragment extends BaseFragment<ASNEditPresenterImp, O
             case Global.RETRY_LOAD_SINGLE_CACHE_ACTION:
                 mPresenter.getTransferInfoSingle(mRefData.bizType, getString(tvMaterialNum),
                         Global.USER_ID, mRefData.workId, mRefData.invId, mRefData.recWorkId,
-                        mRefData.recInvId, getString(tvBatchFlag));
+                        mRefData.recInvId, getString(tvBatchFlag),"",-1);
                 break;
             case Global.RETRY_SAVE_COLLECTION_DATA_ACTION:
                 saveCollectedData();

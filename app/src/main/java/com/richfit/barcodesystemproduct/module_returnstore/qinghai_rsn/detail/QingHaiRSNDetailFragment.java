@@ -149,7 +149,7 @@ public class QingHaiRSNDetailFragment extends BaseFragment<QingHaiRSNDetailPrese
     public void onRefresh() {
         String transferFlag = (String) getData(mBizType + mRefType, "0");
         if ("1".equals(transferFlag)) {
-            setRefreshing(false, "本次采集已经过账,请先进行数据上传操作");
+            setRefreshing(false, getString(R.string.detail_on_location));
             return;
         }
         //单据抬头id
@@ -300,7 +300,7 @@ public class QingHaiRSNDetailFragment extends BaseFragment<QingHaiRSNDetailPrese
     protected void submit2BarcodeSystem(String tranToSapFlag) {
         String transferFlag = (String) SPrefUtil.getData(mBizType, "0");
         if ("1".equals(transferFlag)) {
-            showMessage("本次采集已经过账,请先进行数据上传操作");
+            showMessage(getString(R.string.detail_off_location));
             return;
         }
         FLAGMAP.clear();

@@ -133,7 +133,7 @@ public abstract class BaseMSDetailFragment<P extends IMSDetailPresenter> extends
     public void onRefresh() {
         String state = (String) getData(mBizType + mRefType, "0");
         if (!"0".equals(state)) {
-            setRefreshing(false,"本次采集已经过账,请先进行数据上传操作");
+            setRefreshing(false,getString(R.string.detail_transfer));
             return;
         }
         //单据抬头id
@@ -181,6 +181,10 @@ public abstract class BaseMSDetailFragment<P extends IMSDetailPresenter> extends
         String state = (String) getData(mBizType + mRefType, "0");
         if (!"0".equals(state)) {
             showMessage("已经过账,不允许删除");
+            return;
+        }
+        if (TextUtils.isEmpty(node.transLineId)) {
+            showMessage("该行还未进行数据采集");
             return;
         }
         TreeNode parentNode = node.getParent();

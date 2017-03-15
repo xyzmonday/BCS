@@ -15,6 +15,7 @@ import java.util.List;
  */
 
 public class QingHaiDSWWDetailFragment extends BaseDSDetailFragment<QingHaiDSWWDetailPresenterImp> {
+
     @Override
     public void initInjector() {
         mFragmentComponent.inject(this);

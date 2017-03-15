@@ -36,7 +36,7 @@ public interface IDSEditPresenter extends IPresenter<IDSEditView> {
      * @param location：仓位
      */
     void getTransferInfoSingle(String refCodeId, String refType, String bizType, String refLineId,
-                               String batchFlag, String location, String userId);
+                               String batchFlag, String location, String refDoc,int refDocItem,String userId);
 
     /**
      * 保存本次采集的数据

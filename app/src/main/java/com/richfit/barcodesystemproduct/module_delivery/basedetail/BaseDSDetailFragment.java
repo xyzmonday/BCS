@@ -137,7 +137,7 @@ public abstract class BaseDSDetailFragment<P extends IDSDetailPresenter> extends
     public void onRefresh() {
         String transferFlag = (String) getData(mBizType + mRefType, "0");
         if ("1".equals(transferFlag)) {
-            setRefreshing(false, "本次采集已经过账,请先进行数据上传操作");
+            setRefreshing(false, getString(R.string.detail_off_location));
             return;
         }
         //单据抬头id
@@ -197,6 +197,7 @@ public abstract class BaseDSDetailFragment<P extends IDSDetailPresenter> extends
             showMessage("已经过账,不允许修改");
             return;
         }
+
         mPresenter.editNode(mRefData, node, mCompanyCode, mBizType, mRefType,
                 getSubFunName());
     }
@@ -206,6 +207,10 @@ public abstract class BaseDSDetailFragment<P extends IDSDetailPresenter> extends
         String state = (String) getData(mBizType + mRefType, "0");
         if (!"0".equals(state)) {
             showMessage("已经过账,不允许删除");
+            return;
+        }
+        if (TextUtils.isEmpty(node.transLineId)) {
+            showMessage("该行还未进行数据采集");
             return;
         }
         TreeNode parentNode = node.getParent();

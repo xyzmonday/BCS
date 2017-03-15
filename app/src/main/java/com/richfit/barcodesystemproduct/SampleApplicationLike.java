@@ -104,6 +104,9 @@ public class SampleApplicationLike extends DefaultApplicationLike {
         mAppComponent = DaggerAppComponent.builder()
                 .appModule(new AppModule(application))
                 .build();
+		if (LeakCanary.isInAnalyzerProcess(application)) {
+            return;
+        }
         mRefWatcher = LeakCanary.install(application);
         BlockCanary.install(application, new AppBlockCanaryContext()).start();
         InitializeService.start(application);

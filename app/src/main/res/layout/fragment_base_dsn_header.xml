@@ -29,12 +29,12 @@
         android:padding="@dimen/collect_row_padding">
 
         <TextView
-            android:id="@+id/tv_cost_center_name"
+            android:id="@+id/et_auto_comp_name"
             style="@style/LeftTextViewItemStyle"
             android:text="@string/cost_center" />
 
         <AutoCompleteTextView
-            android:id="@+id/et_cost_center"
+            android:id="@+id/et_auto_comp"
             style="@style/RightEditTextItemStyle" />
 
     </LinearLayout>

@@ -66,6 +66,23 @@ public class QingHaiCNCollectFragment extends BaseFragment<CNCollectPresenterImp
     /*单据行适配器*/
     ArrayAdapter<String> mRefLineAdapter;
 
+    @Override
+    public void handleBarCodeScanResult(String type, String[] list) {
+        if (list != null && list.length > 2) {
+            final String materialNum = list[1];
+            if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
+                saveCollectedData();
+            } else if (!cbSingle.isChecked()) {
+                etMaterialNum.setText(materialNum);
+                getCheckTransferInfoSingle(materialNum,getString(etCheckLocation));
+            }
+
+        } else if (list != null && list.length == 2 & !cbSingle.isChecked()) {
+            final String location = list[1];
+            etCheckLocation.setText("");
+            etCheckLocation.setText(location);
+        }
+    }
 
     @Override
     protected int getContentId() {
@@ -76,25 +93,6 @@ public class QingHaiCNCollectFragment extends BaseFragment<CNCollectPresenterImp
     public void initInjector() {
         mFragmentComponent.inject(this);
     }
-
-    @Override
-    public void handleBarCodeScanResult(String type, String[] list) {
-        if (list != null && list.length > 2) {
-            final String materialNum = list[1];
-            if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
-                    saveCollectedData();
-            } else if (!cbSingle.isChecked()) {
-                etMaterialNum.setText(materialNum);
-               getCheckTransferInfoSingle(materialNum,getString(etCheckLocation));
-            }
-
-        } else if (list != null && list.length == 2 & !cbSingle.isChecked()) {
-            final String location = list[1];
-            etCheckLocation.setText("");
-            etCheckLocation.setText(location);
-        }
-    }
-
 
     @Override
     protected void initVariable(@Nullable Bundle savedInstanceState) {
@@ -157,7 +155,7 @@ public class QingHaiCNCollectFragment extends BaseFragment<CNCollectPresenterImp
     public void initDataLazily() {
         etMaterialNum.setEnabled(false);
         if (mRefData == null) {
-            showMessage("请现在抬头页面初始化本次盘点");
+            showMessage("请先在抬头页面初始化本次盘点");
             return;
         }
 

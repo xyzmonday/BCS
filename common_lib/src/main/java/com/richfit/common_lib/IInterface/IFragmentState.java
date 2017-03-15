@@ -58,4 +58,10 @@ public interface IFragmentState<T> {
      */
     void handleBarCodeScanResult(String type, String[] list);
 
+    /**
+     * 是否需要显示FloatingButton按钮。true表示需要显示，false表示不需要显示
+     * @return
+     */
+    boolean isNeedShowFloatingButton();
+
 }

@@ -9,7 +9,10 @@ import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.SPrefUtil;
+import com.richfit.domain.bean.RefDetailEntity;
+import com.richfit.domain.bean.ReferenceEntity;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -20,7 +23,7 @@ import io.reactivex.Flowable;
  * Created by monday on 2017/2/20.
  */
 
-public class QingHaiAS105NDetailPresenterImp extends ASDetailPresenterImp{
+public class QingHaiAS105NDetailPresenterImp extends ASDetailPresenterImp {
 
     @Inject
     public QingHaiAS105NDetailPresenterImp(@ContextLife("Activity") Context context) {
@@ -119,6 +122,28 @@ public class QingHaiAS105NDetailPresenterImp extends ASDetailPresenterImp{
                     }
                 });
         addSubscriber(subscriber);
+    }
+
+    /**
+     * 通过lineNum105将缓存和原始单据行关联起来
+     */
+    @Override
+    protected RefDetailEntity getLineDataByRefLineId(RefDetailEntity refLineData, ReferenceEntity cachedRefData) {
+        if (refLineData == null) {
+            return null;
+        }
+
+        final String lineNum105 = refLineData.lineNum105;
+        if (TextUtils.isEmpty(lineNum105))
+            return null;
+        //通过refLineId匹配出缓存中的明细行
+        List<RefDetailEntity> detail = cachedRefData.billDetailList;
+        for (RefDetailEntity entity : detail) {
+            if (lineNum105.equals(entity.lineNum105)) {
+                return entity;
+            }
+        }
+        return null;
     }
 
 }

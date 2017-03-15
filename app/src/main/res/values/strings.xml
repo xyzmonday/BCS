@@ -219,6 +219,13 @@
     <string name="move_cause">移动原因</string>
     <string name="real_used_quantity">实际消耗数量</string>
     <string name="total_used_quantity">累计消耗数量</string>
+    <string name="ref_line_num_105">参考单据行</string>
+
+    <!--明细界面上架处理消息-->
+    <string name="detail_on_location">本次采集已经过账,请先直接进行上架处理操作</string>
+    <!--明细界面下架处理消息-->
+    <string name="detail_off_location">本次采集已经过账,请先直接进行下架处理操作</string>
+    <string name="detail_transfer">本次采集已经过账,请先直接进行转储处理操作</string>
 
     //组织机构
     <integer name="orgNorm">0</integer>
@@ -226,7 +233,7 @@
 
     //特殊库存标识
     <string-array name="special_inv_flags">
-        <item>N</item>
+        <item> </item>
         <item>K</item>
     </string-array>
 
@@ -246,4 +253,18 @@
         <item>不合格</item>
     </string-array>
 
+
+    <string-array name="strategy_codes">
+        <item>请选择</item>
+        <item>1001_接收</item>
+        <item>1004_拒收</item>
+    </string-array>
+
+
+    <string-array name="move_reasons">
+        <item>请选择</item>
+        <item>0001_质量低劣</item>
+        <item>0002_未完成的</item>
+        <item>0003_损坏的</item>
+    </string-array>
 </resources>

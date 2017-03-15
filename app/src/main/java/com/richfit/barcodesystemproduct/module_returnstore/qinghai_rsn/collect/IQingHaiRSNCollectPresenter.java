@@ -25,7 +25,8 @@ public interface IQingHaiRSNCollectPresenter extends IPresenter<IQingHaiRSNColle
      * @param batchFlag：发出批次
      */
     void getTransferSingleInfo(String bizType, String materialNum, String userId, String workId,
-                               String invId, String recWorkId, String recInvId, String batchFlag);
+                               String invId, String recWorkId, String recInvId, String batchFlag,
+                               String refDoc,int refDocItem);
     /**
      * 保存本次采集的数据
      *

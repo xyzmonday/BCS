@@ -29,7 +29,6 @@ import com.richfit.barcodesystemproduct.SampleApplicationLike;
 import com.richfit.barcodesystemproduct.di.component.DaggerFragmentComponent;
 import com.richfit.barcodesystemproduct.di.component.FragmentComponent;
 import com.richfit.barcodesystemproduct.di.module.FragmentModule;
-import com.richfit.barcodesystemproduct.module.main.MainActivity;
 import com.richfit.common_lib.IInterface.IFragmentState;
 import com.richfit.common_lib.IInterface.IPresenter;
 import com.richfit.common_lib.dialog.NetConnectErrorDialogFragment;
@@ -43,6 +42,7 @@ import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.ReferenceEntity;
 import com.richfit.domain.bean.RowConfig;
 import com.richfit.domain.bean.SubFuncEntity;
+import com.squareup.leakcanary.RefWatcher;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -301,8 +301,11 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
 
     @Override
     public void onDestroy() {
-        SampleApplicationLike.getRefWatcher().watch(this);
-        super.onDestroy();
+		super.onDestroy();
+        RefWatcher refWatcher = SampleApplicationLike.getRefWatcher();
+		if(refWatcher != null) {
+            refWatcher.watch(this);
+        }
     }
 
     //获取布局文件
@@ -969,16 +972,25 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
                 .show();
     }
 
+    protected void showFailDialog(String message) {
+        new SweetAlertDialog(mActivity, SweetAlertDialog.WARNING_TYPE)
+                .setTitleText("温馨提示")
+                .setContentText(message)
+                .show();
+    }
+
     protected void showErrorDialog(String message) {
         String[] errors = message.split("______");
-        MainActivity activity = (MainActivity) mActivity;
+        //注意这里使用多态性质，父类AppCompatActivity中的FragmentManager
+        AppCompatActivity activity = (AppCompatActivity) mActivity;
         FragmentManager fm = activity.getSupportFragmentManager();
         ShowErrorMessageDialog dialog = ShowErrorMessageDialog.newInstance(errors);
         dialog.show(fm, "nms_show_error_messages");
     }
 
+
     protected void showErrorDialog(String[] messages) {
-        MainActivity activity = (MainActivity) mActivity;
+        AppCompatActivity activity = (AppCompatActivity) mActivity;
         FragmentManager fm = activity.getSupportFragmentManager();
         ShowErrorMessageDialog dialog = ShowErrorMessageDialog.newInstance(messages);
         dialog.show(fm, "nms_show_error_messages");
@@ -1070,13 +1082,18 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
         menus.add(menu);
 
         menu = new BottomMenuEntity();
-        menu.menuName = "数据上传";
+        menu.menuName = "上架";
         menu.menuImageRes = R.mipmap.icon_data_submit;
         menus.add(menu);
 
         menu = new BottomMenuEntity();
         menu.menuName = "下架";
         menu.menuImageRes = R.mipmap.icon_down_location;
+        menus.add(menu);
+
+        menu = new BottomMenuEntity();
+        menu.menuName = "转储";
+        menu.menuImageRes = R.mipmap.icon_detail_transfer;
         menus.add(menu);
         return menus;
     }
@@ -1194,5 +1211,14 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
     @Override
     public void readExtraDictionaryComplete() {
 
+    }
+
+    /**
+     * BaseFragment实现isNeedShowFloatingButton该方法，默认显示FloatingButton
+     * @return
+     */
+    @Override
+    public boolean isNeedShowFloatingButton() {
+        return true;
     }
 }

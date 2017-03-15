@@ -13,7 +13,6 @@ import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.barcodesystemproduct.module_approval.qinghai_ao.detail.imp.QingHaiAODetailPresenterImp;
 import com.richfit.common_lib.animationrv.Animation.animators.FadeInDownAnimator;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.AutoSwipeRefreshLayout;
 import com.richfit.domain.bean.RefDetailEntity;
@@ -308,8 +307,7 @@ public class QingHaiAODetailFragment extends BaseFragment<QingHaiAODetailPresent
 
     @Override
     public void submitDataFail(String message) {
-        L.e("error = " + message);
-        showMessage(message);
+        showErrorDialog(message);
     }
 
     @Override

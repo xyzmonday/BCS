@@ -99,7 +99,7 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
     /*缓存的批次*/
     private String mCachedBatchFlag;
     /*缓存的仓位级别的额外字段*/
-    private Map<String, Object> mExtraLocationMap;
+    private Map<String, Object> mCachedExtraLocationMap;
 
     /**
      * 处理扫描
@@ -114,13 +114,14 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
                 showMessage("请先在抬头界面获取相关数据");
                 return;
             }
-            final String materialNum = list[2];
-            final String batchFlag = list[11];
+            final String materialNum = list[Global.MATERIAL_POS];
+            final String batchFlag = list[Global.BATCHFALG_POS];
             if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
                 //如果已经选中单品，那么说明已经扫描过一次。必须保证每一次的物料都一样
                 getTransferSingle(spSendLoc.getSelectedItemPosition());
             } else if (!cbSingle.isChecked()) {
-                clearAllUI();
+                etMaterialNum.setText(materialNum);
+                etSendBatchFlag.setText(batchFlag);
                 loadMaterialInfo(materialNum, batchFlag);
             }
         } else if (list != null && list.length == 1 & !cbSingle.isChecked()) {
@@ -276,8 +277,6 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
             return;
         }
         clearAllUI();
-        //注意在clearAllUI清除了发出批次，但是明细中没有发出批次信息
-        etSendBatchFlag.setText(batchFlag);
         //刷新界面(在单据行明细查询是否有该物料条码，如果有那么刷新界面)
         matchMaterialInfo(materialNum, batchFlag)
                 .compose(TransformerHelper.io2main())
@@ -458,9 +457,10 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
         final String refType = mRefData.refType;
         final String bizType = mRefData.bizType;
         final String refLineId = lineData.refLineId;
-
+        mCachedBatchFlag = "";
+        mCachedExtraLocationMap = null;
         mPresenter.getTransferInfoSingle(refCodeId, refType, bizType, refLineId,
-                batchFlag, location, Global.USER_ID);
+                batchFlag, location,lineData.refDoc,UiUtil.convertToInt(lineData.refDocItem), Global.USER_ID);
     }
 
     private void resetSendLocation() {
@@ -504,14 +504,14 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
                 if (mIsOpenBatchManager) {
                     if (location.equalsIgnoreCase(info.location) &&
                             batchFlag.equalsIgnoreCase(info.batchFlag)) {
-                        mExtraLocationMap = info.mapExt;
+                        mCachedExtraLocationMap = info.mapExt;
                         mCachedBatchFlag = info.batchFlag;
                         tvLocQuantity.setText(info.quantity);
                         break;
                     }
                 } else {
                     if (location.equalsIgnoreCase(info.location)) {
-                        mExtraLocationMap = info.mapExt;
+                        mCachedExtraLocationMap = info.mapExt;
                         mCachedBatchFlag = info.batchFlag;
                         tvLocQuantity.setText(info.quantity);
                         break;
@@ -537,7 +537,7 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
     public void loadCacheSuccess() {
         showMessage("获取缓存成功");
         /*绑定仓位级别的额外数据*/
-        bindExtraUI(mSubFunEntity.locationConfigs, mExtraLocationMap);
+        bindExtraUI(mSubFunEntity.locationConfigs, mCachedExtraLocationMap);
         if (cbSingle.isChecked() && checkCollectedDataBeforeSave()) {
             saveCollectedData();
         }
@@ -551,7 +551,7 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
         tvLocQuantity.setText("0");
         tvTotalQuantity.setText("0");
         mCachedBatchFlag = "";
-        mExtraLocationMap = null;
+        mCachedExtraLocationMap = null;
         if (cbSingle.isChecked() && checkCollectedDataBeforeSave()) {
             saveCollectedData();
         }
@@ -561,7 +561,7 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
      * 不论扫描的是否是同一个物料，都清除控件的信息。
      */
     private void clearAllUI() {
-        clearCommonUI(tvMaterialDesc, tvSendWork, tvActQuantity, etSendBatchFlag, tvLocQuantity,
+        clearCommonUI(tvMaterialDesc, tvSendWork, tvActQuantity, tvLocQuantity,
                 etQuantity, tvLocQuantity, tvInvQuantity, tvTotalQuantity, cbSingle);
         //单据行
         if (mRefLineAdapter != null) {
@@ -740,9 +740,9 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
             result.batchFlag = getString(etSendBatchFlag).toUpperCase();
             result.quantity = getString(etQuantity);
             result.modifyFlag = "N";
-            result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
-            result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
-            result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
+            result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, lineData.mapExt, mCachedExtraLocationMap);
+            result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, lineData.mapExt, mCachedExtraLocationMap);
+            result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, lineData.mapExt, mCachedExtraLocationMap);
             emitter.onNext(result);
             emitter.onComplete();
         }, BackpressureStrategy.BUFFER).compose(TransformerHelper.io2main())
@@ -782,6 +782,7 @@ public abstract class BaseMSCollectFragment extends BaseFragment<MSCollectPresen
     @Override
     public void _onPause() {
         clearAllUI();
+        clearCommonUI(etMaterialNum,etSendBatchFlag);
     }
 
     /**

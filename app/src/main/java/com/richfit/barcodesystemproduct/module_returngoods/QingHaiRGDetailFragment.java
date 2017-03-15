@@ -7,6 +7,7 @@ import com.richfit.barcodesystemproduct.module_delivery.basedetail.BaseDSDetailF
 import com.richfit.barcodesystemproduct.module_returngoods.imp.QingHaiRGDetailPresenterImp;
 import com.richfit.domain.bean.BottomMenuEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -76,10 +77,13 @@ public class QingHaiRGDetailFragment extends BaseDSDetailFragment<QingHaiRGDetai
 
     @Override
     public List<BottomMenuEntity> provideDefaultBottomMenu() {
-        List<BottomMenuEntity> menus = super.provideDefaultBottomMenu();
-        menus.get(0).transToSapFlag = "01";
-        menus.get(1).transToSapFlag = "05";
-        return menus.subList(0, 2);
+        List<BottomMenuEntity> tmp = super.provideDefaultBottomMenu();
+        tmp.get(0).transToSapFlag = "01";
+        tmp.get(2).transToSapFlag = "05";
+        ArrayList menus = new ArrayList();
+        menus.add(tmp.get(0));
+        menus.add(tmp.get(2));
+        return menus;
     }
 
     @Override

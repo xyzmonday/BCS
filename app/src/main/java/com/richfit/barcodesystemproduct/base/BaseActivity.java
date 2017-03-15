@@ -1,6 +1,9 @@
 package com.richfit.barcodesystemproduct.base;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.ArrayRes;
 import android.support.annotation.LayoutRes;
@@ -8,7 +11,9 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
@@ -21,12 +26,13 @@ import com.richfit.barcodesystemproduct.di.component.DaggerActivityComponent;
 import com.richfit.barcodesystemproduct.di.module.ActivityModule;
 import com.richfit.common_lib.IInterface.IPresenter;
 import com.richfit.common_lib.dialog.NetConnectErrorDialogFragment;
-import com.richfit.common_lib.utils.AppManager;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.StatusBarCompat;
 import com.richfit.common_lib.utils.ViewServer;
 import com.richfit.domain.bean.RowConfig;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -72,12 +78,19 @@ public abstract class BaseActivity<T extends IPresenter> extends AppCompatActivi
                 .appComponent(SampleApplicationLike.getAppComponent())
                 .build();
         super.onCreate(savedInstanceState);
-        
+
         int layoutId = getContentId();
         if (layoutId > 0) {
             setContentView(getContentId());
             mUnbinder = ButterKnife.bind(this);
         }
+
+        //注册接收扫描结构的结果的广播
+        IntentFilter scanDataIntentFilter = new IntentFilter();
+        scanDataIntentFilter.addAction(WZ_RECT_DATA_ACTION);
+        scanDataIntentFilter.addAction(DQ_RECE_DATA_ACTION);
+        registerReceiver(receiver, scanDataIntentFilter);
+
         initInjector();
         if (mPresenter != null)
             mPresenter.attachView(this);
@@ -88,7 +101,8 @@ public abstract class BaseActivity<T extends IPresenter> extends AppCompatActivi
         if (mOpenStatusBar)
             StatusBarCompat.compat(this);
         ViewServer.get(this).addWindow(this);
-        AppManager.addActivity(this);
+        //注意这里如果不在onDestroy方法里面不释放当前Activity的实例，那么将出现内存泄露
+//        AppManager.addActivity(this);
     }
 
     protected void setStatusBar(boolean isOpenStatusBar) {
@@ -108,6 +122,7 @@ public abstract class BaseActivity<T extends IPresenter> extends AppCompatActivi
             mNetConnectErrorDialogFragment.setINetworkConnectListener(null);
             mNetConnectErrorDialogFragment.dismiss();
         }
+        unregisterReceiver(receiver);
         if (mUnbinder != null && mUnbinder != Unbinder.EMPTY) mUnbinder.unbind();
         if (mPresenter != null)
             //防止内存泄露
@@ -212,6 +227,7 @@ public abstract class BaseActivity<T extends IPresenter> extends AppCompatActivi
 
     /**
      * 用户点击重试按钮，回到该方法
+     *
      * @param action
      */
     @Override
@@ -221,6 +237,7 @@ public abstract class BaseActivity<T extends IPresenter> extends AppCompatActivi
 
     /**
      * 网络发生异常时，回调该方法，子类可以重写该方法进行处理改异常
+     *
      * @param retryAction：重试的action
      */
     @Override
@@ -255,6 +272,193 @@ public abstract class BaseActivity<T extends IPresenter> extends AppCompatActivi
 
     @Override
     public void readExtraDictionaryComplete() {
+
+    }
+
+
+    /**
+     * 扫描条码模块
+     */
+    public static final int KEY_SCAN = 135;
+    //最中间的红色扫描按键
+    public static final int KEY_F1 = 134;
+    //2016-08-02新的手持适配，ARMOR手持，android 5.1.1系统
+    public static final int KEY_SCAN1 = 0;
+    /**
+     * 大庆手持的扫码广播
+     */
+    private static final String DQ_RECE_DATA_ACTION = "com.se4500.onDecodeComplete";
+    private static final String DQ_START_SCAN_ACTION = "com.geomobile.se4500barcode";
+    private static final String DQ_STOP_SCAN = "com.geomobile.se4500barcode.poweroff";
+    /**
+     * 物资公司的扫码广播
+     */
+    private static final String WZ_RECT_DATA_ACTION = "com.android.scancontext";
+    private static final String WZ_START_SCAN_ACTION = "android.intent.action.FUNCTION_BUTTON_DOWN";
+    private static final String WZ_STOP_SCAN = "android.intent.action.FUNCTION_BUTTON_UP";
+
+    private boolean isStartScan = false;
+    public static String mType;
+
+    /**
+     * 扫描条码
+     *
+     * @param keyCode
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KEY_SCAN:
+                startScan();
+                break;
+            case KEY_F1:
+                startScan();
+                break;
+            case KEY_SCAN1:
+                startScan();
+                break;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    /**
+     * 停止扫描
+     *
+     * @param keyCode
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KEY_SCAN:
+                stopScan();
+                break;
+            case KEY_F1:
+                stopScan();
+                break;
+            case KEY_SCAN1:
+                stopScan();
+                break;
+        }
+        return super.onKeyUp(keyCode, event);
+    }
+
+    /**
+     * 发送广播开始调用系统扫描
+     */
+    private void startScan() {
+        if (!isStartScan) {
+            isStartScan = true;
+            //如果没有开启
+            Intent intent = new Intent();
+            intent.setAction(WZ_START_SCAN_ACTION);
+            intent.setAction(DQ_START_SCAN_ACTION);
+            sendBroadcast(intent, null);
+        }
+    }
+
+    /**
+     * 停止扫描
+     */
+    private void stopScan() {
+        isStartScan = false;
+        Intent intent = new Intent();
+        intent.setAction(WZ_STOP_SCAN);
+        intent.setAction(DQ_STOP_SCAN);
+        sendBroadcast(intent);
+
+    }
+
+    /**
+     * 接收扫描信息的广播
+     */
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            isStartScan = true;
+            String action = intent.getAction();
+            if (action.equals("com.android.scancontext")) {
+                // “前台输出”不打勾时，不会发送此Intent
+                String data = intent.getStringExtra("Scan_context");
+                filerBarCodeInfo(data);
+            } else if (action.equals(WZ_RECT_DATA_ACTION)) {
+                String data = intent.getStringExtra("Scan_context");
+                filerBarCodeInfo(data);
+            } else if (action.equals(DQ_RECE_DATA_ACTION)) {
+                String data = intent.getStringExtra("se4500");
+                filerBarCodeInfo(data);
+            }
+        }
+    };
+
+    /**
+     * 更具条码的类型，获取条码的信息
+     * 条码类型|物料编码|批次|验收人|采购订单号
+     */
+    private void filerBarCodeInfo(String info) {
+        if (TextUtils.isEmpty(info)) {
+            return;
+        }
+        if(!isStartScan)
+            return;
+        final String barcodeInfo = CharTrans(info);
+        L.e("扫描到的原始单据信息 = " + barcodeInfo);
+        String a[] = barcodeInfo.split("\\|", -1);
+        handleBarCodeScanResult(mType, a);
+    }
+    /**
+     * 条码内容加密
+     * @param char_in
+     * @return
+     */
+    public static String CharTrans(String char_in) {
+        String char_out = "";
+        int char_length = 0;
+
+        char_length = char_in.length();
+
+        int flg_mod = char_length % 2;
+        for (int i = 0; i < char_length - 1; i += 2) {
+            char_out = char_out + char_in.substring(i + 1, i + 2);
+            char_out = char_out + char_in.substring(i, i + 1);
+        }
+
+        if (flg_mod != 0) {
+            char_out = char_out + char_in.substring(char_length - 1);
+        }
+        return char_out;
+    }
+
+
+    /**
+     * 16进制数字字符集
+     */
+    private static final String hexString = "0123456789ABCDEF";
+
+    /**
+     * 将16进制数字解码成字符串,适用于所有字符（包括中文）
+     */
+    public static String decodeForChinese(String bytes) {
+        String str = "";
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(
+                bytes.length() / 2);
+        // 将每2位16进制整数组装成一个字节
+        for (int i = 0; i < bytes.length(); i += 2)
+            baos.write((hexString.indexOf(bytes.charAt(i)) << 4 | hexString
+                    .indexOf(bytes.charAt(i + 1))));
+        try {
+            str = new String(baos.toByteArray(), "GB2312");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return str;
+    }
+
+    //处理条码扫描
+    protected void handleBarCodeScanResult(String type, String[] list) {
 
     }
 

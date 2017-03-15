@@ -29,7 +29,6 @@ import java.util.Map;
 import butterknife.BindView;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
 
 /**
@@ -89,16 +88,14 @@ public class QingHaiRSNCollectFragment extends BaseFragment<QingHaiRSNCollectPre
                 showMessage("请先在抬头界面获取相关数据");
                 return;
             }
-            final String materialNum = list[2];
-            final String batchFlag = list[11];
+            final String materialNum = list[Global.MATERIAL_POS];
+            final String batchFlag = list[Global.BATCHFALG_POS];
             if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
                 //如果已经选中单品，那么说明已经扫描过一次。必须保证每一次的物料都一样
                 saveCollectedData();
-            } else if (!cbSingle.isChecked()) {
-                clearAllUI();
-                loadMaterialInfo(materialNum, batchFlag);
-            } else if (cbSingle.isChecked() && !materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
-                clearAllUI();
+            } else {
+                etMaterialNum.setText(materialNum);
+                etBatchFlag.setText(batchFlag);
                 loadMaterialInfo(materialNum, batchFlag);
             }
         }
@@ -200,7 +197,7 @@ public class QingHaiRSNCollectFragment extends BaseFragment<QingHaiRSNCollectPre
         clearAllUI();
         mPresenter.getTransferSingleInfo(mRefData.bizType, materialNum,
                 Global.USER_ID, mRefData.workId, mRefData.invId, mRefData.recWorkId,
-                mRefData.recInvId, batchFlag);
+                mRefData.recInvId, batchFlag,"",-1);
     }
 
     @Override
@@ -228,7 +225,7 @@ public class QingHaiRSNCollectFragment extends BaseFragment<QingHaiRSNCollectPre
         tvMaterialDesc.setText(data.materialDesc);
         tvMaterialGroup.setText(data.materialGroup);
         tvMaterialUnit.setText(data.unit);
-        tvSpecialInvFlag.setText("K");
+//        tvSpecialInvFlag.setText("K");
         etBatchFlag.setText(!TextUtils.isEmpty(data.batchFlag) ? data.batchFlag :
                 batchFlag);
         mHistoryDetailList = refData.billDetailList;
@@ -286,7 +283,7 @@ public class QingHaiRSNCollectFragment extends BaseFragment<QingHaiRSNCollectPre
     }
 
     private void clearAllUI() {
-        clearCommonUI(tvMaterialDesc, tvMaterialGroup, etBatchFlag,tvMaterialUnit,tvSpecialInvFlag,
+        clearCommonUI(tvMaterialDesc, tvMaterialGroup,tvMaterialUnit,tvSpecialInvFlag,
                 tvLocQuantity, tvLocQuantity, etQuantity, etLocation);
 
         //库存地点
@@ -360,34 +357,31 @@ public class QingHaiRSNCollectFragment extends BaseFragment<QingHaiRSNCollectPre
         if (!checkCollectedDataBeforeSave()) {
             return;
         }
-        Flowable.create(new FlowableOnSubscribe<ResultEntity>() {
-            @Override
-            public void subscribe(FlowableEmitter<ResultEntity> emitter) throws Exception {
-                ResultEntity result = new ResultEntity();
-                result.businessType = mRefData.bizType;
-                result.voucherDate = mRefData.voucherDate;
-                result.moveType = mRefData.moveType;
-                result.userId = Global.USER_ID;
-                result.workId = mRefData.workId;
-                result.invId = mInvs.get(spInv.getSelectedItemPosition()).invId;
-                result.recWorkId = mRefData.recWorkId;
-                result.recInvId = mRefData.recInvId;
-                result.materialId = etMaterialNum.getTag().toString();
-                result.batchFlag = getString(etBatchFlag);
-                result.location = getString(etLocation);
-                result.quantity = getString(etQuantity);
-                result.specialInvFlag = getString(tvSpecialInvFlag);
-                result.supplierId = mRefData.supplierId;
-                result.costCenter = mRefData.costCenter;
-                result.projectNum = mRefData.projectNum;
-                result.invType = getString(R.string.invTypeNorm);
-                result.modifyFlag = "N";
-                result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
-                result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
-                result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
-                emitter.onNext(result);
-                emitter.onComplete();
-            }
+        Flowable.create((FlowableOnSubscribe<ResultEntity>) emitter -> {
+            ResultEntity result = new ResultEntity();
+            result.businessType = mRefData.bizType;
+            result.voucherDate = mRefData.voucherDate;
+            result.moveType = mRefData.moveType;
+            result.userId = Global.USER_ID;
+            result.workId = mRefData.workId;
+            result.invId = mInvs.get(spInv.getSelectedItemPosition()).invId;
+            result.recWorkId = mRefData.recWorkId;
+            result.recInvId = mRefData.recInvId;
+            result.materialId = etMaterialNum.getTag().toString();
+            result.batchFlag = getString(etBatchFlag);
+            result.location = getString(etLocation);
+            result.quantity = getString(etQuantity);
+            result.specialInvFlag = getString(tvSpecialInvFlag);
+            result.supplierId = mRefData.supplierId;
+            result.costCenter = mRefData.costCenter;
+            result.projectNum = mRefData.projectNum;
+            result.invType = getString(R.string.invTypeNorm);
+            result.modifyFlag = "N";
+            result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
+            result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
+            result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
+            emitter.onNext(result);
+            emitter.onComplete();
         }, BackpressureStrategy.BUFFER)
                 .compose(TransformerHelper.io2main())
                 .subscribe(result -> mPresenter.uploadCollectionDataSingle(result));
@@ -398,6 +392,7 @@ public class QingHaiRSNCollectFragment extends BaseFragment<QingHaiRSNCollectPre
     public void _onPause() {
         super._onPause();
         clearAllUI();
+        clearCommonUI(etMaterialNum,etBatchFlag);
     }
 
     @Override

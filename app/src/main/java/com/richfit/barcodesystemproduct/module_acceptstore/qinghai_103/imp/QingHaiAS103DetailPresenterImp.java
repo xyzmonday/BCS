@@ -182,33 +182,34 @@ public class QingHaiAS103DetailPresenterImp extends ASDetailPresenterImp {
         List<RefDetailEntity> list = refData.billDetailList;
         for (RefDetailEntity node : list) {
             //获取缓存中的明细，如果该行明细没有缓存，那么该行明细仅仅赋值原始单据信息
-            RefDetailEntity cacheEntity = getLineDataByRefLineId(node, cache);
-            if (cacheEntity == null)
-                cacheEntity = new RefDetailEntity();
+            RefDetailEntity cachedEntity = getLineDataByRefLineId(node, cache);
+            if (cachedEntity == null)
+                cachedEntity = new RefDetailEntity();
 
-            cacheEntity.lineNum = node.lineNum;
-            cacheEntity.materialNum = node.materialNum;
-            cacheEntity.materialId = node.materialId;
-            cacheEntity.materialDesc = node.materialDesc;
-            cacheEntity.materialGroup = node.materialGroup;
-            cacheEntity.actQuantity = node.actQuantity;
-            cacheEntity.workCode = node.workCode;
+            cachedEntity.lineNum = node.lineNum;
+            cachedEntity.materialNum = node.materialNum;
+            cachedEntity.materialId = node.materialId;
+            cachedEntity.materialDesc = node.materialDesc;
+            cachedEntity.materialGroup = node.materialGroup;
+            cachedEntity.actQuantity = node.actQuantity;
+            cachedEntity.workCode = node.workCode;
 
-            List<LocationInfoEntity> locationList = cacheEntity.locationList;
+            //将仓位级别的数据保存到明细行级别中
+            List<LocationInfoEntity> locationList = cachedEntity.locationList;
             if (locationList != null && locationList.size() > 0) {
                 for (LocationInfoEntity loc : locationList) {
                     //仓位级别的数据
-                    cacheEntity.transId = loc.transId;
-                    cacheEntity.location = loc.location;
-                    cacheEntity.quantity = loc.quantity;
-                    cacheEntity.transLineId = loc.transLineId;
-                    cacheEntity.locationId = loc.id;
-                    cacheEntity.mapExt = UiUtil.copyMap(cacheEntity.mapExt, loc.mapExt);
+                    cachedEntity.transId = loc.transId;
+                    cachedEntity.location = loc.location;
+                    cachedEntity.quantity = loc.quantity;
+                    cachedEntity.transLineId = loc.transLineId;
+                    cachedEntity.locationId = loc.id;
+                    cachedEntity.mapExt = UiUtil.copyMap(cachedEntity.mapExt, loc.mapExt);
                 }
             }
             //处理父节点的缓存
-            cacheEntity.mapExt = UiUtil.copyMap(node.mapExt, cacheEntity.mapExt);
-            nodes.add(cacheEntity);
+            cachedEntity.mapExt = UiUtil.copyMap(node.mapExt, cachedEntity.mapExt);
+            nodes.add(cachedEntity);
         }
         return nodes;
     }

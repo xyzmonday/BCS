@@ -3,6 +3,7 @@ package com.richfit.barcodesystemproduct.module_acceptstore.qinghai_103;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.view.View;
 
 import com.richfit.barcodesystemproduct.module_acceptstore.basecollect.BaseASCollectFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.basecollect.imp.ASCollectPresenterImp;
@@ -40,6 +41,14 @@ public class QingHaiAS103CollectFragment extends BaseASCollectFragment<ASCollect
         //因为不上架，那么仓位自动检查
         isLocationChecked = true;
         isNLocation = true;
+    }
+
+    @Override
+    public void initView() {
+        llBatchFlag.setVisibility(View.GONE);
+        llLocation.setVisibility(View.GONE);
+        llLocationQuantity.setVisibility(View.GONE);
+        super.initView();
     }
 
     @Override

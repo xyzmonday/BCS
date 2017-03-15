@@ -199,7 +199,8 @@ public class ServerRepositoryImp implements IServerRepository {
                                                            String refLineId, String workId, String invId,
                                                            String recWorkId, String recInvId,
                                                            String materialNum, String batchFlag,
-                                                           String location, String userId) {
+                                                           String location, String refDoc, int refDocItem,
+                                                           String userId) {
         mRequestParam.clear();
         mRequestParam.put("refCodeId", refCodeId);
         mRequestParam.put("businessType", bizType);
@@ -213,7 +214,8 @@ public class ServerRepositoryImp implements IServerRepository {
         mRequestParam.put("batchFlag", batchFlag);
         mRequestParam.put("location", location);
         mRequestParam.put("userId", userId);
-
+        mRequestParam.put("refDoc", refDoc);
+        mRequestParam.put("refDocItem", refDocItem);
         return mRequestApi.getTransferInfoSingle(JsonUtil.map2Json(mRequestParam))
                 .compose(TransformerHelper.handleResponse());
     }
@@ -401,6 +403,8 @@ public class ServerRepositoryImp implements IServerRepository {
 
     @Override
     public Flowable<String> uploadCollectionDataSingle(final ResultEntity result) {
+        result.batchFlag = CommonUtil.toUpperCase(result.batchFlag);
+        result.location = CommonUtil.toUpperCase(result.location);
         return mRequestApi.uploadCollectionDataSingle(JsonUtil.object2Json(result))
                 .compose(TransformerHelper.MapTransformer);
     }

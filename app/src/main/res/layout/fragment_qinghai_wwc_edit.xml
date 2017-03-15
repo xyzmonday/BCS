@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="false"
+    android:fitsSystemWindows="true"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <LinearLayout
+        android:id="@id/root_id"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/material_num" />
+
+            <TextView
+                android:id="@+id/tv_material_num"
+                style="@style/RightTextViewItemStyle" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/material_desc" />
+
+            <TextView
+                android:id="@+id/tv_material_desc"
+                style="@style/RightTextViewItemStyle" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/special_inv_flag" />
+
+            <TextView
+                android:id="@+id/tv_special_inv_flag"
+                style="@style/RightTextViewItemStyle" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/work" />
+
+            <TextView
+                android:id="@+id/tv_work"
+                style="@style/RightTextViewItemStyle"
+
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/act_rec_quantity" />
+
+            <TextView
+                android:id="@+id/tv_act_quantity"
+                style="@style/RightTextViewItemStyle" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/batch_flag" />
+
+            <TextView
+                android:id="@+id/tv_batch_flag"
+                style="@style/RightTextViewItemStyle" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/location_quantity" />
+
+            <TextView
+                android:id="@+id/tv_location_quantity"
+                style="@style/RightTextViewItemStyle" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/quantity_name"
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/real_used_quantity" />
+
+            <EditText
+                android:id="@+id/et_quantity"
+                style="@style/RightTextViewItemStyle" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/total_used_quantity" />
+
+            <TextView
+                android:id="@+id/tv_total_quantity"
+                style="@style/RightTextViewItemStyle" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</android.support.v4.widget.NestedScrollView>

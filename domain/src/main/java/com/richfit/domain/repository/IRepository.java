@@ -76,7 +76,7 @@ public interface IRepository {
                                                     String refLineId, String workId, String invId,
                                                     String recWorkId, String recInvId,
                                                     String materialNum, String batchFlag, String location,
-                                                    String userId);
+                                                    String refDoc,int refDocItem,String userId);
 
 
     /**

@@ -2,8 +2,10 @@ package com.richfit.barcodesystemproduct.module_check.qinghai_blind.collect;
 
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.richfit.barcodesystemproduct.R;
@@ -35,6 +37,8 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
         implements IBlindCollectView {
 
 
+    @BindView(R.id.ll_check_location)
+    LinearLayout llCheckLocation;
     @BindView(R.id.et_check_location)
     EditText etCheckLocation;
     @BindView(R.id.et_material_num)
@@ -47,6 +51,24 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
     EditText etQuantity;
     @BindView(R.id.cb_single)
     CheckBox cbSingle;
+
+    @Override
+    public void handleBarCodeScanResult(String type, String[] list) {
+        if (list != null && list.length > 2) {
+            final String materialNum = list[1];
+            if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
+                saveCollectedData();
+            } else {
+                etMaterialNum.setText(materialNum);
+                getCheckTransferInfoSingle(materialNum, getString(etCheckLocation));
+            }
+
+        } else if (list != null && list.length == 2 & !cbSingle.isChecked()) {
+            final String location = list[1];
+            etCheckLocation.setText("");
+            etCheckLocation.setText(location);
+        }
+    }
 
     @Override
     protected int getContentId() {
@@ -64,6 +86,8 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
         //读取额外字段配置信息
         mPresenter.readExtraConfigs(mCompanyCode, mBizType, mRefType,
                 Global.COLLECT_CONFIG_TYPE, Global.LOCATION_CONFIG_TYPE);
+        //如果是库存级，那么盘点仓位不显示
+        llCheckLocation.setVisibility(View.GONE);
     }
 
     /**
@@ -165,7 +189,7 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
             return;
         }
 
-        if (TextUtils.isEmpty(location)) {
+        if ("01".equals(mRefData.checkLevel) && TextUtils.isEmpty(location)) {
             showMessage("请先输入盘点仓位");
             return;
         }
@@ -205,6 +229,7 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
     @Override
     public boolean checkCollectedDataBeforeSave() {
         final float quantityV = UiUtil.convertToFloat(getString(etQuantity), 0.0F);
+
         if (Float.compare(quantityV, 0.0f) <= 0.0f) {
             showMessage("您输入的盘点数量不合理");
             return false;
@@ -219,7 +244,7 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
             return false;
         }
 
-        if (isEmpty(getString(etCheckLocation))) {
+        if ("01".equals(mRefData.checkLevel) && isEmpty(getString(etCheckLocation))) {
             showMessage("请输入盘点仓位");
             return false;
         }
@@ -278,7 +303,7 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
     }
 
     private void clearAllUI() {
-        clearCommonUI(tvMaterialDesc,tvMaterialGroup, etQuantity);
+        clearCommonUI(tvMaterialDesc, tvMaterialGroup, etQuantity);
         clearExtraUI(mSubFunEntity.collectionConfigs);
         clearExtraUI(mSubFunEntity.locationConfigs);
 

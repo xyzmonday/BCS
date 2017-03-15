@@ -46,7 +46,7 @@
     <TextView
         android:id="@+id/batchFlag"
         style="@style/TableHeaderStyle"
-        android:layout_width="240dp"
+        android:layout_width="120dp"
         android:text="@string/batch_flag" />
 
     <View style="@style/ItemSeperatorLayout" />
@@ -55,7 +55,7 @@
     <TextView
         android:id="@+id/totalUsedQuantity"
         style="@style/TableHeaderStyle"
-        android:layout_width="240dp"
+        android:layout_width="120dp"
         android:text="@string/total_used_quantity" />
 
     <View style="@style/ItemSeperatorLayout" />

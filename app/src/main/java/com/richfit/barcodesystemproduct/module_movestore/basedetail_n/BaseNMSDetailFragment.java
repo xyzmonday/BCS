@@ -183,6 +183,10 @@ public abstract class BaseNMSDetailFragment<P extends INMSDetailPresenter> exten
             showMessage("已经过账,不允许删除");
             return;
         }
+        if (TextUtils.isEmpty(node.transLineId)) {
+            showMessage("该行还未进行数据采集");
+            return;
+        }
         mPresenter.deleteNode("N", node.transId, node.transLineId, node.locationId,
                 mRefData.refType, mRefData.bizType, position, mCompanyCode);
     }

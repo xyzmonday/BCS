@@ -1,12 +1,15 @@
 package com.richfit.barcodesystemproduct.module_acceptstore.qinghai_105n;
 
 import android.text.TextUtils;
+import android.view.View;
 
+import com.richfit.barcodesystemproduct.adapter.QingHaiAS105NDetailAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.basedetail.BaseASDetailFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.qinghai_105n.imp.QingHaiAS105NDetailPresenterImp;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.domain.bean.BottomMenuEntity;
+import com.richfit.domain.bean.RefDetailEntity;
 
 import java.util.List;
 
@@ -18,10 +21,33 @@ import java.util.List;
 public class QingHaiAS105NDetailFragment extends BaseASDetailFragment<QingHaiAS105NDetailPresenterImp> {
 
     @Override
+    protected void initView() {
+        tvRefLineNum.setVisibility(View.VISIBLE);
+        super.initView();
+    }
+
+    @Override
+    public void showNodes(List<RefDetailEntity> allNodes) {
+        for (RefDetailEntity node : allNodes) {
+            if (!TextUtils.isEmpty(node.transId)) {
+                mTransId = node.transId;
+                break;
+            }
+        }
+        if (mAdapter == null) {
+            mAdapter = new QingHaiAS105NDetailAdapter(mActivity, allNodes, mSubFunEntity.parentNodeConfigs,
+                    mSubFunEntity.childNodeConfigs, mCompanyCode);
+            mRecycleView.setAdapter(mAdapter);
+            mAdapter.setOnItemEditAndDeleteListener(this);
+        } else {
+            mAdapter.addAll(allNodes);
+        }
+    }
+
+    @Override
     public void initInjector() {
         mFragmentComponent.inject(this);
     }
-
 
     @Override
     public void deleteNodeSuccess(int position) {

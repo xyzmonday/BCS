@@ -12,6 +12,7 @@ import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.ReferenceEntity;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -128,9 +129,20 @@ public class QingHaiAS105DetailPresenterImp extends ASDetailPresenterImp {
      */
     @Override
     protected RefDetailEntity getLineDataByRefLineId(RefDetailEntity refLineData, ReferenceEntity cachedRefData) {
-        if (refLineData == null)
+        if (refLineData == null) {
             return null;
-        return getLineDataByRefLineIdInternal(refLineData.insLot, cachedRefData);
+        }
+        final String insLot = refLineData.insLot;
+        if (TextUtils.isEmpty(insLot))
+            return null;
+        //通过refLineId匹配出缓存中的明细行
+        List<RefDetailEntity> detail = cachedRefData.billDetailList;
+        for (RefDetailEntity entity : detail) {
+            if (insLot.equals(entity.insLot)) {
+                return entity;
+            }
+        }
+        return null;
     }
 
 }

@@ -38,9 +38,16 @@ public class QingHaiWWCAdapter extends CommonTreeAdapter<RefDetailEntity> {
 
     }
 
+    /**
+     * 明细删除成功后清空累计消耗数量
+     *
+     * @param position
+     */
     @Override
     public void notifyNodeChanged(int position) {
-
+        RefDetailEntity deleteNode = mVisibleNodes.get(position);
+        deleteNode.totalQuantity = "";
+        notifyItemChanged(position);
     }
 
     @Override

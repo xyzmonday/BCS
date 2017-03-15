@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.common_lib.baseadapterrv.base.ViewHolder;
 import com.richfit.common_lib.basetreerv.CommonTreeAdapter;
+import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.RowConfig;
 
@@ -41,7 +42,13 @@ public class QingHaiAS103DetailAdapter extends CommonTreeAdapter<RefDetailEntity
 
     @Override
     public void notifyParentNodeChanged(int childNodePosition, int parentNodePosition) {
-
+        RefDetailEntity childNode = mVisibleNodes.get(childNodePosition);
+        RefDetailEntity parentNode = mVisibleNodes.get(parentNodePosition);
+        final float parentTotalQuantityV = UiUtil.convertToFloat(parentNode.totalQuantity, 0.0f);
+        final float childTotalQuantityV = UiUtil.convertToFloat(childNode.quantity, 0.0f);
+        final String newTotalQuantity = String.valueOf(parentTotalQuantityV - childTotalQuantityV);
+        parentNode.totalQuantity = newTotalQuantity;
+        notifyItemChanged(parentNodePosition);
     }
 
     @Override

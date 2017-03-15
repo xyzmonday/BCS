@@ -11,6 +11,10 @@ public class RefDetailEntity extends TreeNode {
 
     /*单据号*/
     public String recordNum;
+    /*对于105非必检的业务，需要通过refDoc+refDocItem来唯一确定该明细行，为了
+    简单起见重新增加一个行号标识
+     */
+    public String lineNum105;
     /*在验收中，该行是否已经验收*/
     public boolean isChecked;
     /*行明细id，同时也是本地数据行明细的id(主键)*/
@@ -122,6 +126,7 @@ public class RefDetailEntity extends TreeNode {
     public Integer refDocItem; // 参考物料凭证行号
     /*仓位信息*/
     public List<LocationInfoEntity> locationList;
+    public String lastFlag;
 
     /*单据行的额外字段数据*/
     public Map<String, Object> mapExt;

@@ -14,10 +14,13 @@ import com.richfit.barcodesystemproduct.adapter.QingHaiWWCAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.common_lib.animationrv.Animation.animators.FadeInDownAnimator;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.AutoSwipeRefreshLayout;
+import com.richfit.domain.bean.BottomMenuEntity;
 import com.richfit.domain.bean.RefDetailEntity;
 
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -31,6 +34,8 @@ import static com.richfit.common_lib.utils.SPrefUtil.getData;
 
 public class QingHaiWWCDetailFragment extends BaseFragment<QingHaiWWCDetailPresenterImp, RefDetailEntity>
         implements QingHaiWWCDetailContract.IQingHaiWWCDetailView, SwipeRefreshLayout.OnRefreshListener {
+
+    private static final HashMap<String, Object> FLAGMAP = new HashMap<>();
 
     @BindView(R.id.data_details_recycle_view)
     RecyclerView mRecycleView;
@@ -49,10 +54,9 @@ public class QingHaiWWCDetailFragment extends BaseFragment<QingHaiWWCDetailPrese
     QingHaiWWCAdapter mAdapter;
     //当前委外入库真正操作的行号，该行号用来获取对应的行明细
     String mSelectedRefLineNum;
-
+    List<BottomMenuEntity> mBottomMenus;
 
     @Override
-
     protected int getContentId() {
         return R.layout.fragment_qinghai_wwc_detail;
     }
@@ -173,6 +177,220 @@ public class QingHaiWWCDetailFragment extends BaseFragment<QingHaiWWCDetailPrese
         //不论成功或者失败都应该关闭下拉加载动画
         mSwipeRefreshLayout.setRefreshing(false);
         showMessage(message);
+    }
+
+    /**
+     * 修改明细里面的子节点
+     *
+     * @param node
+     * @param position
+     */
+    @Override
+    public void editNode(final RefDetailEntity node, int position) {
+        String state = (String) getData(mBizType + mRefType, "0");
+        if (!"0".equals(state)) {
+            showMessage("已经过账,不允许修改");
+            return;
+        }
+        mPresenter.editNode(null, mRefData, node, mCompanyCode, mBizType,
+                mRefType, "委外入库组件", position);
+    }
+
+    @Override
+    public void deleteNode(final RefDetailEntity node, int position) {
+        String state = (String) getData(mBizType + mRefType, "0");
+        if (!"0".equals(state)) {
+            showMessage("已经过账,不允许修改");
+            return;
+        }
+        if (TextUtils.isEmpty(node.transLineId)) {
+            showMessage("该行还未进行数据采集");
+            return;
+        }
+        mPresenter.deleteNode("N", node.transId, node.transLineId,
+                node.locationId, mRefData.refType, mRefData.bizType, position, mCompanyCode);
+    }
+
+    @Override
+    public void deleteNodeFail(String message) {
+        showMessage("删除失败;" + message);
+    }
+
+    /**
+     * 注意该业务相当于有参考，但是没有父子节点结构的明细删除逻辑
+     * @param position：节点在明细列表的位置
+     */
+    @Override
+    public void deleteNodeSuccess(int position) {
+        showMessage("删除成功");
+        if (mAdapter != null) {
+            mAdapter.removeNodeByPosition(position);
+        }
+    }
+
+    @Override
+    public boolean checkDataBeforeOperationOnDetail() {
+        if (mRefData == null) {
+            showMessage("请先获取单据数据");
+            return false;
+        }
+        if (TextUtils.isEmpty(mTransId)) {
+            showMessage("未获取缓存标识");
+            return false;
+        }
+
+        if (TextUtils.isEmpty(mRefData.voucherDate)) {
+            showMessage("请先选择过账日期");
+            return false;
+        }
+        return true;
+    }
+
+//    /**
+//     * 显示过账，数据上传等菜单对话框
+//     *
+//     * @param companyCode
+//     */
+//    @Override
+//    public void showOperationMenuOnDetail(final String companyCode) {
+//        View rootView = LayoutInflater.from(mActivity).inflate(R.layout.menu_bottom, null);
+//        GridView menu = (GridView) rootView.findViewById(R.id.gridview);
+//        mBottomMenus = provideDefaultBottomMenu();
+//        BottomMenuAdapter adapter = new BottomMenuAdapter(mActivity, R.layout.item_bottom_menu, mBottomMenus);
+//        menu.setAdapter(adapter);
+//
+//        final Dialog dialog = new Dialog(mActivity, R.style.MaterialDialogSheet);
+//        dialog.setContentView(rootView);
+//        dialog.setCancelable(true);
+//        dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//        dialog.getWindow().setGravity(Gravity.BOTTOM);
+//        dialog.show();
+//
+//        menu.setOnItemClickListener((adapterView, view, position, id) -> {
+//            switch (position) {
+//                case 0:
+//                    //1.过账
+//                    submit2BarcodeSystem(mBottomMenus.get(position).transToSapFlag);
+//                    break;
+//                case 1:
+//                    submit2SAP(mBottomMenus.get(position).transToSapFlag);
+//                    break;
+//                case 3:
+//                    //转储
+////                    sapUpAndDownLocation(mBottomMenus.get(position).transToSapFlag);
+//                    break;
+//            }
+//            dialog.dismiss();
+//        });
+//    }
+
+    /**
+     * 1.过账
+     */
+    protected void submit2BarcodeSystem(String tranToSapFlag) {
+        String state = (String) SPrefUtil.getData(mBizType + mRefType, "0");
+        if (!"0".equals(state)) {
+            showMessage("已经过账成功,请进行数据上传");
+            return;
+        }
+        mTransNum = "";
+        FLAGMAP.clear();
+        FLAGMAP.put("transToSapFlag", tranToSapFlag);
+        mPresenter.submitData2BarcodeSystem(mTransId, mBizType, mRefType, Global.USER_ID,
+                mRefData.voucherDate, FLAGMAP, createExtraHeaderMap());
+    }
+
+    @Override
+    public void showTransferedVisa(String message) {
+        mTransNum = message;
+    }
+
+
+    @Override
+    public void submitBarcodeSystemSuccess() {
+        showSuccessDialog(mTransNum);
+    }
+
+    @Override
+    public void submitBarcodeSystemFail(String message) {
+        if (TextUtils.isEmpty(message)) {
+            message += "过账失败";
+        }
+        showErrorDialog(message);
+        mTransNum = "";
+    }
+
+    /**
+     * 2.数据上传
+     */
+    protected void submit2SAP(String tranToSapFlag) {
+        String state = (String) getData(mBizType + mRefType, "0");
+        if ("0".equals(state)) {
+            showMessage("请先过账");
+            return;
+        }
+        FLAGMAP.clear();
+        FLAGMAP.put("transToSapFlag", tranToSapFlag);
+        mInspectionNum = "";
+        mPresenter.submitData2SAP(mTransId, mRefData.bizType, mRefType, Global.USER_ID,
+                mRefData.voucherDate, FLAGMAP, createExtraHeaderMap());
+    }
+
+
+    @Override
+    public void showInspectionNum(String inspectionNum) {
+        mInspectionNum = inspectionNum;
+    }
+
+    @Override
+    public void submitSAPSuccess() {
+        setRefreshing(false, "数据上传成功");
+        showSuccessDialog(mInspectionNum);
+        if (mAdapter != null) {
+            mAdapter.removeAllVisibleNodes();
+        }
+    }
+
+    @Override
+    public void submitSAPFail(String[] messages) {
+        showErrorDialog(messages);
+        mInspectionNum = "";
+    }
+
+    @Override
+    public void upAndDownLocationFail(String[] messages) {
+
+    }
+
+    @Override
+    public void upAndDownLocationSuccess() {
+
+    }
+
+    @Override
+    public List<BottomMenuEntity> provideDefaultBottomMenu() {
+        List<BottomMenuEntity> menus = super.provideDefaultBottomMenu();
+        menus.get(0).transToSapFlag = "Z02";
+        menus.get(1).transToSapFlag = "Z03";
+        return menus.subList(0, 2);
+    }
+
+    @Override
+    public boolean isNeedShowFloatingButton() {
+        return false;
+    }
+
+    @Override
+    public void retry(String retryAction) {
+        switch (retryAction) {
+            case Global.RETRY_TRANSFER_DATA_ACTION:
+                submit2BarcodeSystem(mBottomMenus.get(0).transToSapFlag);
+                break;
+            case Global.RETRY_UPLOAD_DATA_ACTION:
+                submit2SAP(mBottomMenus.get(1).transToSapFlag);
+                break;
+        }
+        super.retry(retryAction);
     }
 
 

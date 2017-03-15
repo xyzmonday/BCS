@@ -147,7 +147,7 @@ public class QingHaiDSNDetailFragment extends BaseFragment<QingHaiDSNDetailPrese
     public void onRefresh() {
         String transferKey = (String) SPrefUtil.getData(mBizType, "0");
         if ("1".equals(transferKey)) {
-            setRefreshing(false, "本次采集已经过账,请先进行数据上传操作");
+            setRefreshing(false,getString(R.string.detail_off_location));
             return;
         }
         //单据抬头id
@@ -380,10 +380,15 @@ public class QingHaiDSNDetailFragment extends BaseFragment<QingHaiDSNDetailPrese
 
     @Override
     public List<BottomMenuEntity> provideDefaultBottomMenu() {
-        List<BottomMenuEntity> menus = super.provideDefaultBottomMenu();
-        menus.get(0).transToSapFlag = "01";
-        menus.get(1).transToSapFlag = "05";
-        return menus.subList(0, 2);
+        List<BottomMenuEntity> tmp = super.provideDefaultBottomMenu();
+        tmp.get(0).transToSapFlag = "01";
+        tmp.get(2).transToSapFlag = "05";
+
+        ArrayList<BottomMenuEntity> menus = new ArrayList<>();
+        menus.add(tmp.get(0));
+        menus.add(tmp.get(2));
+
+        return menus;
     }
 
     @Override

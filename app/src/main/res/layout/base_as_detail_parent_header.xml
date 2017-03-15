@@ -27,6 +27,16 @@
 
 
     <TextView
+        android:visibility="gone"
+        android:id="@+id/refLineNum"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/ref_line_num_105" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
+
+    <TextView
         android:id="@+id/materialNum"
         style="@style/TableHeaderStyle"
         android:layout_width="120dp"

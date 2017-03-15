@@ -12,6 +12,7 @@ import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.base.BaseActivity;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.common_lib.utils.L;
 import com.richfit.domain.bean.BizFragmentConfig;
 
 import butterknife.OnClick;
@@ -114,6 +115,7 @@ public class EditActivity extends BaseActivity<EditPresenterImp> implements IEdi
     public void showEditFragment(BizFragmentConfig fragmentConfig) {
         final String fragmentTag = fragmentConfig.fragmentTag;
         final String className = fragmentConfig.className;
+        L.e("修改Framgent  = " +className);
         if (TextUtils.isEmpty(fragmentTag) || TextUtils.isEmpty(className)) {
             showMessage("不能初始化修改界面");
             return;
@@ -125,6 +127,6 @@ public class EditActivity extends BaseActivity<EditPresenterImp> implements IEdi
 
     @Override
     public void initEditFragmentFail(String message) {
-        showMessage(message);
+        showMessage("初始化修改界面错误" + message);
     }
 }

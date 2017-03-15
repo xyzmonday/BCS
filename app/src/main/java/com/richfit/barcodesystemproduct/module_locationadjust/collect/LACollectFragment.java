@@ -55,6 +55,27 @@ public class LACollectFragment extends BaseFragment<LACollectPresenterImp, Objec
     EditText etRecQuantity;
 
     @Override
+    public void handleBarCodeScanResult(String type, String[] list) {
+        if (list != null && list.length > 2) {
+            final String materialNum = list[1];
+            final String batchFlag = list[2];
+            etMaterialNum.setText(materialNum);
+            etBatchFlag.setText(batchFlag);
+            loadMaterialInfo(materialNum, batchFlag);
+        } else {
+            final String location = list[1];
+            //目标仓位
+            if (etRecLocation.hasFocus() && etRecLocation.isFocused()) {
+                etRecLocation.setText(location);
+            } else {
+                //源仓位
+                etSendLocation.setText(location);
+            }
+        }
+    }
+
+
+    @Override
     protected int getContentId() {
         return R.layout.fragment_la_collect;
     }

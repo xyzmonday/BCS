@@ -82,10 +82,48 @@ public class QingHaiDSNCollectFragment extends BaseFragment<QingHaiDSNCollectPre
     private List<RefDetailEntity> mHistoryDetailList;
 
     /*缓存的仓位级别的额外字段*/
-    Map<String, Object> mExtraLocationMap;
+    Map<String, Object> mCachedExtraLocationMap;
     /*缓存的行级别的额外字段*/
-    Map<String, Object> mExtraLineMap;
+    Map<String, Object> mCachedExtraLineMap;
 
+
+    /**
+     * 处理扫描
+     *
+     * @param type
+     * @param list
+     */
+    @Override
+    public void handleBarCodeScanResult(String type, String[] list) {
+        if (list != null && list.length > 2) {
+            if (!etMaterialNum.isEnabled()) {
+                showMessage("请先在抬头界面获取相关数据");
+                return;
+            }
+            final String materialNum = list[Global.MATERIAL_POS];
+            final String batchFlag = list[Global.BATCHFALG_POS];
+            if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
+                //如果已经选中单品，那么说明已经扫描过一次。必须保证每一次的物料都一样
+                loadLocationQuantity(spLocation.getSelectedItemPosition());
+            } else {
+                etMaterialNum.setText(materialNum);
+                etBatchFlag.setText(batchFlag);
+                loadMaterialInfo(materialNum,batchFlag);
+            }
+        } else if (list != null && list.length == 2 & !cbSingle.isChecked()) {
+            final String location = list[1];
+            //扫描仓位
+            if (spLocation.getAdapter() != null) {
+                final int size = mInventoryDatas.size();
+                for (int i = 0; i < size; i++) {
+                    if (mInventoryDatas.get(i).location.equalsIgnoreCase(location)) {
+                        spLocation.setSelection(i);
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
     @Override
     public void initInjector() {
@@ -202,9 +240,10 @@ public class QingHaiDSNCollectFragment extends BaseFragment<QingHaiDSNCollectPre
             return;
         }
         clearAllUI();
+        mHistoryDetailList = null;
         mPresenter.getTransferInfoSingle(mRefData.bizType, materialNum,
                 Global.USER_ID, mRefData.workId, mRefData.invId, mRefData.recWorkId,
-                mRefData.recInvId, batchFlag);
+                mRefData.recInvId, batchFlag,"",-1);
     }
 
     @Override
@@ -287,6 +326,8 @@ public class QingHaiDSNCollectFragment extends BaseFragment<QingHaiDSNCollectPre
         }
 
         final InvEntity invEntity = mInvs.get(position);
+        mCachedExtraLineMap = null;
+        mCachedExtraLocationMap = null;
         mPresenter.getInventoryInfo("04", mRefData.workId, invEntity.invId,
                 mRefData.workCode, invEntity.invCode, "", getString(etMaterialNum),
                 CommonUtil.Obj2String(etMaterialNum.getTag()), "",
@@ -355,16 +396,16 @@ public class QingHaiDSNCollectFragment extends BaseFragment<QingHaiDSNCollectPre
                             location.equalsIgnoreCase(locationInfo.location);
                     if (isMatched) {
                         locQuantity = locationInfo.quantity;
-                        mExtraLocationMap = locationInfo.mapExt;
-                        mExtraLineMap = detail.mapExt;
+                        mCachedExtraLocationMap = locationInfo.mapExt;
+                        mCachedExtraLineMap = detail.mapExt;
                         break;
                     }
                 }
             }
         }
         //绑定额外字段数据
-        bindExtraUI(mSubFunEntity.locationConfigs, mExtraLocationMap);
-        bindExtraUI(mSubFunEntity.collectionConfigs, mExtraLineMap);
+        bindExtraUI(mSubFunEntity.locationConfigs, mCachedExtraLocationMap);
+        bindExtraUI(mSubFunEntity.collectionConfigs, mCachedExtraLineMap);
         tvLocQuantity.setText(locQuantity);
     }
 
@@ -469,9 +510,9 @@ public class QingHaiDSNCollectFragment extends BaseFragment<QingHaiDSNCollectPre
             result.projectNum = mRefData.projectNum;
             result.invType = "1";
             result.modifyFlag = "N";
-            result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
-            result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
-            result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, mExtraLineMap, mExtraLocationMap);
+            result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, mCachedExtraLineMap, mCachedExtraLocationMap);
+            result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, mCachedExtraLineMap, mCachedExtraLocationMap);
+            result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, mCachedExtraLineMap, mCachedExtraLocationMap);
             emitter.onNext(result);
             emitter.onComplete();
         }, BackpressureStrategy.BUFFER)
@@ -495,8 +536,7 @@ public class QingHaiDSNCollectFragment extends BaseFragment<QingHaiDSNCollectPre
     }
 
     private void clearAllUI() {
-        clearCommonUI(tvMaterialDesc, tvMaterialGroup, etBatchFlag,
-                tvInvQuantity, tvLocQuantity, etQuantity);
+        clearCommonUI(tvMaterialDesc, tvMaterialGroup, tvInvQuantity, tvLocQuantity, etQuantity);
 
         //库存地点
         if (spInv.getAdapter() != null) {
@@ -543,6 +583,7 @@ public class QingHaiDSNCollectFragment extends BaseFragment<QingHaiDSNCollectPre
     public void _onPause() {
         super._onPause();
         clearAllUI();
+        clearCommonUI(etMaterialNum,etBatchFlag);
     }
 
     @Override

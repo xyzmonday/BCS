@@ -67,10 +67,11 @@ public class NMSCollectPresenterImp extends BasePresenter<INMSCollectView>
 
     @Override
     public void getTransferInfoSingle(String bizType, String materialNum, String userId, String workId,
-                                      String invId, String recWorkId, String recInvId, String batchFlag) {
+                                      String invId, String recWorkId, String recInvId, String batchFlag,
+                                      String refDoc, int refDocItem) {
         mView = getView();
         RxSubscriber<ReferenceEntity> subscriber = mRepository.getTransferInfoSingle("", "", bizType, "",
-                workId, invId, recWorkId, recInvId, materialNum, batchFlag, "", userId)
+                workId, invId, recWorkId, recInvId, materialNum, batchFlag, "", refDoc, refDocItem, userId)
                 .filter(refData -> refData != null && refData.billDetailList.size() > 0)
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<ReferenceEntity>(mContext, "正在获取物料信息...") {
@@ -120,7 +121,7 @@ public class NMSCollectPresenterImp extends BasePresenter<INMSCollectView>
 
         RxSubscriber<List<InventoryEntity>> subscriber =
                 mRepository.getInventoryInfo(queryType, workId, invId, workCode, invCode, storageNum, materialNum,
-                        materialId, "", "", batchFlag, location, specialInvFlag, specialInvNum,invType)
+                        materialId, "", "", batchFlag, location, specialInvFlag, specialInvNum, invType)
                         .compose(TransformerHelper.io2main())
                         .subscribeWith(new RxSubscriber<List<InventoryEntity>>(mContext) {
                             @Override

@@ -29,7 +29,7 @@ public abstract class RxSubscriber<T> extends ResourceSubscriber<T> {
     }
 
     public RxSubscriber(Context context) {
-        this(context,"正在玩命加载...");
+        this(context,"正在加载...");
     }
 
     @Override

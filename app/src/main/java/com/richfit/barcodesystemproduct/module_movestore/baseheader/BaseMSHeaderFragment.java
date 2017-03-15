@@ -54,7 +54,6 @@ public abstract class BaseMSHeaderFragment extends BaseFragment<MSHeaderPresente
     @BindView(R.id.et_transfer_date)
     RichEditText etTransferDate;
 
-
     @Override
     protected int getContentId() {
         return R.layout.fragment_base_ms_header;
@@ -265,6 +264,10 @@ public abstract class BaseMSHeaderFragment extends BaseFragment<MSHeaderPresente
         super.retry(retryAction);
     }
 
+    @Override
+    public boolean isNeedShowFloatingButton() {
+        return false;
+    }
 
     /*返回移动类型*/
     @CheckResult

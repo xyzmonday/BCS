@@ -52,6 +52,13 @@ public abstract class BaseDSHeaderFragment extends BaseFragment<DSHeaderPresente
     protected LinearLayout llCreator;
 
     @Override
+    public void handleBarCodeScanResult(String type, String[] list) {
+        if (list != null && list.length >= 1) {
+            getRefData(list[0]);
+        }
+    }
+
+    @Override
     protected int getContentId() {
         return R.layout.fragment_base_ds_header;
     }
@@ -91,7 +98,7 @@ public abstract class BaseDSHeaderFragment extends BaseFragment<DSHeaderPresente
     protected void getRefData(String refNum) {
         mRefData = null;
         clearAllUI();
-        mPresenter.getReference(refNum, mRefType, getBizType(), getMoveType(),"", Global.USER_ID);
+        mPresenter.getReference(refNum, mRefType, getBizType(), getMoveType(), "", Global.USER_ID);
     }
 
     /**
@@ -153,7 +160,7 @@ public abstract class BaseDSHeaderFragment extends BaseFragment<DSHeaderPresente
             //创建人
             tvCreator.setText(mRefData.recordCreator);
             //供应商
-            tvSupplier.setText(mRefData.supplierNum);
+            tvSupplier.setText(mRefData.supplierNum + "_" + mRefData.supplierDesc);
             //客户
             tvCustomer.setText(mRefData.customer);
             //过账日期
@@ -233,13 +240,13 @@ public abstract class BaseDSHeaderFragment extends BaseFragment<DSHeaderPresente
 
     @Override
     public void clearAllUI() {
-        clearCommonUI(tvRefNum,tvSupplier, tvCreator);
+        clearCommonUI(tvRefNum, tvSupplier, tvCreator);
         clearExtraUI(mSubFunEntity.headerConfigs);
     }
 
     @Override
     public void clearAllUIAfterSubmitSuccess() {
-        clearCommonUI(etRefNum, tvRefNum,tvSupplier, tvCreator);
+        clearCommonUI(etRefNum, tvRefNum, tvSupplier, tvCreator);
         clearExtraUI(mSubFunEntity.headerConfigs);
         mRefData = null;
     }
@@ -260,7 +267,7 @@ public abstract class BaseDSHeaderFragment extends BaseFragment<DSHeaderPresente
     public void retry(String retryAction) {
         switch (retryAction) {
             case Global.RETRY_LOAD_REFERENCE_ACTION:
-                mPresenter.getReference(getString(etRefNum), mRefType, getBizType(), getMoveType(),"", Global.LOGIN_ID);
+                mPresenter.getReference(getString(etRefNum), mRefType, getBizType(), getMoveType(), "", Global.LOGIN_ID);
                 break;
         }
         super.retry(retryAction);

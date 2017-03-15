@@ -682,5 +682,14 @@
             "refType": "0",
             "fragmentType": 2,
             "className": "com.richfit.barcodesystemproduct.module_acceptstore.ww_component.collect.QingHaiWWCCollectFragment"
-    }
+    },
+    {
+             "id": "79",
+             "tabTitle": "明细修改",
+             "fragmentTag": "qinghai_wwc_edit_fragment_tag",
+             "bizType": "19_ZJ",
+             "refType": "0",
+             "fragmentType": -1,
+             "className": "com.richfit.barcodesystemproduct.module_acceptstore.ww_component.edit.QingHaiWWCEditFragment"
+     }
 ]

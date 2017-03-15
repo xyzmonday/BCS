@@ -10,6 +10,7 @@ import com.richfit.common_lib.utils.Global;
 import com.richfit.domain.bean.BottomMenuEntity;
 import com.richfit.domain.bean.RefDetailEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -106,10 +107,13 @@ public class QingHaiUbSto351DetailFragment extends BaseMSDetailFragment<QingHaiU
 
     @Override
     public List<BottomMenuEntity> provideDefaultBottomMenu() {
-        List<BottomMenuEntity> menus = super.provideDefaultBottomMenu();
-        menus.get(0).transToSapFlag = "01";
-        menus.get(1).transToSapFlag = "05";
-        return menus.subList(0,2);
+        List<BottomMenuEntity> tmp = super.provideDefaultBottomMenu();
+        tmp.get(0).transToSapFlag = "01";
+        tmp.get(3).transToSapFlag = "05";
+        ArrayList menus = new ArrayList();
+        menus.add(tmp.get(0));
+        menus.add(tmp.get(3));
+        return menus;
     }
 
     @Override

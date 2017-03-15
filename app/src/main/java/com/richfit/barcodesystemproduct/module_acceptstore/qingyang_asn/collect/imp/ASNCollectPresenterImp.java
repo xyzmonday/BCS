@@ -34,66 +34,67 @@ public class ASNCollectPresenterImp extends BasePresenter<IASNCollectView>
     }
 
     @Override
-    public void getInvsByWorks(String workId,int flag) {
+    public void getInvsByWorks(String workId, int flag) {
         mView = getView();
         ResourceSubscriber<ArrayList<InvEntity>> subscriber =
-                mRepository.getInvsByWorkId(workId,flag)
-                .compose(TransformerHelper.io2main())
-                .subscribeWith(new ResourceSubscriber<ArrayList<InvEntity>>() {
-                    @Override
-                    public void onNext(ArrayList<InvEntity> list) {
-                        if (mView != null) {
-                            mView.showInvs(list);
-                        }
-                    }
+                mRepository.getInvsByWorkId(workId, flag)
+                        .compose(TransformerHelper.io2main())
+                        .subscribeWith(new ResourceSubscriber<ArrayList<InvEntity>>() {
+                            @Override
+                            public void onNext(ArrayList<InvEntity> list) {
+                                if (mView != null) {
+                                    mView.showInvs(list);
+                                }
+                            }
 
-                    @Override
-                    public void onError(Throwable t) {
-                        if (mView != null) {
-                            mView.loadInvsFail(t.getMessage());
-                        }
-                    }
+                            @Override
+                            public void onError(Throwable t) {
+                                if (mView != null) {
+                                    mView.loadInvsFail(t.getMessage());
+                                }
+                            }
 
-                    @Override
-                    public void onComplete() {
+                            @Override
+                            public void onComplete() {
 
-                    }
-                });
+                            }
+                        });
         addSubscriber(subscriber);
     }
 
     @Override
     public void getTransferSingleInfo(String bizType, String materialNum, String userId, String workId,
-                                      String invId, String recWorkId, String recInvId, String batchFlag) {
+                                      String invId, String recWorkId, String recInvId, String batchFlag,
+                                      String refDoc, int refDocItem) {
         mView = getView();
-        RxSubscriber<ReferenceEntity> subscriber = mRepository.getTransferInfoSingle("","",bizType, "",
-                workId,invId,recWorkId,recInvId,materialNum,batchFlag,"",userId)
+        RxSubscriber<ReferenceEntity> subscriber = mRepository.getTransferInfoSingle("", "", bizType, "",
+                workId, invId, recWorkId, recInvId, materialNum, batchFlag, "", refDoc, refDocItem, userId)
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new RxSubscriber<ReferenceEntity>(mContext) {
                     @Override
                     public void _onNext(ReferenceEntity refData) {
-                        if(mView != null) {
-                            mView.onBindCommonUI(refData,batchFlag);
+                        if (mView != null) {
+                            mView.onBindCommonUI(refData, batchFlag);
                         }
                     }
 
                     @Override
                     public void _onNetWorkConnectError(String message) {
-                        if(mView != null) {
+                        if (mView != null) {
                             mView.networkConnectError(Global.RETRY_LOAD_SINGLE_CACHE_ACTION);
                         }
                     }
 
                     @Override
                     public void _onCommonError(String message) {
-                        if(mView != null) {
+                        if (mView != null) {
                             mView.loadTransferSingleInfoFail(message);
                         }
                     }
 
                     @Override
                     public void _onServerError(String code, String message) {
-                        if(mView != null) {
+                        if (mView != null) {
                             mView.loadTransferSingleInfoFail(message);
                         }
                     }
@@ -120,28 +121,28 @@ public class ASNCollectPresenterImp extends BasePresenter<IASNCollectView>
 
                             @Override
                             public void _onNetWorkConnectError(String message) {
-                                if(mView != null) {
+                                if (mView != null) {
                                     mView.networkConnectError(Global.RETRY_SAVE_COLLECTION_DATA_ACTION);
                                 }
                             }
 
                             @Override
                             public void _onCommonError(String message) {
-                                if(mView != null) {
+                                if (mView != null) {
                                     mView.saveCollectedDataFail(message);
                                 }
                             }
 
                             @Override
                             public void _onServerError(String code, String message) {
-                                if(mView != null) {
+                                if (mView != null) {
                                     mView.saveCollectedDataFail(message);
                                 }
                             }
 
                             @Override
                             public void _onComplete() {
-                                if(mView != null) {
+                                if (mView != null) {
                                     mView.saveCollectedDataSuccess();
                                 }
                             }

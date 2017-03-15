@@ -121,4 +121,6 @@ public class ResultEntity {
     //项目文本
     public String projectText;
     public String supplierNum;
+    public String decisionCode;
+    public String moveCause;
 }

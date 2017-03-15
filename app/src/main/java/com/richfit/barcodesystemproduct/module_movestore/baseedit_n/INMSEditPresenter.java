@@ -21,7 +21,8 @@ public interface INMSEditPresenter extends IPresenter<INMSEditView> {
      * @param batchFlag：发出批次
      */
     void getTransferInfoSingle(String bizType, String materialNum, String userId, String workId,
-                               String invId, String recWorkId, String recInvId, String batchFlag);
+                               String invId, String recWorkId, String recInvId, String batchFlag,
+                               String refDoc,int refDocItem);
 
     /**
      * 获取库存信息

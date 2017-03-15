@@ -29,6 +29,7 @@ import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.edit.Qin
 import com.richfit.barcodesystemproduct.module_acceptstore.qingyang_asn.header.QingYangASNHeaderFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.ww_component.collect.QingHaiWWCCollectFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.ww_component.detail.QingHaiWWCDetailFragment;
+import com.richfit.barcodesystemproduct.module_acceptstore.ww_component.edit.QingHaiWWCEditFragment;
 import com.richfit.barcodesystemproduct.module_approval.qinghai_ao.collect.QingHaiAOCollectFragment;
 import com.richfit.barcodesystemproduct.module_approval.qinghai_ao.detail.QingHaiAODetailFragment;
 import com.richfit.barcodesystemproduct.module_approval.qinghai_ao.edit.QingHaiAOEditFragment;
@@ -274,6 +275,8 @@ public interface FragmentComponent {
     void inject(QingHaiWWCDetailFragment fragment);
 
     void inject(QingHaiWWCCollectFragment fragment);
+
+    void inject(QingHaiWWCEditFragment fragment);
 
     void inject(LAHeaderFragment fragment);
 
