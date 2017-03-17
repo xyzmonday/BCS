@@ -30,6 +30,7 @@ import io.reactivex.Flowable;
 import io.reactivex.FlowableOnSubscribe;
 
 /**
+ * 当盘点级别为01是盘点仓位不显示
  * Created by monday on 2017/3/3.
  */
 
@@ -54,8 +55,8 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
 
     @Override
     public void handleBarCodeScanResult(String type, String[] list) {
-        if (list != null && list.length > 2) {
-            final String materialNum = list[1];
+        if (list != null && list.length >= 12) {
+            final String materialNum = list[Global.MATERIAL_POS];
             if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
                 saveCollectedData();
             } else {
@@ -63,7 +64,7 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
                 getCheckTransferInfoSingle(materialNum, getString(etCheckLocation));
             }
 
-        } else if (list != null && list.length == 2 & !cbSingle.isChecked()) {
+        } else if (list != null && list.length == 2 & !cbSingle.isChecked() && etCheckLocation.isEnabled()) {
             final String location = list[1];
             etCheckLocation.setText("");
             etCheckLocation.setText(location);
@@ -86,8 +87,7 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
         //读取额外字段配置信息
         mPresenter.readExtraConfigs(mCompanyCode, mBizType, mRefType,
                 Global.COLLECT_CONFIG_TYPE, Global.LOCATION_CONFIG_TYPE);
-        //如果是库存级，那么盘点仓位不显示
-        llCheckLocation.setVisibility(View.GONE);
+
     }
 
     /**
@@ -134,6 +134,7 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
     @Override
     public void initDataLazily() {
         etMaterialNum.setEnabled(false);
+
         if (mRefData == null) {
             showMessage("请现在抬头页面初始化本次盘点");
             return;
@@ -171,12 +172,18 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
             showMessage("请在抬头界面输入额外必输字段信息");
             return;
         }
+        //如果是库存级，那么盘点仓位不显示
+        if("02".equals(mRefData.checkLevel)) {
+            llCheckLocation.setVisibility(View.GONE);
+            etCheckLocation.setEnabled(false);
+        }
         String transferKey = (String) SPrefUtil.getData(mBizType, "0");
         if ("1".equals(transferKey)) {
             showMessage("本次采集已经过账,请先到数据明细界面进行数据上传操作");
             return;
         }
         etMaterialNum.setEnabled(true);
+
     }
 
     @Override
@@ -249,6 +256,13 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
             return false;
         }
 
+        if("01".equals(mRefData.checkLevel)) {
+            if(getString(etCheckLocation).length() > 10) {
+                showMessage("您输入的盘点仓位不合理");
+                return false;
+            }
+        }
+
         //检查额外字段是否合格
         if (!checkExtraData(mSubFunEntity.collectionConfigs)) {
             showMessage("请检查输入数据");
@@ -279,6 +293,7 @@ public class QingHaiBlindCollectFragment extends BaseFragment<BlindCollectPresen
             result.userId = Global.USER_ID;
             result.workId = mRefData.workId;
             result.invId = mRefData.invId;
+
             result.materialId = CommonUtil.Obj2String(etMaterialNum.getTag());
             result.quantity = getString(etQuantity);
             result.modifyFlag = "N";

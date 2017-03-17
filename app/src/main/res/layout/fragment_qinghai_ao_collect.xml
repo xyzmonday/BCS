@@ -142,8 +142,18 @@
 
             <EditText
                 android:id="@+id/et_quantity"
-                style="@style/RightRichEditTextItemStyle"
+                style="@style/RightRichEditTextItemStyle2"
                 android:inputType="numberDecimal" />
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/total_quantity" />
+
+            <TextView
+                android:id="@+id/tv_total_quantity"
+                style="@style/RightRichEditTextItemStyle2"
+                android:inputType="numberDecimal" />
+
 
         </LinearLayout>
 
@@ -242,27 +252,21 @@
 
             <EditText
                 android:id="@+id/et_sample_quantity"
-                style="@style/RightRichEditTextItemStyle"
+                style="@style/RightRichEditTextItemStyle2"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/total_quantity" />
+
+            <TextView
+                android:id="@+id/tv_sample_total_quantity"
+                style="@style/RightTextViewItemStyle2"
                 android:inputType="numberDecimal" />
 
         </LinearLayout>
 
-        <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:orientation="horizontal"-->
-        <!--android:padding="5dp">-->
 
-        <!--<TextView-->
-        <!--style="@style/LeftTextViewItemStyle"-->
-        <!--android:text="@string/sample_ratio" />-->
-
-        <!--<EditText-->
-        <!--android:id="@+id/et_sample_ratio"-->
-        <!--style="@style/RightRichEditTextItemStyle"-->
-        <!--android:inputType="numberDecimal" />-->
-
-        <!--</LinearLayout>-->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -276,7 +280,16 @@
 
             <EditText
                 android:id="@+id/et_qualified_quantity"
-                style="@style/RightRichEditTextItemStyle"
+                style="@style/RightRichEditTextItemStyle2"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/total_quantity" />
+
+            <TextView
+                android:id="@+id/tv_qualified_total_quantity"
+                style="@style/RightTextViewItemStyle2"
                 android:inputType="numberDecimal" />
 
         </LinearLayout>
@@ -294,7 +307,16 @@
 
             <EditText
                 android:id="@+id/et_corrosion"
-                style="@style/RightRichEditTextItemStyle"
+                style="@style/RightRichEditTextItemStyle2"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/total_quantity" />
+
+            <TextView
+                android:id="@+id/tv_corrosion_total_quantity"
+                style="@style/RightTextViewItemStyle2"
                 android:inputType="numberDecimal" />
 
         </LinearLayout>
@@ -311,7 +333,16 @@
 
             <EditText
                 android:id="@+id/et_damage"
-                style="@style/RightRichEditTextItemStyle"
+                style="@style/RightRichEditTextItemStyle2"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/total_quantity" />
+
+            <TextView
+                android:id="@+id/tv_damage_total_quantity"
+                style="@style/RightTextViewItemStyle2"
                 android:inputType="numberDecimal" />
 
         </LinearLayout>
@@ -328,7 +359,16 @@
 
             <EditText
                 android:id="@+id/et_bad"
-                style="@style/RightRichEditTextItemStyle"
+                style="@style/RightRichEditTextItemStyle2"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/total_quantity" />
+
+            <TextView
+                android:id="@+id/tv_bad_total_quantity"
+                style="@style/RightTextViewItemStyle2"
                 android:inputType="numberDecimal" />
 
         </LinearLayout>
@@ -345,7 +385,16 @@
 
             <EditText
                 android:id="@+id/et_other_quantity"
-                style="@style/RightRichEditTextItemStyle"
+                style="@style/RightRichEditTextItemStyle2"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/total_quantity" />
+
+            <TextView
+                android:id="@+id/tv_other_total_quantity"
+                style="@style/RightTextViewItemStyle2"
                 android:inputType="numberDecimal" />
 
         </LinearLayout>

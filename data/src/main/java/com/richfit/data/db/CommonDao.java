@@ -630,8 +630,10 @@ public class CommonDao extends BaseDao {
             for (int i = 0; i < authOrgs.size(); i++) {
                 sb.append("'").append(authOrgs.get(i)).append("'").append(i == authOrgs.size() - 1 ? "" : ",");
             }
-            sb.append(")");
+            sb.append(") ");
         }
+
+        sb.append(" order by org_code");
 
         Cursor cursor = db.rawQuery(sb.toString(), null);
         while (cursor.moveToNext()) {
@@ -864,8 +866,23 @@ public class CommonDao extends BaseDao {
 
     public String getStorageNum(String workId, String workCode, String invId, String invCode) {
         SQLiteDatabase db = getReadableDB();
-        Cursor cursor = db.rawQuery("select storage_code from p_auth_org where parent_id = ? and org_code = ? and org_level = ?",
-                new String[]{workId, invCode, "3"});
+        Cursor cursor = null;
+        if (!TextUtils.isEmpty(workId)) {
+            //如果传入的workId不为空那么直接使用
+            cursor = db.rawQuery("select storage_code from p_auth_org where parent_id = ? and org_code = ? and org_level = ?",
+                    new String[]{workId, invCode, "3"});
+        } else if (!TextUtils.isEmpty(workCode)) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("select distinct  storage_code from ").append(" p_auth_org ").append(" where org_level = ? ")
+                    .append(" and parent_id IN ( select org_id from ").append(" p_auth_org ");
+            sb.append(" where org_code IN (");
+            sb.append("'").append(workCode).append("'");
+            sb.append(" ) ");
+            sb.append(" and org_level = ? ");
+            sb.append(")");
+            L.e("查询仓库号sql = " + sb.toString());
+            cursor = db.rawQuery(sb.toString(), new String[]{"3", "2"});
+        }
 
         String storageNum = "";
         while (cursor.moveToNext()) {
@@ -896,8 +913,8 @@ public class CommonDao extends BaseDao {
             for (int i = 0; i < authOrgs.size(); i++) {
                 sb.append("'").append(authOrgs.get(i)).append("'").append(i == authOrgs.size() - 1 ? "" : ",");
             }
+            sb.append(" ) ");
             sb.append(" and org_level = ? ");
-            sb.append(")");
             sb.append(")");
         }
         L.e("查询仓库号列表sql = " + sb.toString());

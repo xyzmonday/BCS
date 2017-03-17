@@ -229,7 +229,7 @@ public class QingHaiRSNDetailFragment extends BaseFragment<QingHaiRSNDetailPrese
     public void deleteNodeSuccess(int position) {
         showMessage("删除成功");
         if (mAdapter != null) {
-            mAdapter.removeNodeByPosition(position);
+            mAdapter.removeItemByPosition(position);
         }
     }
 
@@ -349,6 +349,7 @@ public class QingHaiRSNDetailFragment extends BaseFragment<QingHaiRSNDetailPrese
         if (mAdapter != null) {
             mAdapter.removeAllVisibleNodes();
         }
+        mRefData = null;
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 

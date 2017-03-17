@@ -19,7 +19,6 @@ import java.util.List;
 
 public class QingHaiUbSto351DetailFragment extends BaseMSDetailFragment<QingHaiUnSto351DetailPresenterImp> {
 
-    QingHaiUbSto351DetailAdapter mAdapter;
 
     @Override
     public void initInjector() {
@@ -87,6 +86,7 @@ public class QingHaiUbSto351DetailFragment extends BaseMSDetailFragment<QingHaiU
         if(mAdapter != null) {
             mAdapter.removeAllVisibleNodes();
         }
+        mRefData = null;
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 
@@ -109,10 +109,11 @@ public class QingHaiUbSto351DetailFragment extends BaseMSDetailFragment<QingHaiU
     public List<BottomMenuEntity> provideDefaultBottomMenu() {
         List<BottomMenuEntity> tmp = super.provideDefaultBottomMenu();
         tmp.get(0).transToSapFlag = "01";
-        tmp.get(3).transToSapFlag = "05";
+        tmp.get(2).transToSapFlag = "05";
+        //注意351是发出
         ArrayList menus = new ArrayList();
         menus.add(tmp.get(0));
-        menus.add(tmp.get(3));
+        menus.add(tmp.get(2));
         return menus;
     }
 

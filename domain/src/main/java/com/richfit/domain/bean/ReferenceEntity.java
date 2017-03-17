@@ -101,6 +101,12 @@ public class ReferenceEntity {
     public String checkLevel;
     public String specialFlag;
 
+    public String location;
+    public String materialNum;
+    public String materialGroup;
+    public String materialDesc;
+    public String batchFlag;
+
     @Override
     public String toString() {
         return "ReferenceEntity{" +

@@ -19,6 +19,7 @@ import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.BottomMenuAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.common_lib.animationrv.Animation.animators.FadeInDownAnimator;
+import com.richfit.common_lib.basetreerv.MultiItemTypeTreeAdapter;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
@@ -67,6 +68,7 @@ public abstract class BaseNMSDetailFragment<P extends INMSDetailPresenter> exten
     protected ArrayList<RowConfig> mConfigs;
     protected String mInspectionNum;
     protected List<BottomMenuEntity> mBottomMenus;
+    protected MultiItemTypeTreeAdapter<RefDetailEntity> mAdapter;
 
     @Override
     protected int getContentId() {

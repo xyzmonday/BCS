@@ -1,8 +1,11 @@
 package com.richfit.barcodesystemproduct.module_acceptstore.qinghai_105;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.ViewStub;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.module_acceptstore.baseedit.BaseASEditFragment;
@@ -13,7 +16,7 @@ import com.richfit.common_lib.utils.Global;
 import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.ResultEntity;
 
-import java.util.Map;
+import java.util.List;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -28,6 +31,8 @@ public class QingHaiAS105EditFragment extends BaseASEditFragment<QingHaiAS105Edi
     EditText etReturnQuantity;
     EditText etProjectText;
     EditText etMoveCauseDesc;
+    Spinner spStrategyCode;
+    Spinner spMoveReason;
 
     @Override
     public void initInjector() {
@@ -44,6 +49,8 @@ public class QingHaiAS105EditFragment extends BaseASEditFragment<QingHaiAS105Edi
         //如果输入的退货交货数量，那么移动原因必输，如果退货交货数量没有输入那么移动原因可输可不输
         etProjectText = (EditText) mActivity.findViewById(R.id.et_project_text);
         etMoveCauseDesc = (EditText) mActivity.findViewById(R.id.et_move_cause_desc);
+        spStrategyCode = (Spinner) mActivity.findViewById(R.id.sp_strategy_code);
+        spMoveReason = (Spinner) mActivity.findViewById(R.id.sp_move_cause);
         super.initView();
     }
 
@@ -53,35 +60,45 @@ public class QingHaiAS105EditFragment extends BaseASEditFragment<QingHaiAS105Edi
         String returnQuantity = bundle.getString(Global.EXTRA_RETURN_QUANTITY_KEY);
         String projectText = bundle.getString(Global.EXTRA_PROJECT_TEXT_KEY);
         String moveCauseDesc = bundle.getString(Global.EXTRA_MOVE_CAUSE_DESC_KEY);
+        String moveCause = bundle.getString(Global.EXTRA_MOVE_CAUSE_KEY);
+        String decisionCode = bundle.getString(Global.EXTRA_DECISION_CAUSE_KEY);
         etReturnQuantity.setText(returnQuantity);
         etProjectText.setText(projectText);
         etMoveCauseDesc.setText(moveCauseDesc);
         //注意实发数量不能修改
         etQuantity.setEnabled(false);
+        if (spStrategyCode != null) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(mActivity, R.layout.item_simple_sp,
+                    getStringArray(R.array.strategy_codes));
+            spStrategyCode.setAdapter(adapter);
+        }
+        if (spMoveReason != null) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(mActivity, R.layout.item_simple_sp,
+                    getStringArray(R.array.move_reasons));
+            spMoveReason.setAdapter(adapter);
+        }
+        spStrategyCode.setEnabled(false);
+        spMoveReason.setEnabled(false);
+        setSelection(spStrategyCode, getStringArray(R.array.strategy_codes), decisionCode);
+        setSelection(spMoveReason, getStringArray(R.array.move_reasons), moveCause);
+
         super.initData();
     }
 
-    /**
-     * 读取数据字段成功
-     *
-     * @param extraMap
-     */
-    @Override
-    public void readExtraDictionarySuccess(Map<String, Object> extraMap) {
-        //第一步绑定原始数据
-        bindExtraUI(mSubFunEntity.collectionConfigs, extraMap, false);
-    }
-
-    @Override
-    public void readExtraDictionaryFail(String message) {
-        showMessage(message);
-    }
-
-
-    @Override
-    public void readExtraDictionaryComplete() {
-        //第二步绑定缓存数据
-        bindExtraUI(mSubFunEntity.collectionConfigs, mExtraCollectMap, false);
+    private void setSelection(Spinner sp, List<String> list, String key) {
+        if (sp == null || TextUtils.isEmpty(key) || list == null || list.size() == 0) {
+            return;
+        }
+        int pos = -1;
+        for (int i = 0, size = list.size(); i < size; i++) {
+            pos++;
+            if (key.equalsIgnoreCase(list.get(i))) {
+                break;
+            }
+        }
+        if (pos >= 0) {
+            sp.setSelection(pos);
+        }
     }
 
     @Override
@@ -115,7 +132,7 @@ public class QingHaiAS105EditFragment extends BaseASEditFragment<QingHaiAS105Edi
 
             result.modifyFlag = "Y";
 
-            result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE,lineData.mapExt, mExtraLocationMap);
+            result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
             result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
             result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
             emitter.onNext(result);

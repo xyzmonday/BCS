@@ -78,6 +78,7 @@ public class QingHaiAS105NDetailFragment extends BaseASDetailFragment<QingHaiAS1
         if (mAdapter != null) {
             mAdapter.removeAllVisibleNodes();
         }
+        mRefData = null;
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 

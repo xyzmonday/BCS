@@ -5,12 +5,14 @@ import android.support.annotation.ArrayRes;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 
+import com.orhanobut.logger.Logger;
 import com.richfit.common_lib.IInterface.IPresenter;
 import com.richfit.common_lib.basetreerv.RecycleTreeViewHelper;
 import com.richfit.common_lib.rxutils.RxManager;
 import com.richfit.common_lib.rxutils.SimpleRxBus;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.common_lib.utils.JsonUtil;
 import com.richfit.data.repository.Repository;
 import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.ReferenceEntity;
@@ -155,7 +157,7 @@ public class BasePresenter<T extends BaseView> implements IPresenter<T> {
      * 为子节点增加树形结构的信息（主要是增加子节点的父节点id）
      */
     protected void addTreeInfo(RefDetailEntity parentNode, RefDetailEntity childNode,
-                               final ArrayList<RefDetailEntity> collectedList) {
+                               ArrayList<RefDetailEntity> collectedList) {
         if (parentNode == null || childNode == null)
             return;
         //处理子节点

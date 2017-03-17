@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?><!--物资入库抬头需要显示的额外字段。因为对于不同的入库需要的明细界面不同，这些差异都有该惰性控件给出-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!--105非必检需要显示参考单据行-->
+    <TextView
+        android:id="@+id/refLineNum"
+        style="@style/TableHeaderStyle"
+        android:layout_width="120dp"
+        android:text="@string/ref_line_num_105" />
+
+    <View style="@style/ItemSeperatorLayout" />
+
+</LinearLayout>

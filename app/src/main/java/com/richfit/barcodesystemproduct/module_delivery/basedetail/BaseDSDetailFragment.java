@@ -18,6 +18,7 @@ import com.richfit.barcodesystemproduct.adapter.BottomMenuAdapter;
 import com.richfit.barcodesystemproduct.adapter.DSYDetailAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.common_lib.animationrv.Animation.animators.FadeInDownAnimator;
+import com.richfit.common_lib.basetreerv.MultiItemTypeTreeAdapter;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
@@ -59,7 +60,7 @@ public abstract class BaseDSDetailFragment<P extends IDSDetailPresenter> extends
     //第二过账成功后返回的验收单号
     protected String mInspectionNum;
     protected List<BottomMenuEntity> mBottomMenus;
-    protected DSYDetailAdapter mAdapter;
+    protected MultiItemTypeTreeAdapter<RefDetailEntity> mAdapter;
 
     @Override
     protected int getContentId() {

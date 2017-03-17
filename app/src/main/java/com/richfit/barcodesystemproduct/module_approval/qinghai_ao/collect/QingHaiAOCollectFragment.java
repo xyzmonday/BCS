@@ -25,6 +25,7 @@ import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.barcodesystemproduct.camera.TakephotoActivity;
 import com.richfit.barcodesystemproduct.module_approval.qinghai_ao.collect.imp.QingHaiAOCollectPresenterImp;
 import com.richfit.common_lib.rxutils.TransformerHelper;
+import com.richfit.common_lib.utils.ArithUtil;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.RichEditText;
@@ -101,6 +102,21 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
     EditText etQmNum;
     @BindView(R.id.et_query_claim_num)
     EditText etQueryClaimNum;
+    //累计数量
+    @BindView(R.id.tv_total_quantity)
+    TextView tvTotalQuantity;
+    @BindView(R.id.tv_sample_total_quantity)
+    TextView tvSampleTotalQuantity;
+    @BindView(R.id.tv_qualified_total_quantity)
+    TextView tvQualifiedTotalQuantity;
+    @BindView(R.id.tv_corrosion_total_quantity)
+    TextView tvCorrosionTotalQuantity;
+    @BindView(R.id.tv_damage_total_quantity)
+    TextView tvDamageTotalQuantity;
+    @BindView(R.id.tv_bad_total_quantity)
+    TextView tvBadTotalQuantity;
+    @BindView(R.id.tv_other_total_quantity)
+    TextView tvOtherTotalQuantity;
 
     /*/匹配的检验批行明细*/
     List<String> mRefLines;
@@ -112,6 +128,7 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
     InvAdapter mInvAdapter;
     /*缓存行明细*/
     RefDetailEntity mCachedRefDetailData;
+
 
     @Override
     public void initInjector() {
@@ -329,19 +346,26 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
             //制造商名称
             etManufacturer.setText(mCachedRefDetailData.manufacturer);
             //实收数量
-            etQuantity.setText(TextUtils.isEmpty(mCachedRefDetailData.totalQuantity) ? lineData.actQuantity : mCachedRefDetailData.totalQuantity);
+//            etQuantity.setText(TextUtils.isEmpty(mCachedRefDetailData.totalQuantity) ? lineData.actQuantity : mCachedRefDetailData.totalQuantity);
+            tvTotalQuantity.setText(mCachedRefDetailData.totalQuantity);
             //抽检数量
-            etSampleQuantity.setText(TextUtils.isEmpty(mCachedRefDetailData.randomQuantity) ? lineData.actQuantity : mCachedRefDetailData.randomQuantity);
+//            etSampleQuantity.setText(TextUtils.isEmpty(mCachedRefDetailData.randomQuantity) ? lineData.actQuantity : mCachedRefDetailData.randomQuantity);
+            tvSampleTotalQuantity.setText(mCachedRefDetailData.randomQuantity);
             //完好数量
-            etQualifiedQuantity.setText(TextUtils.isEmpty(mCachedRefDetailData.qualifiedQuantity) ? lineData.actQuantity : mCachedRefDetailData.qualifiedQuantity);
+//            etQualifiedQuantity.setText(TextUtils.isEmpty(mCachedRefDetailData.qualifiedQuantity) ? lineData.actQuantity : mCachedRefDetailData.qualifiedQuantity);
+            tvQualifiedTotalQuantity.setText(mCachedRefDetailData.qualifiedQuantity);
             //锈蚀数量
-            etCorrosion.setText(mCachedRefDetailData.rustQuantity);
+//            etCorrosion.setText(mCachedRefDetailData.rustQuantity);
+            tvCorrosionTotalQuantity.setText(mCachedRefDetailData.rustQuantity);
             //损坏
-            etDamage.setText(mCachedRefDetailData.damagedQuantity);
+//            etDamage.setText(mCachedRefDetailData.damagedQuantity);
+            tvDamageTotalQuantity.setText(mCachedRefDetailData.damagedQuantity);
             //变质
-            etBad.setText(mCachedRefDetailData.badQuantity);
+//            etBad.setText(mCachedRefDetailData.badQuantity);
+            tvBadTotalQuantity.setText(mCachedRefDetailData.badQuantity);
             //其他
-            etOtherQuantity.setText(mCachedRefDetailData.otherQuantity);
+//            etOtherQuantity.setText(mCachedRefDetailData.otherQuantity);
+            tvOtherTotalQuantity.setText(mCachedRefDetailData.otherQuantity);
             //包装情况
             setSelectionForSp(getStringArray(R.array.package_conditions), mCachedRefDetailData.sapPackage, spPackageCondition);
             //验收结果
@@ -448,14 +472,19 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
         //腐蚀
         final float rustCorrosionQuantityV = UiUtil.convertToFloat(getString(etCorrosion), 0.0f);
         //损坏
-        final float damagedQuantity = UiUtil.convertToFloat(getString(etDamage), 0.0f);
+        final float damagedQuantityV = UiUtil.convertToFloat(getString(etDamage), 0.0f);
         //变质
         final float badQuantityV = UiUtil.convertToFloat(getString(etBad), 0.0f);
         //其他质量问题
         final float otherQuantityV = UiUtil.convertToFloat(getString(etOtherQuantity), 0.0f);
 
-        if (Float.compare(qualifiedQuantityV + rustCorrosionQuantityV + damagedQuantity + badQuantityV
-                + otherQuantityV, quantityV) != 0.0f) {
+
+        //计算这几个数量的和，注意精度问题
+        float tmp = ArithUtil.addAll(qualifiedQuantityV, rustCorrosionQuantityV, damagedQuantityV,
+                badQuantityV, otherQuantityV);
+
+        //注意这里不能完全判断相等，如果两个数量的精度在10^-3我们认为它们相等(实际测试的结果是10^-7)
+        if (Math.abs(ArithUtil.sub(tmp, quantityV)) > 0.0001) {
             showMessage("完好数量,锈蚀,损坏,变质,其他质量问题数量之和不等于实收数量");
             return false;
         }
@@ -606,8 +635,24 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
     @Override
     public void saveCollectedDataSuccess() {
         showMessage("数据保存成功");
-        clearCommonUI(etQuantity,etSampleQuantity,etQualifiedQuantity,
-                etQmNum,etBad,etOtherQuantity,etDamage,etCorrosion,etInspectQuantity);
+        clearCommonUI(etQuantity, etSampleQuantity, etQualifiedQuantity,
+                etQmNum, etBad, etOtherQuantity, etDamage, etCorrosion, etInspectQuantity);
+        //更新累计数量
+        refreshTotalQuantity(etQuantity, tvTotalQuantity);
+        refreshTotalQuantity(etSampleQuantity, tvSampleTotalQuantity);
+        refreshTotalQuantity(etQualifiedQuantity, tvQualifiedTotalQuantity);
+        refreshTotalQuantity(etCorrosion, tvCorrosionTotalQuantity);
+        refreshTotalQuantity(etDamage, tvDamageTotalQuantity);
+        refreshTotalQuantity(etBad, tvBadTotalQuantity);
+        refreshTotalQuantity(etOtherQuantity, tvOtherTotalQuantity);
+
+    }
+
+    private void refreshTotalQuantity(EditText et, TextView tv) {
+        float tmp = UiUtil.convertToFloat(getString(et), 0.0f);
+        float total = UiUtil.convertToFloat(getString(tv), 0.0f);
+        float quantity = ArithUtil.add(tmp, total);
+        tv.setText(String.valueOf(quantity));
     }
 
     @Override
@@ -699,4 +744,6 @@ public class QingHaiAOCollectFragment extends BaseFragment<QingHaiAOCollectPrese
         //清除额外资源
         clearExtraUI(mSubFunEntity.collectionConfigs);
     }
+
+
 }

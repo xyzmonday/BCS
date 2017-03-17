@@ -150,8 +150,8 @@ public interface IServerRepository extends IRepository {
      * @param materialDesc：物料描述
      * @param batchFlag:批次
      * @param location:仓位
-     * @param invType:库存类型                                                             0 代管；1:正常
-     * @param specialInvFlag:特殊库存标识                                                    N K
+     * @param invType:库存类型 0 代管；1:正常
+     * @param specialInvFlag:特殊库存标识  N K
      * @param specialInvNum:抬头界面的供应商编号
      * @return
      */

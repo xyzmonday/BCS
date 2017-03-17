@@ -8,4 +8,9 @@
     <item name="item_edit" type="id"></item>
     <item name="item_delete" type="id"></item>
 
+    <!--明细界面的控件-->
+    <item name="base_detail_recycler_view" type="id"></item>
+    <item name="base_detail_swipe_refresh_layout" type="id"></item>
+    <item name="base_detail_horizontal_scroll" type="id"></item>
+
 </resources>

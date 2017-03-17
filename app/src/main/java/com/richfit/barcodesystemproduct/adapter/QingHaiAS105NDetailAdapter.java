@@ -7,6 +7,7 @@ import com.richfit.barcodesystemproduct.adapter.itemdelegate.ASYChildItemDelegat
 import com.richfit.barcodesystemproduct.adapter.itemdelegate.QingHaiAS105NParentHeaderItemDelegate;
 import com.richfit.common_lib.basetreerv.MultiItemTypeTreeAdapter;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.domain.bean.RefDetailEntity;
 import com.richfit.domain.bean.RowConfig;
 
@@ -29,7 +30,13 @@ public class QingHaiAS105NDetailAdapter extends MultiItemTypeTreeAdapter<RefDeta
 
     @Override
     public void notifyParentNodeChanged(int childNodePosition, int parentNodePosition) {
-
+        RefDetailEntity childNode = mVisibleNodes.get(childNodePosition);
+        RefDetailEntity parentNode = mVisibleNodes.get(parentNodePosition);
+        final float parentTotalQuantityV = UiUtil.convertToFloat(parentNode.totalQuantity, 0.0f);
+        final float childTotalQuantityV = UiUtil.convertToFloat(childNode.quantity, 0.0f);
+        final String newTotalQuantity = String.valueOf(parentTotalQuantityV - childTotalQuantityV);
+        parentNode.totalQuantity = newTotalQuantity;
+        notifyItemChanged(parentNodePosition);
     }
 
     @Override

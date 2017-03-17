@@ -19,7 +19,6 @@ import java.util.List;
 
 public class QingHaiUbSto101DetailFragment extends BaseASDetailFragment<QingHaiUbSto101DetailPresenterImp> {
 
-    QingHaiUbSto101DetailAdapter mAdapter;
 
     @Override
     protected void initView() {
@@ -89,6 +88,10 @@ public class QingHaiUbSto101DetailFragment extends BaseASDetailFragment<QingHaiU
     public void submitSAPSuccess() {
         setRefreshing(false, "数据上传成功");
         showSuccessDialog(mInspectionNum);
+        if(mAdapter != null) {
+            mAdapter.removeAllVisibleNodes();
+        }
+        mRefData = null;
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 
@@ -123,10 +126,10 @@ public class QingHaiUbSto101DetailFragment extends BaseASDetailFragment<QingHaiU
     public List<BottomMenuEntity> provideDefaultBottomMenu() {
         List<BottomMenuEntity> tmp = super.provideDefaultBottomMenu();
         tmp.get(0).transToSapFlag = "01";
-        tmp.get(3).transToSapFlag = "05";
+        tmp.get(1).transToSapFlag = "05";
         ArrayList menus = new ArrayList();
         menus.add(tmp.get(0));
-        menus.add(tmp.get(3));
+        menus.add(tmp.get(1));
         return menus;
     }
 

@@ -177,6 +177,12 @@ public class ASDetailPresenterImp extends BasePresenter<IASDetailView>
                     //移动原因说明
                     bundle.putString(Global.EXTRA_MOVE_CAUSE_DESC_KEY, parentNode.moveCauseDesc);
 
+                    //移动原因
+                    bundle.putString(Global.EXTRA_MOVE_CAUSE_KEY,parentNode.moveCause);
+
+                    //决策代码
+                    bundle.putString(Global.EXTRA_DECISION_CAUSE_KEY,parentNode.decisionCode);
+
                     //入库的子菜单的名称
                     bundle.putString(Global.EXTRA_TITLE_KEY, subFunName + "-明细修改");
 

@@ -3,6 +3,7 @@ package com.richfit.barcodesystemproduct.module_acceptstore.baseedit;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.richfit.barcodesystemproduct.R;
@@ -54,6 +55,11 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
     protected TextView tvLocationQuantity;
     @BindView(R.id.tv_total_quantity)
     TextView tvTotalQuantity;
+    @BindView(R.id.ll_location)
+    protected LinearLayout llLocation;
+    @BindView(R.id.ll_location_quantity)
+    protected LinearLayout llLocationQuantity;
+
 
     //已经上架的所有仓位
     protected List<String> mLocations;
@@ -68,7 +74,7 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
     protected boolean isNLocation;
 
     protected Map<String, Object> mExtraLocationMap;
-    protected Map<String,Object> mExtraCollectMap;
+    protected Map<String, Object> mExtraCollectMap;
 
     @Override
     protected int getContentId() {
@@ -85,13 +91,14 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
     @Override
     public void initData() {
         Bundle bundle = getArguments();
-        mExtraLocationMap  = (Map<String, Object>) bundle.getSerializable(Global.LOCATION_EXTRA_MAP_KEY);
+        mExtraLocationMap = (Map<String, Object>) bundle.getSerializable(Global.LOCATION_EXTRA_MAP_KEY);
         mExtraCollectMap = (Map<String, Object>) bundle.getSerializable(Global.COLLECT_EXTRA_MAP_KEY);
         final String location = bundle.getString(Global.EXTRA_LOCATION_KEY);
         final String totalQuantity = bundle.getString(Global.EXTRA_TOTAL_QUANTITY_KEY);
         final String batchFlag = bundle.getString(Global.EXTRA_BATCH_FLAG_KEY);
         final String invId = bundle.getString(Global.EXTRA_INV_ID_KEY);
         final String invCode = bundle.getString(Global.EXTRA_INV_CODE_KEY);
+        isNLocation = "BARCODE".equalsIgnoreCase(location);
 
         mPosition = bundle.getInt(Global.EXTRA_POSITION_KEY);
         mQuantity = bundle.getString(Global.EXTRA_QUANTITY_KEY);
@@ -109,14 +116,14 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
             tvBatchFlag.setText(batchFlag);
             tvInv.setText(invCode);
             tvInv.setTag(invId);
-            tvLocationQuantity.setText(mQuantity);
-            etLocation.setText(location);
+            etLocation.setEnabled(!isNLocation);
+            if (!isNLocation) {
+                etLocation.setText(location);
+                tvLocationQuantity.setText(mQuantity);
+            }
             etQuantity.setText(mQuantity);
-            tvLocationQuantity.setText(mQuantity);
             tvTotalQuantity.setText(totalQuantity);
 
-            mPresenter.readExtraDataSourceDictionary(mSubFunEntity.collectionConfigs);
-            mPresenter.readExtraDataSourceDictionary(mSubFunEntity.locationConfigs);
         }
     }
 
@@ -150,7 +157,7 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
     @Override
     public boolean checkCollectedDataBeforeSave() {
 
-        if(!isValidatedLocation(getString(etLocation))) {
+        if (!isNLocation && !isValidatedLocation(getString(etLocation))) {
             return false;
         }
 
@@ -172,7 +179,7 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
         float totalQuantityV = UiUtil.convertToFloat(getString(tvTotalQuantity), 0.0f);
         float collectedQuantity = UiUtil.convertToFloat(mQuantity, 0.0f);
         float quantityV = UiUtil.convertToFloat(getString(etQuantity), 0.0f);
-        if(Float.compare(quantityV,0.0f) <= 0.0f) {
+        if (Float.compare(quantityV, 0.0f) <= 0.0f) {
             showMessage("输入数量不合理");
             etQuantity.setText("");
             return false;
@@ -206,11 +213,13 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
             result.invId = CommonUtil.Obj2String(tvInv.getTag());
             result.locationId = mLocationId;
             result.materialId = lineData.materialId;
-            result.location = getString(etLocation);
+            result.location = isNLocation ? "BARCODE" : getString(etLocation);
             result.batchFlag = getString(tvBatchFlag);
             result.quantity = getString(etQuantity);
+            result.refDoc = lineData.refDoc;
+            result.refDocItem = lineData.refDocItem;
             result.modifyFlag = "Y";
-            result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE,lineData.mapExt, mExtraLocationMap);
+            result.mapExHead = createExtraMap(Global.EXTRA_HEADER_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
             result.mapExLine = createExtraMap(Global.EXTRA_LINE_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
             result.mapExLocation = createExtraMap(Global.EXTRA_LOCATION_MAP_TYPE, lineData.mapExt, mExtraLocationMap);
             emitter.onNext(result);
@@ -223,7 +232,8 @@ public abstract class BaseASEditFragment<P extends IASEditPresenter> extends Bas
     @Override
     public void saveEditedDataSuccess(String message) {
         showMessage("修改成功");
-        tvLocationQuantity.setText(mQuantity);
+        if (!isNLocation)
+            tvLocationQuantity.setText(mQuantity);
         tvTotalQuantity.setText(mQuantity);
     }
 

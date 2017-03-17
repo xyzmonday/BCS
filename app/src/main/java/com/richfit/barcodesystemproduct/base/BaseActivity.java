@@ -402,15 +402,25 @@ public abstract class BaseActivity<T extends IPresenter> extends AppCompatActivi
         if (TextUtils.isEmpty(info)) {
             return;
         }
-        if(!isStartScan)
+        if (!isStartScan)
             return;
-        final String barcodeInfo = CharTrans(info);
-        L.e("扫描到的原始单据信息 = " + barcodeInfo);
+
+        //仓位和单据不加密
+        int length = info.split("\\|", -1).length;
+        String barcodeInfo;
+        if (length > 1) {
+            barcodeInfo = CharTrans(info);
+        } else {
+            barcodeInfo = info;
+        }
+        L.e("扫描得到的原始数据 barcodeInfo " + barcodeInfo);
         String a[] = barcodeInfo.split("\\|", -1);
         handleBarCodeScanResult(mType, a);
     }
+
     /**
      * 条码内容加密
+     *
      * @param char_in
      * @return
      */

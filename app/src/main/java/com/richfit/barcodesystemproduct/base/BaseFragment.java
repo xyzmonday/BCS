@@ -349,7 +349,7 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
     protected Flowable<ArrayList<String>> matchMaterialInfo(final String materialNum, final String batchFlag) {
         if (mRefData == null || mRefData.billDetailList == null ||
                 mRefData.billDetailList.size() == 0 || TextUtils.isEmpty(materialNum)) {
-            return Flowable.error(new Throwable("请先单据明细"));
+            return Flowable.error(new Throwable("请先获取单据信息"));
         }
         ArrayList<String> lineNums = new ArrayList<>();
         List<RefDetailEntity> list = mRefData.billDetailList;
@@ -1092,7 +1092,7 @@ public abstract class BaseFragment<P extends IPresenter, M> extends Fragment imp
         menus.add(menu);
 
         menu = new BottomMenuEntity();
-        menu.menuName = "转储";
+        menu.menuName = "记账更改";
         menu.menuImageRes = R.mipmap.icon_detail_transfer;
         menus.add(menu);
         return menus;

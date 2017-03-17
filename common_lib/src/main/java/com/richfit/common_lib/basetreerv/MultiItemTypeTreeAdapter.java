@@ -69,15 +69,15 @@ public abstract class MultiItemTypeTreeAdapter<T extends TreeNode> extends Recyc
         ItemViewDelegate itemViewDelegate = mItemViewDelegateManager.getItemViewDelegate(viewType);
         int layoutId = itemViewDelegate.getItemViewLayoutId();
         ViewHolder holder = ViewHolder.createViewHolder(mContext, parent, layoutId);
-//        onViewHolderCreated(holder,holder.getConvertView());
+
         addExtraUI(holder, holder.getConvertView(), viewType);
         setItemListener(parent, holder, viewType);
         return holder;
     }
 
-//    public void onViewHolderCreated(ViewHolder holder,View itemView){
-//
-//    }
+    public void onViewHolderCreated(ViewHolder holder,View itemView){
+
+    }
 
     public void convert(ViewHolder holder, T item) {
         mItemViewDelegateManager.convert(holder, item, holder.getAdapterPosition());
@@ -129,6 +129,11 @@ public abstract class MultiItemTypeTreeAdapter<T extends TreeNode> extends Recyc
         //绑定额外字段信息
         bindExtraUI(holder, position, mVisibleNodes.get(position).getViewType());
         convert(holder, mVisibleNodes.get(position));
+        onViewHolderBinded(holder,position);
+    }
+
+    protected void onViewHolderBinded(ViewHolder holder,int position) {
+
     }
 
     @Override

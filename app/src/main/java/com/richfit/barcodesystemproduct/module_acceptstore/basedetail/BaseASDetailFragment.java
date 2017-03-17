@@ -20,7 +20,6 @@ import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.common_lib.animationrv.Animation.animators.FadeInDownAnimator;
 import com.richfit.common_lib.basetreerv.MultiItemTypeTreeAdapter;
 import com.richfit.common_lib.utils.Global;
-import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.AutoSwipeRefreshLayout;
 import com.richfit.domain.bean.BottomMenuEntity;
@@ -36,7 +35,6 @@ import butterknife.BindView;
 
 import static com.richfit.common_lib.utils.SPrefUtil.getData;
 
-
 /**
  * 物资入库明细界面基类
  * Created by monday on 2016/11/15.
@@ -44,6 +42,7 @@ import static com.richfit.common_lib.utils.SPrefUtil.getData;
 
 public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends BaseFragment<P, RefDetailEntity>
         implements IASDetailView, SwipeRefreshLayout.OnRefreshListener {
+
 
     private static final HashMap<String, Object> FLAGMAP = new HashMap<>();
 
@@ -53,6 +52,10 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
     AutoSwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.horizontal_scroll)
     HorizontalScrollView mHorizontalScroll;
+    @BindView(R.id.root_id)
+    protected LinearLayout mExtraContainer;
+
+
     /*是否不上架*/
     @BindView(R.id.y_n_location)
     protected TextView tvIsNLocation;
@@ -66,8 +69,7 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
     /*应收，应退数量*/
     @BindView(R.id.actQuantity)
     protected TextView tvActQuantity;
-    @BindView(R.id.root_id)
-    protected LinearLayout mExtraContainer;
+
 
     protected String mTransNum;
     protected String mTransId;
@@ -300,7 +302,7 @@ public abstract class BaseASDetailFragment<P extends IASDetailPresenter> extends
      * 1.过账
      */
     protected void submit2BarcodeSystem(String tranToSapFlag) {
-        String state = (String) SPrefUtil.getData(mBizType + mRefType, "0");
+        String state = (String) getData(mBizType + mRefType, "0");
         if (!"0".equals(state)) {
             showMessage("已经过账成功,请进行数据上传");
             return;

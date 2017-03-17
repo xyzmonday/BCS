@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxAdapterView;
 import com.richfit.barcodesystemproduct.R;
+import com.richfit.barcodesystemproduct.adapter.WWCInventoryAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
@@ -27,7 +28,10 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableOnSubscribe;
 
+import static com.richfit.barcodesystemproduct.R.id.act_quantity_name;
+
 /**
+ * 通过明细里面的lineNum初始化单据行，选择某一行后那么获取库存，选择批次获取单条缓存
  * Created by monday on 2017/3/10.
  */
 
@@ -47,7 +51,7 @@ public class QingHaiWWCCollectFragment extends BaseFragment<QingHaiWWCCollectPre
     TextView tvWorkName;
     @BindView(R.id.tv_work)
     TextView tvWork;
-    @BindView(R.id.act_quantity_name)
+    @BindView(act_quantity_name)
     TextView actQuantityName;
     @BindView(R.id.tv_act_quantity)
     TextView tvActQuantity;
@@ -61,11 +65,10 @@ public class QingHaiWWCCollectFragment extends BaseFragment<QingHaiWWCCollectPre
     TextView tvTotalQuantity;
 
     String mSelectedRefLineNum;
+    ArrayList<String> mRefLines;
     ArrayAdapter<String> mRefLineAdapter;
-    /*库存信息*/
-    private List<InventoryEntity> mInventoryDatas;
-    /*批次下拉*/
-    private ArrayAdapter<String> mBatchFlagAdapter;
+    List<InventoryEntity> mInventoryDatas;
+    WWCInventoryAdapter mInventoryAdapter;
 
     @Override
     protected int getContentId() {
@@ -93,10 +96,17 @@ public class QingHaiWWCCollectFragment extends BaseFragment<QingHaiWWCCollectPre
                 .itemSelections(spRefLine)
                 .filter(position -> position > 0)
                 .subscribe(position -> bindCommonCollectUI());
+
         /*选择批次获获取缓存，初始化仓位数量*/
         RxAdapterView.itemSelections(spBatchFlag)
                 .filter(position -> position > 0)
                 .subscribe(position -> loadLocationQuantity(position.intValue()));
+    }
+
+    @Override
+    protected void initView() {
+        actQuantityName.setText("应发数量");
+        super.initView();
     }
 
     @Override
@@ -105,7 +115,6 @@ public class QingHaiWWCCollectFragment extends BaseFragment<QingHaiWWCCollectPre
             showMessage("未获取到数据明细");
             return;
         }
-
         if (TextUtils.isEmpty(mSelectedRefLineNum)) {
             showMessage("未获取到单据行号");
             return;
@@ -115,19 +124,18 @@ public class QingHaiWWCCollectFragment extends BaseFragment<QingHaiWWCCollectPre
 
     @Override
     public void setupRefLineAdapter() {
-        if (mRefLineAdapter != null)
-            return;
-        ArrayList<String> refLines = new ArrayList<>();
-        refLines.add("请选择");
-        for (RefDetailEntity item : mRefDetail) {
-            refLines.add(String.valueOf(item.refDocItem));
+        if (mRefLines == null) {
+            mRefLines = new ArrayList<>();
         }
-
+        mRefLines.clear();
+        mRefLines.add("请选择");
+        for (RefDetailEntity item : mRefDetail) {
+            mRefLines.add(String.valueOf(item.refDocItem));
+        }
         //初始化单据行适配器
         if (mRefLineAdapter == null) {
-            mRefLineAdapter = new ArrayAdapter<>(mActivity, R.layout.item_simple_sp, refLines);
+            mRefLineAdapter = new ArrayAdapter<>(mActivity, R.layout.item_simple_sp, mRefLines);
             spRefLine.setAdapter(mRefLineAdapter);
-
         } else {
             mRefLineAdapter.notifyDataSetChanged();
         }
@@ -159,32 +167,44 @@ public class QingHaiWWCCollectFragment extends BaseFragment<QingHaiWWCCollectPre
     @Override
     public void showInventory(List<InventoryEntity> list) {
         mInventoryDatas.clear();
-
         InventoryEntity tmp = new InventoryEntity();
         tmp.batchFlag = "请选择";
+
         mInventoryDatas.add(tmp);
         mInventoryDatas.addAll(list);
 
-        ArrayList<String> batchFlags = new ArrayList<>();
-        for (InventoryEntity item : list) {
-            batchFlags.add(item.batchFlag);
+        if (mInventoryAdapter == null) {
+            mInventoryAdapter = new WWCInventoryAdapter(mActivity, R.layout.item_simple_sp, mInventoryDatas);
+            spBatchFlag.setAdapter(mInventoryAdapter);
+        } else {
+            mInventoryAdapter.notifyDataSetChanged();
         }
 
-        if (mBatchFlagAdapter == null) {
-            mBatchFlagAdapter = new ArrayAdapter<>(mActivity, R.layout.item_simple_sp, batchFlags);
-            spBatchFlag.setAdapter(mBatchFlagAdapter);
-        } else {
-            mBatchFlagAdapter.notifyDataSetChanged();
+
+        //获取上一次的缓存的批次，如果有那么锁定它
+        RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
+        final String cachedBatchFlag = lineData.batchFlag;
+        int pos = -1;
+        if (!TextUtils.isEmpty(cachedBatchFlag)) {
+            for (int i = 0, size = mInventoryDatas.size(); i < size; i++) {
+                ++pos;
+                if (cachedBatchFlag.equals(mInventoryDatas.get(i).batchFlag)) {
+                    break;
+                }
+            }
         }
-        spBatchFlag.setSelection(1);
+        spBatchFlag.setEnabled(pos < 0);
+        //如果没有获取到缓存的批次，那么默认选择第一条
+        spBatchFlag.setSelection(pos < 0 ? 1 : pos);
     }
 
     @Override
     public void loadInventoryFail(String message) {
         showMessage(message);
-        mInventoryDatas.clear();
-        if (mBatchFlagAdapter != null) {
-            mBatchFlagAdapter.notifyDataSetChanged();
+        ArrayAdapter<String> adapter = (ArrayAdapter<String>) spBatchFlag.getAdapter();
+        if (adapter != null) {
+            mInventoryDatas.clear();
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -192,8 +212,7 @@ public class QingHaiWWCCollectFragment extends BaseFragment<QingHaiWWCCollectPre
      * 加载单条缓存
      */
     private void loadLocationQuantity(int position) {
-        if (position <= 0 || position >= mInventoryDatas.size())
-            return;
+
         if (TextUtils.isEmpty(mRefData.refCodeId)) {
             showMessage("参考单据的Id为空");
             return;
@@ -204,7 +223,7 @@ public class QingHaiWWCCollectFragment extends BaseFragment<QingHaiWWCCollectPre
             return;
         }
         final String refLineId = lineData.refLineId;
-        final String batchFlag = mInventoryDatas.get(position - 1).batchFlag;
+        final String batchFlag = mInventoryDatas.get(position).batchFlag;
         mPresenter.getTransferInfoSingle(mRefData.refCodeId, mRefType, mBizType, refLineId, batchFlag, "",
                 lineData.refDoc, UiUtil.convertToInt(lineData.refDocItem), Global.USER_ID);
     }
@@ -251,6 +270,15 @@ public class QingHaiWWCCollectFragment extends BaseFragment<QingHaiWWCCollectPre
             showMessage("输入数量不合理");
             return false;
         }
+
+        /*lastFlag 委外出库行数量判断标识如果 lastFlag = 'X'  则累计录入数量不能大于 应发数量*/
+        RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
+        if (lineData != null) {
+            if (!"X".equalsIgnoreCase(lineData.lastFlag)) {
+                return true;
+            }
+        }
+
         if (Float.compare(quantityV + totalQuantityV, actQuantityV) > 0.0f) {
             showMessage("输入数量有误，请出现输入");
             return false;
@@ -261,6 +289,7 @@ public class QingHaiWWCCollectFragment extends BaseFragment<QingHaiWWCCollectPre
 
     @Override
     public boolean checkCollectedDataBeforeSave() {
+
 
         if (mRefData == null) {
             showMessage("请先在抬头界面获取单据数据");
@@ -282,16 +311,11 @@ public class QingHaiWWCCollectFragment extends BaseFragment<QingHaiWWCCollectPre
             return false;
         }
 
-        //检查额外字段是否合格
-        if (!checkExtraData(mSubFunEntity.collectionConfigs)) {
-            showMessage("请检查输入数据");
+        if(spBatchFlag.getSelectedItemPosition() == 0) {
+            showMessage("请选择批次");
             return false;
         }
 
-        if (!checkExtraData(mSubFunEntity.locationConfigs)) {
-            showMessage("请检查输入数据");
-            return false;
-        }
         return true;
     }
 
@@ -358,15 +382,16 @@ public class QingHaiWWCCollectFragment extends BaseFragment<QingHaiWWCCollectPre
 
     @Override
     public void _onPause() {
-        super._onPause();
-        clearCommonUI(tvMaterialNum, tvMaterialNum, tvSpecialInvFlag, tvWork, tvActQuantity, tvTotalQuantity);
+        clearCommonUI(tvMaterialNum, tvMaterialDesc, tvSpecialInvFlag, tvWork, tvActQuantity, tvTotalQuantity);
         //清除下拉
         if (mRefLineAdapter != null) {
             spRefLine.setSelection(0);
         }
-        if (mBatchFlagAdapter != null) {
+
+        if (mInventoryAdapter != null) {
+            spBatchFlag.setSelection(0);
             mInventoryDatas.clear();
-            mBatchFlagAdapter.notifyDataSetChanged();
+            mInventoryAdapter.notifyDataSetChanged();
         }
     }
 }

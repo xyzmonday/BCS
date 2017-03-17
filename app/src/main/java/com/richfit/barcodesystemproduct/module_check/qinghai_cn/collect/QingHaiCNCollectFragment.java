@@ -68,13 +68,13 @@ public class QingHaiCNCollectFragment extends BaseFragment<CNCollectPresenterImp
 
     @Override
     public void handleBarCodeScanResult(String type, String[] list) {
-        if (list != null && list.length > 2) {
-            final String materialNum = list[1];
+        if (list != null && list.length >= 12) {
+            final String materialNum = list[Global.MATERIAL_POS];
             if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
                 saveCollectedData();
             } else if (!cbSingle.isChecked()) {
                 etMaterialNum.setText(materialNum);
-                getCheckTransferInfoSingle(materialNum,getString(etCheckLocation));
+                getCheckTransferInfoSingle(materialNum, getString(etCheckLocation));
             }
 
         } else if (list != null && list.length == 2 & !cbSingle.isChecked()) {
@@ -290,8 +290,8 @@ public class QingHaiCNCollectFragment extends BaseFragment<CNCollectPresenterImp
         InventoryEntity data = mCurrentInventoryList.get(position);
         tvMaterialDesc.setText(data.materialDesc);
         tvInvQuantity.setText(data.invQuantity);
-        etSpecialInvFlag.setText(data.specialInventoryFlag);
-        etSpecialInvNum.setText(data.specialInventoryNum);
+        etSpecialInvFlag.setText(data.specialInvFlag);
+        etSpecialInvNum.setText(data.specialInvNum);
         tvTotalQuantity.setText(data.totalQuantity);
     }
 
@@ -396,6 +396,9 @@ public class QingHaiCNCollectFragment extends BaseFragment<CNCollectPresenterImp
         final float totalQuantityV = UiUtil.convertToFloat(getString(tvTotalQuantity), 0.0f);
         final float quantityV = UiUtil.convertToFloat(getString(etQuantity), 0.0f);
         tvTotalQuantity.setText(String.valueOf(totalQuantityV + quantityV));
+        if(!cbSingle.isChecked()) {
+            etQuantity.setText("");
+        }
     }
 
     @Override

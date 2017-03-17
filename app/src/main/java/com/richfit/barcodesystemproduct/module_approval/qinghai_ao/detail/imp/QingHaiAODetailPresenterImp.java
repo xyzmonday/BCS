@@ -51,7 +51,7 @@ public class QingHaiAODetailPresenterImp extends BasePresenter<IQingHaiAODetailV
         mView = getView();
 
         ResourceSubscriber<ReferenceEntity> subscriber =
-                mRepository.getReference(refNum, refType, bizType, moveType, refLineId,userId)
+                mRepository.getReference(refNum, refType, bizType, moveType, refLineId, userId)
                         .filter(refData -> refData != null && refData.billDetailList != null && refData.billDetailList.size() > 0)
                         .map(refData -> addTreeInfo(refData))
                         .compose(TransformerHelper.io2main())
@@ -256,10 +256,13 @@ public class QingHaiAODetailPresenterImp extends BasePresenter<IQingHaiAODetailV
      */
     private Flowable<String> uploadInspectedImages(String refNum, String refCodeId, String transId,
                                                    String userId, String transFileToServer, boolean isLocal) {
+       
+    
         return Flowable.just(refNum)
                 .map(num -> mRepository.readImagesByRefNum(refNum, isLocal))
                 .filter(images -> images != null && images.size() > 0)
-                .map(images -> wrapperImage(images, refCodeId, transId, userId, transFileToServer))
+                .flatMap(images -> Flowable.fromIterable(wrapperImage(images, refCodeId, transId, userId, transFileToServer)))
+                .buffer(3)
                 .flatMap(results -> mRepository.uploadMultiFiles(results));
     }
 
@@ -290,8 +293,10 @@ public class QingHaiAODetailPresenterImp extends BasePresenter<IQingHaiAODetailV
     private ArrayList<ResultEntity> wrapperImage(List<ImageEntity> images, String refCodeId, String transId, String userId,
                                                  String transFileToServer) {
         ArrayList<ResultEntity> results = new ArrayList<>();
+        int pos = -1;
         for (ImageEntity image : images) {
             ResultEntity result = wrapperImageInternal(image, refCodeId, transId, userId, transFileToServer);
+            result.taskId = ++pos;
             results.add(result);
         }
         return results;

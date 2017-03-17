@@ -7,6 +7,7 @@ import android.view.View;
 
 import com.richfit.barcodesystemproduct.module_acceptstore.basecollect.BaseASCollectFragment;
 import com.richfit.barcodesystemproduct.module_acceptstore.basecollect.imp.ASCollectPresenterImp;
+import com.richfit.common_lib.utils.Global;
 
 /**
  * Created by monday on 2017/2/17.
@@ -17,13 +18,14 @@ public class QingHaiAS103CollectFragment extends BaseASCollectFragment<ASCollect
     @Override
     public void handleBarCodeScanResult(String type, String[] list) {
         if (list != null && list.length >= 12) {
-            final String materialNum = list[2];
-            final String batchFlag = list[11];
+            final String materialNum = list[Global.MATERIAL_POS];
+            final String batchFlag = list[Global.BATCHFALG_POS];
             if (cbSingle.isChecked() && materialNum.equalsIgnoreCase(getString(etMaterialNum))) {
                 //如果已经选中单品，那么说明已经扫描过一次。必须保证每一次的物料都一样
                 saveCollectedData();
             } else {
                 //在单品模式下，扫描不同的物料
+                etMaterialNum.setText(materialNum);
                 loadMaterialInfo(materialNum, batchFlag);
             }
         }
@@ -37,9 +39,9 @@ public class QingHaiAS103CollectFragment extends BaseASCollectFragment<ASCollect
     @Override
     protected void initVariable(@Nullable Bundle savedInstanceState) {
         super.initVariable(savedInstanceState);
+        //不打开批次管理，所有的批次不做任何检查
         mIsOpenBatchManager = false;
-        //因为不上架，那么仓位自动检查
-        isLocationChecked = true;
+        //不上架，不能输入仓位，单条缓存有库存地点触发
         isNLocation = true;
     }
 

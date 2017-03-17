@@ -691,5 +691,32 @@
              "refType": "0",
              "fragmentType": -1,
              "className": "com.richfit.barcodesystemproduct.module_acceptstore.ww_component.edit.QingHaiWWCEditFragment"
+    },
+    {
+               "id": "80",
+               "tabTitle": "物资条码信息查询",
+               "fragmentTag": "qinghai_material_info_qeury_fragment_tag",
+               "bizType": "1000",
+               "refType": "0",
+               "fragmentType": 0,
+               "className": "com.richfit.barcodesystemproduct.module_infoquery.material_infoquery.MaterialInfoQueryFragment"
+    },
+     {
+                "id": "81",
+                "tabTitle": "抬头",
+                "fragmentTag": "qinghai_lq_qeury_fragment_tag",
+                "bizType": "2000",
+                "refType": "0",
+                "fragmentType": 0,
+                "className": "com.richfit.barcodesystemproduct.module_infoquery.material_liaoqian.header.LQHeaderFragment"
+     },
+     {
+                "id": "82",
+                "tabTitle": "库存明细",
+                "fragmentTag": "qinghai_lq_qeury_fragment_tag",
+                "bizType": "2000",
+                "refType": "0",
+                "fragmentType": 0,
+                "className": "com.richfit.barcodesystemproduct.module_infoquery.material_liaoqian.detail.LQDetailFragment"
      }
 ]

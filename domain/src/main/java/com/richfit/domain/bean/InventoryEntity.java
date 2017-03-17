@@ -42,11 +42,11 @@ public class InventoryEntity extends TreeNode{
     /**
      * 特殊库存标识
      */
-    public String specialInventoryFlag;
+    public String specialInvFlag;
     /**
      * 特殊库存编号
      */
-    public String specialInventoryNum;
+    public String specialInvNum;
     public String newFlag;//新增库存标识
 
 
@@ -82,8 +82,8 @@ public class InventoryEntity extends TreeNode{
                 ", workName='" + workName + '\'' +
                 ", checkVisa='" + checkVisa + '\'' +
                 ", inventoryType='" + inventoryType + '\'' +
-                ", specialInventoryFlag='" + specialInventoryFlag + '\'' +
-                ", specialInventoryNum='" + specialInventoryNum + '\'' +
+                ", specialInvFlag='" + specialInvFlag + '\'' +
+                ", specialInvNum='" + specialInvNum + '\'' +
                 '}';
     }
 }

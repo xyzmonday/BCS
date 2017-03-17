@@ -333,7 +333,7 @@ public class QingHaiWWCDetailPresenterImp extends BasePresenter<QingHaiWWCDetail
         final String refDocItem = String.valueOf(refLineData.refDocItem);
         if ("null".equals(refDocItem))
             return null;
-        //通过refLineId匹配出缓存中的明细行
+        //通过refDocItem匹配出缓存中的明细行
         List<RefDetailEntity> detail = cachedRefData.billDetailList;
         for (RefDetailEntity entity : detail) {
             if (refDocItem.equals(String.valueOf(entity.refDocItem))) {

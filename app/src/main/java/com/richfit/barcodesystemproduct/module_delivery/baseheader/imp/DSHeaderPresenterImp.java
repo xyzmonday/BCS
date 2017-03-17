@@ -84,7 +84,8 @@ public class DSHeaderPresenterImp extends BasePresenter<IDSHeaderView>
             return;
         }
 
-        RxSubscriber<ReferenceEntity> subscriber = mRepository.getReference(refNum, refType, bizType, moveType,refLineId, userId)
+        RxSubscriber<ReferenceEntity> subscriber =
+                mRepository.getReference(refNum, refType, bizType, moveType,refLineId, userId)
                 .filter(refData -> refData != null && refData.billDetailList != null && refData.billDetailList.size() > 0)
                 .map(refData -> addTreeInfo(refData))
                 .compose(TransformerHelper.io2main())
@@ -175,7 +176,8 @@ public class DSHeaderPresenterImp extends BasePresenter<IDSHeaderView>
     @Override
     public void getTransferInfo(final ReferenceEntity refData, String refCodeId, String bizType, String refType) {
         mView = getView();
-        ResourceSubscriber<ReferenceEntity> subscriber = mRepository.getTransferInfo("", refCodeId, bizType, refType, "", "", "", "", "")
+        ResourceSubscriber<ReferenceEntity> subscriber =
+                mRepository.getTransferInfo("", refCodeId, bizType, refType, "", "", "", "", "")
                 .zipWith(Flowable.just(refData), (cache, data) -> createHeaderByCache(cache, data))
                 .compose(TransformerHelper.io2main())
                 .subscribeWith(new ResourceSubscriber<ReferenceEntity>() {

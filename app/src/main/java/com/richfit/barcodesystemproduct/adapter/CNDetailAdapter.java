@@ -29,14 +29,15 @@ public class CNDetailAdapter extends CommonTreeAdapter<InventoryEntity> {
     @Override
     protected void convert(ViewHolder holder, InventoryEntity item, int position) {
         holder.setText(R.id.rowNum, String.valueOf(position + 1))
+                .setText(R.id.lineNum,item.lineNum)
                 .setText(R.id.materialNum, item.materialNum)
                 .setText(R.id.materialDesc, item.materialDesc)
                 .setText(R.id.materialGroup, item.materialGroup)
                 .setText(R.id.checkLocation, item.location)
                 .setText(R.id.invQuantity, item.invQuantity)
                 .setText(R.id.checkQuantity, item.totalQuantity)
-                .setText(R.id.specialInvFlag, item.specialInventoryFlag)
-                .setText(R.id.specialInvNum, item.specialInventoryNum)
+                .setText(R.id.specialInvFlag, item.specialInvFlag)
+                .setText(R.id.specialInvNum, item.specialInvNum)
                 .setText(R.id.newFlag, item.newFlag)
                 .setText(R.id.checkState, item.isChecked ? "已盘点" : "未盘点");
         if (item.isChecked) {

@@ -22,7 +22,6 @@ import java.util.List;
 
 public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment<QingYangNMS301DetailPresenterImp> {
 
-    QingYangNMS301DetailAdapter mAdapter;
 
     @Override
     public void initInjector() {
@@ -67,9 +66,10 @@ public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment<QingYang
             return;
         }
         //获取与该子节点的物料编码和发出库位一致的发出仓位和接收仓位列表
-        if (mAdapter != null) {
-            ArrayList<String> sendLocations = mAdapter.getLocations(position, 0);
-            ArrayList<String> recLocations = mAdapter.getLocations(position, 1);
+        if (mAdapter != null && QingYangNMS301DetailAdapter.class.isInstance(mAdapter)) {
+            QingYangNMS301DetailAdapter adapter = (QingYangNMS301DetailAdapter) mAdapter;
+            ArrayList<String> sendLocations = adapter.getLocations(position, 0);
+            ArrayList<String> recLocations = adapter.getLocations(position, 1);
             mPresenter.editNode(sendLocations, recLocations, node, EditActivity.class, mCompanyCode,
                     mBizType, mRefType, getSubFunName());
         }
@@ -82,6 +82,7 @@ public class QingYangNMS301DetailFragment extends BaseNMSDetailFragment<QingYang
         if (mAdapter != null) {
             mAdapter.removeAllVisibleNodes();
         }
+        mRefData = null;
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 

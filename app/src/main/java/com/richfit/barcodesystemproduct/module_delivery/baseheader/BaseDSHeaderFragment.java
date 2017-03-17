@@ -273,6 +273,11 @@ public abstract class BaseDSHeaderFragment extends BaseFragment<DSHeaderPresente
         super.retry(retryAction);
     }
 
+    @Override
+    public boolean isNeedShowFloatingButton() {
+        return false;
+    }
+
     /*子类需实现的方法*/
     /*返回业务类型*/
     @CheckResult

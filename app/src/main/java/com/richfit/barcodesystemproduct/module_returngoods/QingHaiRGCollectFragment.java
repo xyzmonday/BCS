@@ -17,8 +17,8 @@ public class QingHaiRGCollectFragment extends BaseDSCollectFragment<DSCollectPre
 
     @Override
     protected void initView() {
-        quantityName.setText("应退数量");
-        actQuantityName.setText("实退数量");
+        quantityName.setText("实退数量");
+        actQuantityName.setText("应退数量");
         super.initView();
     }
 

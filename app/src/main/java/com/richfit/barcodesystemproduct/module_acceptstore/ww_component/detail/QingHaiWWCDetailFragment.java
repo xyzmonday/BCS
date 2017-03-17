@@ -14,6 +14,8 @@ import com.richfit.barcodesystemproduct.adapter.QingHaiWWCAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.common_lib.animationrv.Animation.animators.FadeInDownAnimator;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.common_lib.utils.JsonUtil;
+import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.common_lib.widget.AutoSwipeRefreshLayout;

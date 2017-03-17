@@ -64,6 +64,7 @@ public class QingHaiRSNEditFragment extends BaseFragment<QingHaiRSNEditPresenter
 
     //修改前的上架仓位
     String mLocation;
+    String mLocationId;
 
 
     @Override
@@ -107,7 +108,7 @@ public class QingHaiRSNEditFragment extends BaseFragment<QingHaiRSNEditPresenter
         final String batchFlag = bundle.getString(Global.EXTRA_BATCH_FLAG_KEY);
         //仓位
         mLocation = bundle.getString(Global.EXTRA_LOCATION_KEY);
-
+        mLocationId = bundle.getString(Global.EXTRA_LOCATION_ID_KEY);
         //入库数量
         mQuantity = bundle.getString(Global.EXTRA_QUANTITY_KEY);
 
@@ -265,6 +266,7 @@ public class QingHaiRSNEditFragment extends BaseFragment<QingHaiRSNEditPresenter
             result.materialId = CommonUtil.Obj2String(tvMaterialNum.getTag());
             result.batchFlag = getString(tvBatchFlag);
             result.location = getString(etLocation);
+            result.locationId = mLocationId;
             result.quantity = getString(etQuantity);
             result.supplierId = mRefData.supplierId;
             result.costCenter = mRefData.costCenter;

@@ -8,6 +8,7 @@ import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsww.imp.QingHai
 import com.richfit.common_lib.utils.Global;
 import com.richfit.domain.bean.BottomMenuEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,19 +25,6 @@ public class QingHaiDSWWDetailFragment extends BaseDSDetailFragment<QingHaiDSWWD
     @Override
     protected String getSubFunName() {
         return "委外出库";
-    }
-
-    /**
-     * 1.过账。必须保证所有的明细行都完成了才能开始过账
-     */
-    protected void submit2BarcodeSystem(String tranToSapFlag) {
-        if (mAdapter != null) {
-            if (!mAdapter.isTransferValide()) {
-                showMessage("您必须对所有的明细采集数据后，才能过账");
-                return;
-            }
-        }
-        super.submit2BarcodeSystem(tranToSapFlag);
     }
 
     /**
@@ -72,6 +60,7 @@ public class QingHaiDSWWDetailFragment extends BaseDSDetailFragment<QingHaiDSWWD
         if(mAdapter != null) {
             mAdapter.removeAllVisibleNodes();
         }
+        mRefData = null;
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 
@@ -89,10 +78,16 @@ public class QingHaiDSWWDetailFragment extends BaseDSDetailFragment<QingHaiDSWWD
 
     @Override
     public List<BottomMenuEntity> provideDefaultBottomMenu() {
-        List<BottomMenuEntity> menus = super.provideDefaultBottomMenu();
-        menus.get(0).transToSapFlag = "01";
-        menus.get(1).transToSapFlag = "05";
-        return menus.subList(0, 2);
+
+        List<BottomMenuEntity> tmp = super.provideDefaultBottomMenu();
+        tmp.get(0).transToSapFlag = "01";
+        tmp.get(2).transToSapFlag = "05";
+
+        ArrayList menus = new ArrayList();
+        menus.add(tmp.get(0));
+        menus.add(tmp.get(2));
+
+        return menus;
     }
 
     @Override

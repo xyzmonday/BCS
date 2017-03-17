@@ -7,7 +7,7 @@
     android:background="@drawable/parent_node_bg"
     android:orientation="horizontal">
 
-    <View style="@style/ItemSeperatorLayout"/>
+    <View style="@style/ItemSeperatorLayout" />
 
     <TextView
         android:id="@+id/rowNum"
@@ -15,7 +15,7 @@
         android:layout_width="60dp"
         android:text="@string/row_num" />
 
-    <View style="@style/ItemSeperatorLayout"/>
+    <View style="@style/ItemSeperatorLayout" />
 
     <TextView
         android:id="@+id/lineNum"
@@ -23,18 +23,17 @@
         android:layout_width="80dp"
         android:text="@string/ref_num" />
 
-    <View style="@style/ItemSeperatorLayout"/>
+    <View style="@style/ItemSeperatorLayout" />
 
 
     <TextView
-        android:visibility="gone"
         android:id="@+id/refLineNum"
         style="@style/TableHeaderStyle"
         android:layout_width="120dp"
-        android:text="@string/ref_line_num_105" />
+        android:text="@string/ref_line_num_105"
+        android:visibility="gone" />
 
-    <View style="@style/ItemSeperatorLayout"/>
-
+    <View style="@style/ItemSeperatorLayout" />
 
     <TextView
         android:id="@+id/materialNum"
@@ -42,7 +41,7 @@
         android:layout_width="120dp"
         android:text="@string/material_num" />
 
-    <View style="@style/ItemSeperatorLayout"/>
+    <View style="@style/ItemSeperatorLayout" />
 
     <TextView
         android:id="@+id/materialDesc"
@@ -50,7 +49,7 @@
         android:layout_width="240dp"
         android:text="@string/material_desc" />
 
-    <View style="@style/ItemSeperatorLayout"/>
+    <View style="@style/ItemSeperatorLayout" />
 
     <TextView
         android:id="@+id/materialGroup"
@@ -58,7 +57,7 @@
         android:layout_width="120dp"
         android:text="@string/material_group" />
 
-    <View style="@style/ItemSeperatorLayout"/>
+    <View style="@style/ItemSeperatorLayout" />
 
 
     <TextView
@@ -67,14 +66,14 @@
         android:layout_width="120dp"
         android:text="@string/material_unit" />
 
-    <View style="@style/ItemSeperatorLayout"/>
+    <View style="@style/ItemSeperatorLayout" />
 
     <TextView
         android:id="@+id/specailInventoryFlag"
         style="@style/TableHeaderStyle"
-        android:visibility="gone"
         android:layout_width="120dp"
-        android:text="@string/special_inventory_flags" />
+        android:text="@string/special_inventory_flags"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/actQuantity"
@@ -82,7 +81,7 @@
         android:layout_width="120dp"
         android:text="@string/act_quantity" />
 
-    <View style="@style/ItemSeperatorLayout"/>
+    <View style="@style/ItemSeperatorLayout" />
 
     <TextView
         android:id="@+id/totalQuantity"
@@ -90,7 +89,7 @@
         android:layout_width="120dp"
         android:text="@string/total_quantity" />
 
-    <View style="@style/ItemSeperatorLayout"/>
+    <View style="@style/ItemSeperatorLayout" />
 
     <TextView
         android:id="@+id/work"
@@ -98,7 +97,7 @@
         android:layout_width="120dp"
         android:text="@string/work" />
 
-    <View style="@style/ItemSeperatorLayout"/>
+    <View style="@style/ItemSeperatorLayout" />
 
 
     <TextView
@@ -107,16 +106,16 @@
         android:layout_width="120dp"
         android:text="@string/inv" />
 
-    <View style="@style/ItemSeperatorLayout"/>
+    <View style="@style/ItemSeperatorLayout" />
 
     <TextView
         android:id="@+id/y_n_location"
         style="@style/TableHeaderStyle"
         android:layout_width="80dp"
-        android:visibility="gone"
-        android:text="@string/yes_no_location" />
+        android:text="@string/yes_no_location"
+        android:visibility="gone" />
 
-    <View style="@style/ItemSeperatorLayout"/>
+    <View style="@style/ItemSeperatorLayout" />
 
 
 </LinearLayout>

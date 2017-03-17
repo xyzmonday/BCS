@@ -2,10 +2,12 @@ package com.richfit.barcodesystemproduct.module_returngoods;
 
 import android.text.TextUtils;
 
+import com.richfit.barcodesystemproduct.adapter.QingHaiRGDetailAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.barcodesystemproduct.module_delivery.basedetail.BaseDSDetailFragment;
 import com.richfit.barcodesystemproduct.module_returngoods.imp.QingHaiRGDetailPresenterImp;
 import com.richfit.domain.bean.BottomMenuEntity;
+import com.richfit.domain.bean.RefDetailEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +20,35 @@ public class QingHaiRGDetailFragment extends BaseDSDetailFragment<QingHaiRGDetai
 
     @Override
     protected void initView() {
-        actQuantityName.setText("实退数量");
+        actQuantityName.setText("应退数量");
         super.initView();
     }
 
     @Override
     public void initInjector() {
         mFragmentComponent.inject(this);
+    }
+
+    /**
+     * 如果不是标准的出库，需要重写该方法。
+     */
+    @Override
+    public void showNodes(List<RefDetailEntity> allNodes) {
+        for (RefDetailEntity node : allNodes) {
+            if (!TextUtils.isEmpty(node.transId)) {
+                mTransId = node.transId;
+                break;
+            }
+        }
+        if (mAdapter == null) {
+            mAdapter = new QingHaiRGDetailAdapter(mActivity, allNodes,
+                    mSubFunEntity.parentNodeConfigs, mSubFunEntity.childNodeConfigs,
+                    mCompanyCode);
+            mRecycleView.setAdapter(mAdapter);
+            mAdapter.setOnItemEditAndDeleteListener(this);
+        } else {
+            mAdapter.addAll(allNodes);
+        }
     }
 
     /**
@@ -60,6 +84,7 @@ public class QingHaiRGDetailFragment extends BaseDSDetailFragment<QingHaiRGDetai
         if (mAdapter != null) {
             mAdapter.removeAllVisibleNodes();
         }
+        mRefData = null;
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 

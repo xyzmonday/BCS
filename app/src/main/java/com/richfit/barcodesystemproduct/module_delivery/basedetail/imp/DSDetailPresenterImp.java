@@ -16,6 +16,7 @@ import com.richfit.common_lib.rxutils.RetryWhenNetworkException;
 import com.richfit.common_lib.rxutils.RxSubscriber;
 import com.richfit.common_lib.rxutils.TransformerHelper;
 import com.richfit.common_lib.utils.Global;
+import com.richfit.common_lib.utils.L;
 import com.richfit.common_lib.utils.SPrefUtil;
 import com.richfit.common_lib.utils.UiUtil;
 import com.richfit.domain.bean.LocationInfoEntity;
@@ -157,7 +158,7 @@ public class DSDetailPresenterImp extends BasePresenter<IDSDetailView>
                     //该子节点的id
                     bundle.putString(Global.EXTRA_REF_LINE_ID_KEY, node.refLineId);
                     //该子节点的LocationId
-                    bundle.putString(Global.EXTRA_LOCATION_KEY, node.locationId);
+                    bundle.putString(Global.EXTRA_LOCATION_ID_KEY, node.locationId);
                     //入库子菜单类型
                     bundle.putString(Global.EXTRA_BIZ_TYPE_KEY, bizType);
                     bundle.putString(Global.EXTRA_REF_TYPE_KEY, refType);
@@ -198,9 +199,8 @@ public class DSDetailPresenterImp extends BasePresenter<IDSDetailView>
 
 
     @Override
-    public void
-    submitData2BarcodeSystem(String transId, String bizType, String refType, String userId, String voucherDate,
-                             Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
+    public void submitData2BarcodeSystem(String transId, String bizType, String refType, String userId, String voucherDate,
+                                         Map<String, Object> flagMap, Map<String, Object> extraHeaderMap) {
         mView = getView();
         mRepository.uploadCollectionData("", transId, bizType, refType, -1, voucherDate, "", "")
                 .retryWhen(new RetryWhenNetworkException(3, 3000))
@@ -308,7 +308,7 @@ public class DSDetailPresenterImp extends BasePresenter<IDSDetailView>
      * @param cache：缓存单据数据
      * @return
      */
-    private ArrayList<RefDetailEntity> createNodesByCache(ReferenceEntity refData, ReferenceEntity cache) {
+    protected ArrayList<RefDetailEntity> createNodesByCache(ReferenceEntity refData, ReferenceEntity cache) {
         ArrayList<RefDetailEntity> nodes = new ArrayList<>();
         //第一步，将原始单据中的行明细赋值新的父节点中
         List<RefDetailEntity> list = refData.billDetailList;
@@ -317,12 +317,13 @@ public class DSDetailPresenterImp extends BasePresenter<IDSDetailView>
             RefDetailEntity cachedEntity = getLineDataByRefLineId(node, cache);
             if (cachedEntity == null)
                 cachedEntity = new RefDetailEntity();
-
+            //将原始单据的物料信息赋值给缓存
             cachedEntity.lineNum = node.lineNum;
             cachedEntity.materialNum = node.materialNum;
             cachedEntity.materialId = node.materialId;
             cachedEntity.materialDesc = node.materialDesc;
             cachedEntity.materialGroup = node.materialGroup;
+            cachedEntity.unit = node.unit;
             cachedEntity.actQuantity = node.actQuantity;
             cachedEntity.workCode = node.workCode;
             //处理父节点的缓存

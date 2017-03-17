@@ -50,6 +50,7 @@ public class QingHaiWWCEditFragment extends BaseFragment<QingHaiWWCEditPresenter
     int mPosition;
     String mRefLineId;
     String mQuantity;
+    String mLocationId;
 
     @Override
     protected int getContentId() {
@@ -70,7 +71,7 @@ public class QingHaiWWCEditFragment extends BaseFragment<QingHaiWWCEditPresenter
         mPosition = bundle.getInt(Global.EXTRA_POSITION_KEY);
         mQuantity = bundle.getString(Global.EXTRA_QUANTITY_KEY);
         mRefLineId = bundle.getString(Global.EXTRA_REF_LINE_ID_KEY);
-
+        mLocationId = bundle.getString(Global.EXTRA_LOCATION_ID_KEY);
 
         if (mRefData != null && mPosition >= 0) {
             /*单据数据中的库存地点不一定有，而且用户可以录入新的库存地点，所以只有子节点的库存地点才是正确的*/
@@ -118,6 +119,17 @@ public class QingHaiWWCEditFragment extends BaseFragment<QingHaiWWCEditPresenter
             etQuantity.setText("");
             return false;
         }
+
+        /*lastFlag 委外出库行数量判断标识如果 lastFlag = 'X'  则累计录入数量不能大于 应发数量*/
+        RefDetailEntity lineData = mRefDetail.get(mPosition);
+        if (lineData != null) {
+            if (!"X".equalsIgnoreCase(lineData.lastFlag)) {
+                mQuantity = quantityV + "";
+                return true;
+            }
+        }
+
+
         float residualQuantity = totalQuantityV - collectedQuantity + quantityV;//减去已经录入的数量
         if (Float.compare(residualQuantity, actQuantityV) > 0.0f) {
             showMessage("输入实收数量有误");
@@ -137,7 +149,7 @@ public class QingHaiWWCEditFragment extends BaseFragment<QingHaiWWCEditPresenter
         Flowable.create((FlowableOnSubscribe<ResultEntity>) emitter -> {
             RefDetailEntity lineData = mRefDetail.get(mPosition);
             ResultEntity result = new ResultEntity();
-            result.businessType = mRefData.bizType;
+            result.businessType = mBizType;
             result.refCodeId = mRefData.refCodeId;
             result.refCode = mRefData.recordNum;
             result.refLineNum = lineData.lineNum;
@@ -148,6 +160,7 @@ public class QingHaiWWCEditFragment extends BaseFragment<QingHaiWWCEditPresenter
             result.refLineId = lineData.refLineId;
             result.workId = lineData.workId;
             result.materialId = lineData.materialId;
+            result.locationId = mLocationId;
             result.location = "barcode";
             result.batchFlag = getString(tvBatchFlag);
             result.quantity = getString(etQuantity);

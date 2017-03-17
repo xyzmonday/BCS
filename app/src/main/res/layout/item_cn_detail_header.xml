@@ -16,6 +16,15 @@
 
     <View style="@style/ItemSeperatorLayout"/>
 
+
+    <TextView
+        android:id="@+id/lineNum"
+        style="@style/TableHeaderStyle"
+        android:layout_width="60dp"
+        android:text="@string/line_num" />
+
+    <View style="@style/ItemSeperatorLayout"/>
+
     <TextView
         android:id="@+id/materialNum"
         style="@style/TableHeaderStyle"

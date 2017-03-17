@@ -47,7 +47,7 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
     @BindView(R.id.tv_inv)
     TextView tvInv;
     @BindView(R.id.tv_act_delivery_quantity)
-    TextView tvActDeliveryQuantity;
+    protected TextView tvActQuantity;
     @BindView(R.id.et_quantity)
     protected EditText etQuantity;
     @BindView(R.id.sp_location)
@@ -57,19 +57,19 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
     @BindView(R.id.tv_total_quantity)
     protected TextView tvTotalQuantity;
     @BindView(R.id.tv_inv_quantity)
-    TextView tvInvQuantity;
+    protected  TextView tvInvQuantity;
 
     protected String mRefLineId;
     protected String mLocationId;
     protected int mPosition;
     //该子节点修改前的出库数量
-    private String mQuantity;
+    protected String mQuantity;
     protected List<InventoryEntity> mInventoryDatas;
     private LocationAdapter mLocationAdapter;
     private List<String> mLocations;
     protected String mSelectedLocation;
     Map<String, Object> mExtraLocationMap;
-    private float mTotalQuantity;
+    protected float mTotalQuantity;
 
     @Override
     protected int getContentId() {
@@ -135,6 +135,8 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
         mLocations = bundle.getStringArrayList(Global.EXTRA_LOCATION_LIST_KEY);
         mRefLineId = bundle.getString(Global.EXTRA_REF_LINE_ID_KEY);
         mLocationId = bundle.getString(Global.EXTRA_LOCATION_ID_KEY);
+
+
         if (mRefData != null) {
             /*单据数据中的库存地点不一定有，而且用户可以录入新的库存地点，所以只有子节点的库存地点才是正确的*/
             final RefDetailEntity lineData = mRefData.billDetailList.get(mPosition);
@@ -142,7 +144,7 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
             tvRefLineNum.setText(lineData.lineNum);
             tvMaterialNum.setText(lineData.materialNum);
             tvMaterialDesc.setText(lineData.materialDesc);
-            tvActDeliveryQuantity.setText(lineData.actQuantity);
+            tvActQuantity.setText(lineData.actQuantity);
             tvBatchFlag.setText(batchFlag);
             tvInv.setText(invCode);
             tvInv.setTag(invId);
@@ -249,7 +251,7 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
     public boolean checkCollectedDataBeforeSave() {
         //检查是否合理，可以保存修改后的数据
         if (TextUtils.isEmpty(getString(etQuantity))) {
-            showMessage("请输入入库数量");
+            showMessage("请输入实发数量");
             return false;
         }
 
@@ -270,14 +272,14 @@ public abstract class BaseDSEditFragment extends BaseFragment<DSEditPresenterImp
         }
 
         //是否满足本次录入数量+累计数量-上次已经录入的出库数量<=应出数量
-        float actQuantityV = UiUtil.convertToFloat(getString(tvActDeliveryQuantity), 0.0f);
+        float actQuantityV = UiUtil.convertToFloat(getString(tvActQuantity), 0.0f);
         float totalQuantityV = UiUtil.convertToFloat(getString(tvTotalQuantity), 0.0f);
         float collectedQuantity = UiUtil.convertToFloat(mQuantity, 0.0f);
         //修改后的出库数量
         float quantityV = UiUtil.convertToFloat(getString(etQuantity), 0.0f);
         float residualQuantity = totalQuantityV - collectedQuantity + quantityV;//减去已经录入的数量
         if (Float.compare(residualQuantity, actQuantityV) > 0.0f) {
-            showMessage("输入实收数量有误");
+            showMessage("输入实发数量有误");
             etQuantity.setText("");
             return false;
         }

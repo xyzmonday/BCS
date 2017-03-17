@@ -19,10 +19,12 @@ public class QingHaiASWWEditFragment extends BaseASEditFragment<QingHaiASWWEditP
 
     @Override
     public boolean checkCollectedDataBeforeSave() {
-        final String location = getString(etLocation);
-        if (TextUtils.isEmpty(location) || location.length() > 10) {
-            showMessage("您输入的上架仓位有误");
-            return false;
+        if(!isNLocation) {
+            final String location = getString(etLocation);
+            if (TextUtils.isEmpty(location) || location.length() > 10) {
+                showMessage("您输入的上架仓位有误");
+                return false;
+            }
         }
         return super.checkCollectedDataBeforeSave();
     }

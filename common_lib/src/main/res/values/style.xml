@@ -145,7 +145,16 @@
         <item name="android:textSize">15sp</item>
         <item name="android:padding">2dp</item>
     </style>
-
+    <style name="RightTextViewItemStyle2">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/edit_selector</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:freezesText">true</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:padding">2dp</item>
+    </style>
 
     <!--第二列EditText的样式-->
     <style name="RightEditTextItemStyle">
@@ -163,6 +172,19 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">2</item>
+        <item name="android:padding">2dp</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:background">@drawable/edit_selector</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColorHint">@color/colorPrimary</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="RightRichEditTextItemStyle2">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:padding">2dp</item>
         <item name="android:focusableInTouchMode">true</item>
         <item name="android:background">@drawable/edit_selector</item>

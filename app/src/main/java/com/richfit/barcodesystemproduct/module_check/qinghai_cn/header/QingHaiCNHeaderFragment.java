@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -16,6 +17,7 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding.widget.RxAdapterView;
+import com.jakewharton.rxbinding.widget.RxCompoundButton;
 import com.richfit.barcodesystemproduct.R;
 import com.richfit.barcodesystemproduct.adapter.BottomMenuAdapter;
 import com.richfit.barcodesystemproduct.adapter.InvAdapter;
@@ -52,7 +54,6 @@ import static com.richfit.common_lib.utils.Global.USER_ID;
 public class QingHaiCNHeaderFragment extends BaseFragment<CNHeaderPresenterImp, Object>
         implements ICNHeaderView {
 
-    private static final String DEFAULT_SPECIAL_FLAG = "Y";
 
     @BindView(R.id.ll_warehouse_level)
     LinearLayout llWarehouseLevel;
@@ -72,6 +73,8 @@ public class QingHaiCNHeaderFragment extends BaseFragment<CNHeaderPresenterImp, 
     TextView tvChecker;
     @BindView(R.id.et_check_date)
     RichEditText etTransferDate;
+    @BindView(R.id.cb_special_flag)
+    CheckBox cbSpecialFlag;
 
     /*工厂列表*/
     List<WorkEntity> mWorkDatas;
@@ -80,6 +83,7 @@ public class QingHaiCNHeaderFragment extends BaseFragment<CNHeaderPresenterImp, 
     List<InvEntity> mInvDatas;
     /*库存号列表*/
     List<String> mStorageNums;
+    String mSpecialFlag;
 
 
     @Override
@@ -143,12 +147,18 @@ public class QingHaiCNHeaderFragment extends BaseFragment<CNHeaderPresenterImp, 
                     }
                 });
 
+        RxCompoundButton.checkedChanges(cbSpecialFlag)
+                .subscribe(a -> {
+                    mSpecialFlag = a.booleanValue() ? "Y" : "N";
+                });
+
     }
 
     @Override
     public void initData() {
         etTransferDate.setText(UiUtil.getCurrentDate(Global.GLOBAL_DATE_PATTERN_TYPE1));
         tvChecker.setText(Global.LOGIN_ID);
+        mSpecialFlag = cbSpecialFlag.isChecked() ? "Y" : "N";
     }
 
     /**
@@ -338,11 +348,11 @@ public class QingHaiCNHeaderFragment extends BaseFragment<CNHeaderPresenterImp, 
         if (rbStorageNumLevel.isChecked()) {
             //库位级盘点
             mPresenter.getCheckInfo(USER_ID, mBizType, "01",
-                    DEFAULT_SPECIAL_FLAG, mStorageNums.get(spStorageNum.getSelectedItemPosition()),
+                    mSpecialFlag, mStorageNums.get(spStorageNum.getSelectedItemPosition()),
                     "", "");
         } else if (rbWarehouseLevel.isChecked()) {
             mPresenter.getCheckInfo(USER_ID, mBizType, "02",
-                    DEFAULT_SPECIAL_FLAG, "",
+                    mSpecialFlag, "",
                     mWorkDatas.get(spWork.getSelectedItemPosition()).workId,
                     mInvDatas.get(spInv.getSelectedItemPosition()).invId);
         }
@@ -445,7 +455,7 @@ public class QingHaiCNHeaderFragment extends BaseFragment<CNHeaderPresenterImp, 
                 }
                 mRefData.checkLevel = "02";
             }
-            mRefData.specialFlag = DEFAULT_SPECIAL_FLAG;
+            mRefData.specialFlag = mSpecialFlag;
             Map<String, Object> extraHeaderMap = saveExtraUIData(mSubFunEntity.headerConfigs);
             mRefData.mapExt = UiUtil.copyMap(extraHeaderMap, mRefData.mapExt);
         }

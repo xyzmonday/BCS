@@ -23,7 +23,6 @@ import java.util.List;
 
 public class QingHaiNMS311DetailFragment extends BaseNMSDetailFragment<QingHaiNMS311DetailPresenterImp> {
 
-    QingHaiNMS311DetailAdapter mAdapter;
 
     @Override
     public void initInjector() {
@@ -63,9 +62,10 @@ public class QingHaiNMS311DetailFragment extends BaseNMSDetailFragment<QingHaiNM
             return;
         }
         //获取与该子节点的物料编码和发出库位一致的发出仓位和接收仓位列表
-        if (mAdapter != null) {
-            ArrayList<String> sendLocations = mAdapter.getLocations(node.materialNum, node.invId, position, 0);
-            ArrayList<String> recLocations = mAdapter.getLocations(node.materialNum, node.invId, position, 1);
+        if (mAdapter != null && QingHaiNMS311DetailAdapter.class.isInstance(mAdapter)) {
+            QingHaiNMS311DetailAdapter adapter = (QingHaiNMS311DetailAdapter) mAdapter;
+            ArrayList<String> sendLocations = adapter.getLocations(node.materialNum, node.invId, position, 0);
+            ArrayList<String> recLocations = adapter.getLocations(node.materialNum, node.invId, position, 1);
             mPresenter.editNode(sendLocations, recLocations, node, EditActivity.class, mCompanyCode,
                     mBizType, mRefType, getSubFunName());
         }
@@ -116,6 +116,7 @@ public class QingHaiNMS311DetailFragment extends BaseNMSDetailFragment<QingHaiNM
         if (mAdapter != null) {
             mAdapter.removeAllVisibleNodes();
         }
+        mRefData = null;
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 

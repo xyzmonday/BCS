@@ -70,7 +70,7 @@ public class QingHaiCNDetailFragment extends BaseFragment<CNDetailPresenterImp, 
     @Override
     public void handleBarCodeScanResult(String type, String[] list) {
         if (list != null && list.length >= 12) {
-            final String materialNum = list[2];
+            final String materialNum = list[Global.MATERIAL_POS];
             if (mMaterialCondition.isFocused()) {
                 mMaterialCondition.setText(materialNum);
                 startLoadInventory(mCurrentPageNum + 1);

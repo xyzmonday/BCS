@@ -53,7 +53,6 @@ public class QingHaiDSWWCollectFragment extends BaseDSCollectFragment<QingHaiDSW
             etQuantity.setText("");
             return false;
         }
-//        }
         return true;
     }
 

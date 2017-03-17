@@ -115,6 +115,25 @@
 
         <TextView
             style="@style/LeftTextViewItemStyle"
+            android:text="@string/is_special_flag" />
+
+        <CheckBox
+            android:id="@+id/cb_special_flag"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            style="@style/LeftTextViewItemStyle"
             android:text="@string/checker" />
 
         <TextView

@@ -132,8 +132,8 @@ public class CNDetailPresenterImp extends BasePresenter<ICNDetailView>
         //物料组
         bundle.putString(Global.EXTRA_MATERIAL_GROUP_KEY, node.materialGroup);
         //特殊库存标识
-        bundle.putString(Global.EXTRA_SPECIAL_INV_FLAG_KEY, node.specialInventoryFlag);
-        bundle.putString(Global.EXTRA_SPECIAL_INV_NUM_KEY, node.specialInventoryNum);
+        bundle.putString(Global.EXTRA_SPECIAL_INV_FLAG_KEY, node.specialInvFlag);
+        bundle.putString(Global.EXTRA_SPECIAL_INV_NUM_KEY, node.specialInvNum);
         //工厂和库存地点
         bundle.putString(Global.EXTRA_WORK_ID_KEY,node.workId);
         bundle.putString(Global.EXTRA_INV_ID_KEY,node.invId);

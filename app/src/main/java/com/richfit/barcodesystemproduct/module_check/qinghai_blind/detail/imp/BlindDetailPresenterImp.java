@@ -131,9 +131,11 @@ public class BlindDetailPresenterImp extends BasePresenter<IBlindDetailView>
         bundle.putString(Global.EXTRA_MATERIAL_DESC_KEY, node.materialDesc);
         //物料组
         bundle.putString(Global.EXTRA_MATERIAL_GROUP_KEY, node.materialGroup);
+
         //工厂和库存地点
-        bundle.putString(Global.EXTRA_WORK_ID_KEY,node.workId);
-        bundle.putString(Global.EXTRA_INV_ID_KEY,node.invId);
+//        bundle.putString(Global.EXTRA_WORK_ID_KEY,node.workId);
+//        bundle.putString(Global.EXTRA_INV_ID_KEY,node.invId);
+
         //库存
         bundle.putString(Global.EXTRA_INV_QUANTITY_KEY, node.invQuantity);
         //需要修改的字段

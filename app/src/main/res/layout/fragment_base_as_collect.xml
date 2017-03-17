@@ -101,6 +101,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:padding="5dp"
+            android:id="@+id/ll_inslot_quantity"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/LeftTextViewItemStyle"
+                android:text="@string/insLot_quantity" />
+
+            <TextView
+                android:id="@+id/tv_insLost_quantity"
+                style="@style/RightTextViewItemStyle" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:padding="5dp">
 
             <TextView

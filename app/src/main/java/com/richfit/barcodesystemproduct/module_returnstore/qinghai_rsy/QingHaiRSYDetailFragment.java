@@ -17,7 +17,6 @@ import java.util.List;
 
 public class QingHaiRSYDetailFragment extends BaseASDetailFragment<QingHaiRSYDetailPresenterImp> {
 
-    RSYDetailAdapter mAdapter;
 
     @Override
     public void initInjector() {
@@ -81,6 +80,7 @@ public class QingHaiRSYDetailFragment extends BaseASDetailFragment<QingHaiRSYDet
         if (mAdapter != null) {
             mAdapter.removeAllVisibleNodes();
         }
+        mRefData = null;
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 

@@ -2,12 +2,14 @@ package com.richfit.barcodesystemproduct.module_delivery.qinghai_dsxs;
 
 import android.text.TextUtils;
 
+import com.richfit.barcodesystemproduct.adapter.DSYDetailAdapter;
 import com.richfit.barcodesystemproduct.base.BaseFragment;
 import com.richfit.barcodesystemproduct.module_delivery.basedetail.BaseDSDetailFragment;
 import com.richfit.barcodesystemproduct.module_delivery.qinghai_dsxs.imp.QingHaiDSXSDetailPresenterImp;
 import com.richfit.common_lib.utils.Global;
 import com.richfit.domain.bean.BottomMenuEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,8 +34,9 @@ public class QingHaiDSXSDetailFFragment extends BaseDSDetailFragment<QingHaiDSXS
      * 1.过账。必须保证所有的明细行都完成了才能开始过账
      */
     protected void submit2BarcodeSystem(String tranToSapFlag) {
-        if (mAdapter != null) {
-            if (!mAdapter.isTransferValide()) {
+        if (mAdapter != null && DSYDetailAdapter.class.isInstance(mAdapter)) {
+            final DSYDetailAdapter adapter = (DSYDetailAdapter) mAdapter;
+            if (!adapter.isTransferValide()) {
                 showMessage("您必须对所有的明细采集数据后，才能过账");
                 return;
             }
@@ -71,9 +74,10 @@ public class QingHaiDSXSDetailFFragment extends BaseDSDetailFragment<QingHaiDSXS
     public void submitSAPSuccess() {
         setRefreshing(false, "数据上传成功");
         showSuccessDialog(mInspectionNum);
-        if(mAdapter != null) {
+        if (mAdapter != null) {
             mAdapter.removeAllVisibleNodes();
         }
+        mRefData = null;
         mPresenter.showHeadFragmentByPosition(BaseFragment.HEADER_FRAGMENT_INDEX);
     }
 
@@ -91,10 +95,15 @@ public class QingHaiDSXSDetailFFragment extends BaseDSDetailFragment<QingHaiDSXS
 
     @Override
     public List<BottomMenuEntity> provideDefaultBottomMenu() {
-        List<BottomMenuEntity> menus = super.provideDefaultBottomMenu();
-        menus.get(0).transToSapFlag = "06";
-        menus.get(1).transToSapFlag = "05";
-        return menus.subList(0, 2);
+        List<BottomMenuEntity> tmp = super.provideDefaultBottomMenu();
+        tmp.get(0).transToSapFlag = "06";
+        tmp.get(2).transToSapFlag = "05";
+
+        ArrayList menus = new ArrayList();
+        menus.add(tmp.get(0));
+        menus.add(tmp.get(2));
+
+        return menus;
     }
 
     @Override

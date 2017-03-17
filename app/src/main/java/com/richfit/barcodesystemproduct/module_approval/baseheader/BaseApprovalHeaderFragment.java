@@ -240,6 +240,10 @@ public abstract class BaseApprovalHeaderFragment extends BaseFragment<ApprovalHe
         super.retry(action);
     }
 
+    @Override
+    public boolean isNeedShowFloatingButton() {
+        return false;
+    }
 
     /*子类需实现的方法*/
     /*返回业务类型*/

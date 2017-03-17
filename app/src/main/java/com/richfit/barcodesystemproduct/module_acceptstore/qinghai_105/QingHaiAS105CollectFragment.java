@@ -2,6 +2,7 @@ package com.richfit.barcodesystemproduct.module_acceptstore.qinghai_105;
 
 
 import android.text.TextUtils;
+import android.view.View;
 import android.view.ViewStub;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -46,6 +47,7 @@ public class QingHaiAS105CollectFragment extends BaseASCollectFragment<QingHaiAS
 
     @Override
     protected void initView() {
+        llInsLostQuantity.setVisibility(View.VISIBLE);
         ViewStub stub = (ViewStub) mActivity.findViewById(R.id.viewstub_as_collect);
         stub.inflate();
         //退货交货数量
@@ -55,9 +57,14 @@ public class QingHaiAS105CollectFragment extends BaseASCollectFragment<QingHaiAS
         etMoveCauseDesc = (EditText) mActivity.findViewById(R.id.et_move_cause_desc);
         spStrategyCode = (Spinner) mActivity.findViewById(R.id.sp_strategy_code);
         spMoveReason = (Spinner) mActivity.findViewById(R.id.sp_move_cause);
-
-        etBatchFlag.setEnabled(false);
         super.initView();
+    }
+
+    @Override
+    public void initDataLazily() {
+        //注意由于initDataLazily方法中对批次的enable进行了设置
+        super.initDataLazily();
+        etBatchFlag.setEnabled(false);
     }
 
     @Override
@@ -156,6 +163,7 @@ public class QingHaiAS105CollectFragment extends BaseASCollectFragment<QingHaiAS
         etReturnQuantity.setText(lineData.returnQuantity);
         etMoveCauseDesc.setText(lineData.moveCauseDesc);
         etProjectText.setText(lineData.projectText);
+        tvInsLostQuantity.setText(lineData.insLotQuantity);
         super.bindCommonCollectUI();
     }
 
@@ -208,7 +216,7 @@ public class QingHaiAS105CollectFragment extends BaseASCollectFragment<QingHaiAS
     @Override
     public boolean checkCollectedDataBeforeSave() {
         //如果退货数量不为o那么移动原因说明必须输入
-        if ((!isEmpty(getString(etReturnQuantity)) || !"0".equals(getString(etReturnQuantity)))
+        if ((!isEmpty(getString(etReturnQuantity)) && !"0".equals(getString(etReturnQuantity)))
                 && isEmpty(getString(etMoveCauseDesc))) {
             showMessage("请输入移动原因说明");
             return false;
@@ -279,5 +287,17 @@ public class QingHaiAS105CollectFragment extends BaseASCollectFragment<QingHaiAS
     @Override
     protected int getOrgFlag() {
         return 0;
+    }
+
+    @Override
+    public void _onPause() {
+        clearCommonUI(etProjectText, etMoveCauseDesc);
+        if (spStrategyCode.getAdapter() != null) {
+            spStrategyCode.setSelection(0);
+        }
+        if (spMoveReason.getAdapter() != null) {
+            spMoveReason.setSelection(0);
+        }
+        super._onPause();
     }
 }

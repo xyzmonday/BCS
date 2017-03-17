@@ -2,7 +2,9 @@ package com.richfit.barcodesystemproduct.module_check.qinghai_blind.edit;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.richfit.barcodesystemproduct.R;
@@ -26,6 +28,8 @@ import io.reactivex.FlowableOnSubscribe;
 public class QingHaiBlindEditFragment extends BaseFragment<BlindEditPresenterImp, Object>
         implements IBlindEditView {
 
+    @BindView(R.id.ll_check_location)
+    LinearLayout llCheckLocation;
     @BindView(R.id.et_check_location)
     TextView etCheckLocation;
     @BindView(R.id.tv_material_num)
@@ -40,8 +44,6 @@ public class QingHaiBlindEditFragment extends BaseFragment<BlindEditPresenterImp
     EditText etCheckQuantity;
 
     String mCheckLineId;
-    String mWorkId;
-    String mInvId;
 
     @Override
     protected int getContentId() {
@@ -65,8 +67,6 @@ public class QingHaiBlindEditFragment extends BaseFragment<BlindEditPresenterImp
             String location = bundle.getString(Global.EXTRA_LOCATION_KEY);
             String quantity = bundle.getString(Global.EXTRA_QUANTITY_KEY);
             String invQuantity = bundle.getString(Global.EXTRA_INV_QUANTITY_KEY);
-            mWorkId = bundle.getString(Global.EXTRA_WORK_ID_KEY);
-            mInvId = bundle.getString(Global.EXTRA_INV_ID_KEY);
             tvMaterialNum.setText(materialNum);
             tvMaterialNum.setTag(materialId);
             tvMaterialDesc.setText(materialDesc);
@@ -74,20 +74,39 @@ public class QingHaiBlindEditFragment extends BaseFragment<BlindEditPresenterImp
             etCheckLocation.setText(location);
             tvInvQuantity.setText(invQuantity);
             etCheckQuantity.setText(quantity);
+
+            //默认不允许修改盘点仓位
+            etCheckLocation.setEnabled(false);
+            if (mRefData != null && (!TextUtils.isEmpty(mRefData.checkLevel))) {
+                if ("02".equals(mRefData.checkLevel)) {
+                    llCheckLocation.setVisibility(View.GONE);
+                    etCheckLocation.setEnabled(false);
+                }
+            }
         }
     }
 
     @Override
     public boolean checkCollectedDataBeforeSave() {
+        if (mRefData == null) {
+            showMessage("请先在抬头界面初始化本次盘点");
+            return false;
+        }
+        final String checkLevel = mRefData.checkLevel;
+        if (TextUtils.isEmpty(checkLevel)) {
+            showMessage("请先在抬头选择盘点类型");
+            return false;
+        }
         if (TextUtils.isEmpty(mCheckLineId)) {
             showMessage("该行的盘点Id为空");
             return false;
         }
-        if (TextUtils.isEmpty(mWorkId)) {
+
+        if ("02".equals(checkLevel) && TextUtils.isEmpty(mRefData.workId)) {
             showMessage("盘点工厂Id为空");
             return false;
         }
-        if (TextUtils.isEmpty(mInvId)) {
+        if ("02".equals(checkLevel) && TextUtils.isEmpty(mRefData.invId)) {
             showMessage("盘点库存地点Id为空");
             return false;
         }
@@ -95,8 +114,13 @@ public class QingHaiBlindEditFragment extends BaseFragment<BlindEditPresenterImp
             showMessage("请输入盘点数量");
             return false;
         }
-        if (TextUtils.isEmpty(getString(etCheckLocation))) {
+        if ("01".equals(checkLevel) && TextUtils.isEmpty(getString(etCheckLocation))) {
             showMessage("请输入盘底仓位");
+            return false;
+        }
+
+        if ("01".equals(checkLevel) && getString(etCheckLocation).length() > 10) {
+            showMessage("您输入的盘点仓位不合理");
             return false;
         }
         float quantity = UiUtil.convertToFloat(getString(etCheckQuantity), 0.0F);
@@ -119,8 +143,6 @@ public class QingHaiBlindEditFragment extends BaseFragment<BlindEditPresenterImp
             result.invId = mRefData.invId;
             result.voucherDate = mRefData.voucherDate;
             result.userId = Global.USER_ID;
-            result.workId = mWorkId;
-            result.invId = mInvId;
             result.materialId = CommonUtil.Obj2String(tvMaterialNum.getTag());
             result.quantity = getString(etCheckQuantity);
             result.modifyFlag = "Y";

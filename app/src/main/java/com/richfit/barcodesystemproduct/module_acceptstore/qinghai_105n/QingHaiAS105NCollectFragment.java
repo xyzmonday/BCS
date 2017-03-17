@@ -24,9 +24,10 @@ public class QingHaiAS105NCollectFragment extends BaseASCollectFragment<QingHaiA
     }
 
     @Override
-    protected void initView() {
+    public void initDataLazily() {
+        //注意由于initDataLazily方法中对批次的enable进行了设置
+        super.initDataLazily();
         etBatchFlag.setEnabled(false);
-        super.initView();
     }
 
     @Override
@@ -45,7 +46,9 @@ public class QingHaiAS105NCollectFragment extends BaseASCollectFragment<QingHaiA
         mSelectedRefLineNum = mRefLines.get(spRefLine.getSelectedItemPosition());
         RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
         //如果是质检，那么不允许进行下面的操作
-        if(lineData != null && !TextUtils.isEmpty(lineData.qmFlag) && "x".equalsIgnoreCase(lineData.qmFlag)) {
+        isQmFlag = false;
+        if (lineData != null && !TextUtils.isEmpty(lineData.qmFlag) && "X".equalsIgnoreCase(lineData.qmFlag)) {
+            isQmFlag = true;
             showMessage("该物料是必检物资不能做105非必检入库");
             return;
         }
@@ -54,7 +57,7 @@ public class QingHaiAS105NCollectFragment extends BaseASCollectFragment<QingHaiA
 
     @Override
     public boolean checkCollectedDataBeforeSave() {
-        if(!isNLocation) {
+        if (!isNLocation) {
             final String location = getString(etLocation);
             if (TextUtils.isEmpty(location)) {
                 showMessage("请输入上架仓位");
@@ -66,9 +69,7 @@ public class QingHaiAS105NCollectFragment extends BaseASCollectFragment<QingHaiA
                 return false;
             }
         }
-        RefDetailEntity lineData = getLineData(mSelectedRefLineNum);
-        //如果是质检，那么不允许进行下面的操作
-        if(!TextUtils.isEmpty(lineData.qmFlag) && "x".equalsIgnoreCase(lineData.qmFlag)) {
+        if (isQmFlag) {
             showMessage("该物料是必检物资不能做105非必检入库");
             return false;
         }
@@ -88,10 +89,11 @@ public class QingHaiAS105NCollectFragment extends BaseASCollectFragment<QingHaiA
      * @param batchFlag
      * @return
      */
+    @Override
     protected Flowable<ArrayList<String>> matchMaterialInfo(final String materialNum, final String batchFlag) {
         if (mRefData == null || mRefData.billDetailList == null ||
                 mRefData.billDetailList.size() == 0 || TextUtils.isEmpty(materialNum)) {
-            return Flowable.error(new Throwable("请先单据明细"));
+            return Flowable.error(new Throwable("请先获取单据信息"));
         }
         ArrayList<String> lineNums = new ArrayList<>();
         List<RefDetailEntity> list = mRefData.billDetailList;
@@ -131,6 +133,7 @@ public class QingHaiAS105NCollectFragment extends BaseASCollectFragment<QingHaiA
      * @param lineNum105:单据行的行号
      * @return 返回该行号对应的行明细在明细列表的索引
      */
+    @Override
     protected int getIndexByLineNum(String lineNum105) {
         int index = -1;
         if (TextUtils.isEmpty(lineNum105))
